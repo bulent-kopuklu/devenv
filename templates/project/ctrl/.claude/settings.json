@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "additionalDirectories": [
+      "{{ROOT}}/{{NAME}}-impl",
+      "{{WIKI}}"
+    ],
+    "deny": [
+      "Edit(/{{ROOT}}/{{NAME}}-impl/**)"
+    ]
+  }
+}

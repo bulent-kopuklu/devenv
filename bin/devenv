@@ -1,15 +1,21 @@
 #!/usr/bin/env python3
-"""devenv - dev-templates devshell and config files for the project in the current directory.
+"""devenv - a two-role project: the product repo, the reviewer, and the devshell.
 
-    devenv rust cpp --target aarch64
-    devenv node --node 22
-    devenv go --speckit
+    devenv create ornek go rust --speckit
+    devenv create . rust cpp --target aarch64
+    devenv create ornek node --node 22
 
-Copies the templates and builds the devshell so the runtimes are on disk. It
-creates no source files and reads no project tree: languages are what you name.
-Nothing is committed - created files land in .git/info/exclude, except flake.nix,
-which is intent-to-added because nix reads only files git knows about, and the
-root Makefile, which drives components/ and belongs to the project.
+<name>/<name>-impl is the product repo. The templates are copied there and the
+devshell is built so the runtimes are on disk. It creates no source files and
+reads no project tree: languages are what you name. Nothing is committed -
+created files land in .git/info/exclude, except flake.nix, which is
+intent-to-added because nix reads only files git knows about, and the root
+Makefile, which drives components/ and belongs to the project.
+
+<name>/<name>-ctrl is the reviewer's directory and <name>/CLAUDE.md carries the
+shared protocol. Role texts are not copied: the project files import them from
+the Claude config directory, so one install updates them all. `devenv create .`
+takes the current directory as <name>/ and its name as the project name.
 """
 import argparse, json, os, shutil, subprocess, sys, tempfile
 from pathlib import Path
@@ -35,9 +41,12 @@ ALIAS = {"c++": "cpp", "cxx": "cpp", "c": "cpp", "ts": "node", "js": "node",
 #: eder. Proje disina link verilmez: agac kendi kendine yeter.
 AI_RULES = TEMPLATES / "rules"
 COMPANION = os.environ.get("SPECKIT_COMPANION", "https://github.com/alfredoperez/speckit-companion")
-ORCHESTRATION = os.environ.get("SPECKIT_ORCHESTRATION", "")
+#: Rol metinlerini install.sh buraya kurar (`roles/`); proje dosyalari onlari
+#: buradan import eder. Wiki, denetcinin ve spike'in yazdigi yer.
+CONFIG = Path(os.environ.get("CLAUDE_CONFIG_DIR", Path.home() / ".claude"))
+WIKI = Path(os.environ.get("CC_WORKSPACE", Path.home() / "workspace/cc-workspace"))
 
-VERSION = "1.0.0"
+VERSION = "2.0.0"
 #: install.sh kopyalarken bunu deponun commit'iyle degistirir; depodan
 #: calistirilinca yerinde kalir ve git'ten okunur.
 BUILD = "@BUILD@"
@@ -75,6 +84,51 @@ def copy(template):
 def edit(path, subs):
     p = Path(path)
     p.write_text(subs(p.read_text()))
+
+
+def tilde(p):
+    try:
+        return "~/" + str(Path(p).relative_to(Path.home()))
+    except ValueError:
+        return str(p)
+
+
+def render(template, dest, subs):
+    """`templates/project/<template>` altindakileri dest'e yazar, `{{AD}}` yer
+    tutucularini doldurarak. Var olan dosyaya dokunmaz; izin JSON'u haric: onun
+    listelerine eksik girdiler eklenir, cunku mevcut bir repoyu iceri alirken
+    oradaki izinler de korunmali."""
+    src = TEMPLATES / "project" / template
+    for f in sorted(p for p in src.rglob("*") if p.is_file()):
+        dst = Path(dest) / f.relative_to(src)
+        text = f.read_text()
+        for k, v in subs.items():
+            text = text.replace("{{" + k + "}}", v)
+        if dst.exists() and dst.suffix == ".json":
+            merge_permissions(dst, json.loads(text))
+        elif dst.exists():
+            print(f"kept:    {dst}")
+        else:
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            dst.write_text(text)
+            print(f"created: {dst}")
+
+
+def merge_permissions(path, new):
+    cfg = json.loads(path.read_text())
+    perms = cfg.setdefault("permissions", {})
+    added = 0
+    for key, values in new.get("permissions", {}).items():
+        have = perms.setdefault(key, [])
+        for v in values:
+            if v not in have:
+                have.append(v)
+                added += 1
+    if added:
+        path.write_text(json.dumps(cfg, indent=2) + "\n")
+        print(f"edited:  {path} ({added} izin eklendi)")
+    else:
+        print(f"kept:    {path}")
 
 
 def nix_list(name, values):
@@ -123,6 +177,9 @@ def speckit():
     Sira onemli. `init` .specify/ agacini yaratir; extension'lar ona yazar;
     anayasa en sona kalir cunku init kendi sablonunu birakiyor ve bizimki onun
     yerine gecmeli.
+
+    Orchestration extension'i kurulmaz: hakem subagent'i ve after_* hook'lari
+    karari yazan oturumun icinde verir, o karar denetcinindir.
     """
     if not shutil.which("specify"):
         sys.exit("specify yok: uv tool install specify-cli --from git+https://github.com/github/spec-kit.git")
@@ -130,10 +187,6 @@ def speckit():
     run("specify", "init", "--here", "--force", "--non-interactive",
         "--script", "sh", "--integration", "claude", "--extension", "git", "--extension", "agent-context")
     add_extension(COMPANION)
-    if ORCHESTRATION:
-        add_extension(ORCHESTRATION)
-    else:
-        print("atlandi: orchestration (SPECKIT_ORCHESTRATION verilmedi)")
 
     src = TEMPLATES / "speckit" / "constitution.md"
     dst = Path(".specify/memory/constitution.md")
@@ -153,14 +206,6 @@ def speckit():
     else:
         print(f"atlandi: companion workflow ({wf} yok)")
 
-    if ORCHESTRATION:
-        wf = Path(".specify/extensions/orchestration/workflows/orchestration.workflow.yml")
-        if wf.is_file():
-            run("specify", "workflow", "add", str(wf))
-        else:
-            print(f"atlandi: orchestration workflow ({wf} yok)")
-        stop_hook()
-        subagents()
     node_replacement()
     optional_hooks()
 
@@ -176,22 +221,6 @@ def speckit():
         print(f"created: {ls} (living specs acik, bos; git add it to keep it)")
 
 
-def subagents():
-    """Orchestration'in subagent tanimlarini `.claude/agents/`'a kopyalar.
-
-    Extension `provides:` agent tanimi kuramaz. Hook bir subagent'a is
-    veriyorsa (specify'in hakemi) tanim burada olmali; yoksa hook karari
-    kendisi vermeye donmez, isaretleri clarify'a birakir.
-    """
-    src = Path(".specify/extensions/orchestration/agents")
-    if not src.is_dir():
-        print(f"atlandi: subagent ({src} yok)")
-        return
-    for f in sorted(src.glob("*.md")):
-        dst = Path(".claude/agents") / f.name
-        dst.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(f, dst)
-        print(f"created: {dst}")
 
 
 def optional_hooks():
@@ -238,8 +267,8 @@ def optional_hooks():
           f"{sayac['agent-context']} agent-context hook'u zorunlu yapildi)")
 
 def node_replacement():
-    """Companion'in node'larinin yerine bizimkileri koyar: plan'in yerlesim
-    kurali sablondan, implement govdesi orchestration'dan.
+    """Companion'in plan-doc node'unun yerine bizimkini koyar: plan'in yerlesim
+    kurali sablondan.
 
     Extension `provides:` yalnizca commands/templates/scripts aliyor, yani bir
     extension proje overlay'ine (`.specify/companion/nodes/`) yazamaz. Kopyayi
@@ -247,12 +276,12 @@ def node_replacement():
     alanini korur, ona takili hook'lar fire etmeye devam eder. Geri almak icin
     dosyayi silmek yeter.
     """
-    kaynaklar = [TEMPLATES / "speckit" / "nodes", Path(".specify/extensions/orchestration/nodes")]
-    dosyalar = [(k, f) for k in kaynaklar if k.is_dir() for f in sorted(k.rglob("*.md"))]
+    kok = TEMPLATES / "speckit" / "nodes"
+    dosyalar = sorted(kok.rglob("*.md")) if kok.is_dir() else []
     if not dosyalar:
         print("atlandi: node replacement (kaynak yok)")
         return
-    for kok, src in dosyalar:
+    for src in dosyalar:
         dst = Path(".specify/companion/nodes") / src.relative_to(kok)
         dst.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(src, dst)
@@ -264,38 +293,84 @@ def node_replacement():
         print(f"atlandi: pipeline build ({build} yok) — replacement govdeye islenmedi")
 
 
-def stop_hook():
-    """Ajan durdugunda bitmemis isin kaydini yazan hook'u settings.json'a ekler.
 
-    Spec Kit extension'i bunu yapamaz: `.claude/settings.json` ajanin ayari,
-    `.specify/` degil. Hook bloke ETMEZ, yalnizca yazar — cikis kodu her yolda
-    0. Exit 2 durmayi engelliyor (olculdu) ama engellenen ajan kapiyi gecmek
-    icin uydurma kayit uretebilir.
+
+ORNEKLER = """ornekler:
+  devenv create ornek go rust --speckit   ./ornek/ornek-impl ve ./ornek/ornek-ctrl
+  devenv create . go rust                 bulundugun dizin proje dizini, adi proje adi
+  devenv create ornek cpp --target aarch64
+  devenv create ornek node --node 22"""
+
+CREATE = """Iki rollu bir proje kurar:
+
+  <ad>/            git degil; Claude burada calismaz. CLAUDE.md ortak protokolu import eder
+    <ad>-impl/     urun reposu: flake.nix, Makefile, CLAUDE.md; --speckit ile Spec Kit.
+                   devshell burada derlenir. Rol import'u ve izinler git disinda:
+                   CLAUDE.local.md, .claude/settings.local.json
+    <ad>-ctrl/     denetci: CLAUDE.md, .claude/settings.json, kayit.md
+
+Rol metinleri kopyalanmaz, Claude config dizininden import edilir; once
+dev-templates'te install.sh calismis olmali. Var olan dosyalara dokunulmaz,
+izin listeleri birlestirilir.
+
+Mevcut bir repoyu almak icin: repoyu <ad>/<ad>-impl'e tasi, <ad>/ icinde
+`devenv create . <diller>` calistir (--speckit'siz; kurulu Spec Kit ezilmez)."""
+
+
+def parser():
+    ap = argparse.ArgumentParser(
+        prog="devenv", formatter_class=argparse.RawDescriptionHelpFormatter,
+        description="Iki rollu proje: <ad>/<ad>-impl (urun, yazan) ve <ad>/<ad>-ctrl (denetci).",
+        epilog=ORNEKLER)
+    ap.add_argument("--version", action="version", version=f"devenv {VERSION} ({build_info()})")
+    sub = ap.add_subparsers(dest="command", required=True, metavar="komut")
+    c = sub.add_parser("create", help="yeni proje kur ya da tasinmis bir repoyu duzene al",
+                       formatter_class=argparse.RawDescriptionHelpFormatter,
+                       description=CREATE, epilog=ORNEKLER)
+    c.add_argument("name", metavar="ad",
+                   help="proje adi, ya da `.`: bulundugun dizin proje dizinidir ve adi proje adidir. "
+                        "Urunun icindeki adlar bundan gelir, dizin adindan degil")
+    c.add_argument("langs", metavar="dil", nargs="+", help=" | ".join(LANGS))
+    c.add_argument("--target", action="append", default=[],
+                   help="capraz derleme hedefi: aarch64 | armv7 (tekrarlanabilir)")
+    c.add_argument("--node", help=".nvmrc icin node major surumu, ornek 22")
+    c.add_argument("--speckit", action="store_true",
+                   help="Spec Kit kur: self upgrade, init + git (spec basina branch) + agent-context "
+                        "(CLAUDE.md blogu), companion, living specs acik, generic anayasa")
+    return ap
+
+
+def create_project(name):
+    """Iki rollu duzeni kurar ve impl'e gecer; impl'in kurulumu main'e kalir.
+
+    Ust dizin git reposu olamaz: Claude'un hafizasi repoya gore tutulur, ust
+    dizin repo olursa impl ile ctrl ayni hafizayi paylasir.
     """
-    p = Path(".claude/settings.json")
-    cfg = json.loads(p.read_text()) if p.is_file() else {}
-    cmd = "$CLAUDE_PROJECT_DIR/.specify/extensions/orchestration/scripts/stop_guard.py"
-    hooks = cfg.setdefault("hooks", {})
-    varsa = any(h.get("command") == cmd
-                for girdi in hooks.get("Stop", []) for h in girdi.get("hooks", []))
-    if varsa:
-        print(f"kept:    {p} (Stop hook zaten var)")
-        return
-    hooks.setdefault("Stop", []).append({"hooks": [{"type": "command", "command": cmd}]})
-    p.parent.mkdir(parents=True, exist_ok=True)
-    p.write_text(json.dumps(cfg, indent=2) + "\n")
-    print(f"created: {p} (Stop hook: bitmemis isin kaydi)")
+    if name == ".":
+        root = Path.cwd()
+        name = root.name
+    elif not name or "/" in name or name == "..":
+        sys.exit(f"gecersiz proje adi: {name!r}")
+    else:
+        root = Path.cwd() / name
+    if (root / ".git").exists():
+        sys.exit(f"{root} bir git reposu; ust dizin repo olamaz. "
+                 f"Repoyu {root}/{name}-impl altina tasi, sonra yeniden calistir (--speckit'siz).")
+    impl, ctrl = root / f"{name}-impl", root / f"{name}-ctrl"
+    impl.mkdir(parents=True, exist_ok=True)
+    ctrl.mkdir(exist_ok=True)
+    subs = {"NAME": name, "ROOT": str(root), "CONFIG": tilde(CONFIG), "WIKI": str(WIKI)}
+    render("parent", root, subs)
+    render("ctrl", ctrl, subs)
+    if not (CONFIG / "roles" / "protocol.md").is_file():
+        print(f"UYARI:   {CONFIG / 'roles'} yok; proje dosyalarinin import'lari bos kalir. "
+              "dev-templates'te install.sh'i calistir.")
+    os.chdir(impl)
+    return subs
 
 
 def main():
-    ap = argparse.ArgumentParser(description="dev-templates devshell for this project")
-    ap.add_argument("--version", action="version", version=f"devenv {VERSION} ({build_info()})")
-    ap.add_argument("langs", nargs="+", help=" | ".join(LANGS))
-    ap.add_argument("--target", action="append", default=[], help="aarch64 | armv7 (repeatable)")
-    ap.add_argument("--node", help="node major for .nvmrc, e.g. 22")
-    ap.add_argument("--speckit", action="store_true",
-                    help="Spec Kit kur: self upgrade, init + git (spec basina branch) + agent-context (CLAUDE.md blogu), companion + orchestration, living specs acik, generic anayasa")
-    a = ap.parse_args()
+    a = parser().parse_args()
 
     langs = [ALIAS.get(l.lower(), l.lower()) for l in a.langs]
     unknown = [l for l in langs if l not in LANGS]
@@ -303,6 +378,15 @@ def main():
         sys.exit(f"unknown language: {' '.join(unknown)} (pick from {' '.join(LANGS)})")
     targets = [ALIAS.get(t.lower(), t.lower()) for t in a.target if t.lower() != "none"]
 
+    subs = create_project(a.name)
+    setup(a, langs, targets, subs)
+    build()
+    root, name = subs["ROOT"], subs["NAME"]
+    print(f"oturumlar: cd {root}/{name}-impl && claude -n {name}-impl")
+    print(f"           cd {root}/{name}-ctrl && claude -n {name}-ctrl")
+
+
+def setup(a, langs, targets, subs):
     if not Path(".git").is_dir():
         subprocess.run(["git", "init", "-q"], check=True)
         print("created: .git")
@@ -345,7 +429,7 @@ def main():
             copy("node")
     copy("claude")
     if Path("CLAUDE.md").exists():
-        edit("CLAUDE.md", lambda t: t.replace("# PROJECT_NAME", f"# {Path.cwd().name}"))
+        edit("CLAUDE.md", lambda t: t.replace("# PROJECT_NAME", f"# {subs['NAME']}"))
         body = Path("CLAUDE.md").read_text()
         imports = []
         for l in langs:
@@ -375,6 +459,11 @@ def main():
             edit("CLAUDE.md", ekle)
             print(f"claude:  {len(imports)} kural dosyasi import edildi")
 
+    # Rol import'u ve izinler makineye ozgu (mutlak yollar), commit'lenmez:
+    # repoyu baska makinede acan kirik bir import gormesin.
+    render("impl", Path("."), subs)
+    created.extend(["CLAUDE.local.md", ".claude/settings.local.json", "ilerleme.md"])
+
     already = Path(".git/info/exclude").read_text().splitlines()
     excluded = [f for f in created + [".direnv/"] if f not in ("flake.nix", "Makefile") and f not in already]
     if excluded:
@@ -383,15 +472,19 @@ def main():
         for e in excluded:
             print(f"excluded: {e}")
 
-    if a.speckit:
+    if a.speckit and Path(".specify").is_dir():
+        # Iceri alinan repoda init --force kurulu Spec Kit'i ezer.
+        print("atlandi: speckit (.specify/ zaten var)")
+    elif a.speckit:
         speckit()
 
+
+def build():
     if shutil.which("direnv"):
         subprocess.run(["direnv", "allow", "."], check=True)
         print("direnv:  allowed")
     print("building the devshell (runtimes, LSPs, formatters) ...")
-    build = subprocess.run(["nix", "develop", "--command", "true"])
-    if build.returncode != 0:
+    if subprocess.run(["nix", "develop", "--command", "true"]).returncode != 0:
         sys.exit("devshell failed to build; the nix error is above")
     print("ready. open the editor from this shell: code .")
 

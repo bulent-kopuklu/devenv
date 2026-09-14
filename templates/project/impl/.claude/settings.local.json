@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "additionalDirectories": [
+      "{{ROOT}}/{{NAME}}-ctrl"
+    ],
+    "deny": [
+      "Edit(/{{ROOT}}/{{NAME}}-ctrl/**)",
+      "Read(/{{ROOT}}/{{NAME}}-ctrl/CLAUDE.md)",
+      "Skill(spike)",
+      "Skill(spike *)"
+    ]
+  }
+}

@@ -8,7 +8,7 @@ nix flake init -t github:bulent-kopuklu/devenv#cpp     # .clangd, .clang-format,
 nix flake init -t github:bulent-kopuklu/devenv#rust    # rustfmt.toml
 nix flake init -t github:bulent-kopuklu/devenv#go      # .golangci.yml
 nix flake init -t github:bulent-kopuklu/devenv#node    # biome.json
-nix flake init -t github:bulent-kopuklu/devenv#claude  # CLAUDE.md, .claude/rules/, .claude/skills/
+nix flake init -t github:bulent-kopuklu/devenv#claude  # CLAUDE.md
 nix flake init -t github:bulent-kopuklu/devenv#make    # root Makefile driving components/<name>/
 nix flake init -t github:bulent-kopuklu/devenv#shell   # shell.nix + .envrc (use nix) when flake.nix cannot be committed
 nix flake init -t github:bulent-kopuklu/devenv#init-cpp  # CMakeLists.txt + src/main.cpp for an empty project
@@ -56,6 +56,46 @@ replaces Companion's `plan-doc` node so a plan places its paths in this layout
 instead of Spec Kit's `src/` default; the rule itself is in the `CLAUDE.md`
 template under `## Yerleşim`.
 
+## Two-role projects (`devenv create`)
+
+```bash
+devenv create ornek go rust --speckit
+```
+
+```
+ornek/                 not a git repo; nobody runs Claude here
+├── CLAUDE.md          imports the shared protocol
+├── ornek-impl/        the product repo (remote: ornek.git); everything above happens here
+└── ornek-ctrl/        the reviewer: CLAUDE.md, .claude/settings.json, kayit.md
+```
+
+One session writes (`claude -n ornek-impl`), one reviews (`claude -n ornek-ctrl`);
+they talk over `SendMessage`. The role texts live once, in `claude/roles/`, and
+`install.sh` copies them to `$CLAUDE_CONFIG_DIR/roles/`. Project files only
+import them and carry what is specific to the project: names, paths,
+permissions. Updating a role is one `./install.sh`, not a walk through projects.
+
+- The product repo keeps its committed `CLAUDE.md` about the product. The role
+  import and the permissions carry absolute paths, so they go to
+  `CLAUDE.local.md` and `.claude/settings.local.json`, both in
+  `.git/info/exclude`.
+- impl may not edit the reviewer's directory, read its `CLAUDE.md`, or call
+  the `spike` skill; the reviewer may read impl but not edit it. `Edit` deny
+  rules also stop the Write tool and `>` redirects, not `cp` or `git commit`
+  from Bash; that part is the role text's rule.
+- Names inside the product come from the argument, never from the directory:
+  the `CLAUDE.md` title is `ornek`, not `ornek-impl`.
+- `devenv create . <langs>` takes the current directory as `ornek/` and its
+  name as the project name. An existing repo is adopted that way: move it to
+  `ornek/ornek-impl`, then run `devenv create . <langs>` inside `ornek/`,
+  without `--speckit`; existing files are kept and permission lists are merged.
+- `devenv` does not install the orchestration extension: its judge and
+  `after_*` hooks decide inside the writing session, and in this layout the
+  reviewer decides.
+
+`spike` is a global skill (`claude/skills/spike`, `context: fork`): it runs in
+its own subagent and writes only to the wiki.
+
 ## Claude Code skill
 
 `skills/devenv` drives the templates from inside any project or an empty folder:
@@ -68,7 +108,8 @@ be green. Install once (symlinks into `~/.claude/skills`, so `git pull` updates 
 ```
 
 `install.sh` kopyalar, symlink kurmaz: `bin/` → `~/.local/bin`, `templates/` →
-`~/.local/share/dev-templates/templates`. `devenv` şablonları önce depoda
+`~/.local/share/dev-templates/templates`, `claude/roles/` ve `claude/skills/*` →
+Claude config dizini. `devenv` şablonları önce depoda
 (`<kök>/templates`), yoksa oradan okur — klondan çalıştırmak da kurulu hâli
 kullanmak da çalışır. `devenv --version` sürümü ve kurulu kopyanın geldiği
 commit'i basar (`devenv 1.0.0 (d7b508c 2026-09-11)`); commit'lenmemiş
