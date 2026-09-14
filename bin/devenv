@@ -307,7 +307,7 @@ CREATE = """Iki rollu bir proje kurar:
     <ad>-impl/     urun reposu: flake.nix, Makefile, CLAUDE.md; --speckit ile Spec Kit.
                    devshell burada derlenir. Rol import'u ve izinler git disinda:
                    CLAUDE.local.md, .claude/settings.local.json
-    <ad>-ctrl/     denetci: CLAUDE.md, .claude/settings.json, kayit.md
+    <ad>-ctrl/     denetci: CLAUDE.md, .claude/settings.json, record.md
 
 Rol metinleri kopyalanmaz, Claude config dizininden import edilir; once
 dev-templates'te install.sh calismis olmali. Var olan dosyalara dokunulmaz,
@@ -462,7 +462,7 @@ def setup(a, langs, targets, subs):
     # Rol import'u ve izinler makineye ozgu (mutlak yollar), commit'lenmez:
     # repoyu baska makinede acan kirik bir import gormesin.
     render("impl", Path("."), subs)
-    created.extend(["CLAUDE.local.md", ".claude/settings.local.json", "ilerleme.md"])
+    created.extend(["CLAUDE.local.md", ".claude/settings.local.json", "handoff.md"])
 
     already = Path(".git/info/exclude").read_text().splitlines()
     excluded = [f for f in created + [".direnv/"] if f not in ("flake.nix", "Makefile") and f not in already]

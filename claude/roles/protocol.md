@@ -12,7 +12,7 @@ dizin git reposu değildir. Tek git reposu impl'dir.
 | rol | yazar | karar verir |
 |---|---|---|
 | impl, yazan | ürün: kod, spec belgeleri, commit | hayır; bulguya düzeltme ya da kanıtlı itiraz |
-| ctrl, denetçi | yalnız kendi dizini: `kayit.md` | evet: karar merdiveni, spike, bulgunun kapanması |
+| ctrl, denetçi | yalnız kendi dizini: `record.md` | evet: karar merdiveni, spike, bulgunun kapanması |
 | spike | yalnız wiki | hayır; ölçer, kart yazar. ctrl'in çağırdığı global skill |
 | insan | — | ürün kararı; yıkıcı ve dışarı dönük işin onayı |
 
@@ -20,7 +20,7 @@ dizin git reposu değildir. Tek git reposu impl'dir.
 
 1. Anayasa: impl'de `.specify/memory/constitution.md`
 2. Spec, plan, tasks, contracts: impl'de `specs/`
-3. ctrl'de `kayit.md`: kapanmış kararlar
+3. ctrl'de `record.md`: kapanmış kararlar
 4. Mesajlar geçicidir. Kayda ya da belgeye geçmeyen mesaj karar değildir.
 
 `/clear` sonrası her rol kendini `CLAUDE.md`'si ve bu sıradaki dosyalarla
@@ -41,7 +41,7 @@ tekrar etme.
 | `[CEVAP] <kimlik>` | impl → ctrl | `düzeltildi <commit> <dosya:satır>` ya da `itiraz <kanıt>` |
 | `[RAPOR] <tur>` | impl → ctrl | madde → sonuç → kayıt yeri; açık kalanlar; kapı çıktısının son satırları |
 | `[İNSAN] <kimlik>` | impl → ctrl | insanın impl terminalinde dediği (alıntı), nasıl anlaşıldığı, ne yapılacağı |
-| `[DUR]` | ctrl → impl | tutarlı noktada dur, ilerleme notunu yaz, tek satır `durdum` |
+| `[DUR]` | ctrl → impl | tutarlı noktada dur, devir notunu (`handoff.md`) yaz, tek satır `durdum` |
 
 ## Kaynak kapısı
 
@@ -54,8 +54,9 @@ bir belgenin baştan sona okunması ya da uzun bir deney.
 - **5 saatlik limit:** Model bunu göremez; insan `/usage`'da görür. ctrl büyük
   işi başlatmadan önce insana sorar. Kalan pay azsa büyük iş başlamaz; küçük ve
   kendi içinde biten işler yapılır.
-- **Kesinti sigortası:** İş task başına kaydedilir (commit ve ilerleme notu).
-  Limit ortada keserse en fazla bir task kaybolur.
+- **Kesinti sigortası:** İş task başına kaydedilir (commit ve task kapatma);
+  yarım iş impl'in devir notunda durur. Limit ortada keserse en fazla bir task
+  kaybolur.
 
 ## Değişmez kurallar
 

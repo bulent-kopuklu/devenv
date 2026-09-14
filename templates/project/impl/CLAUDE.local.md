@@ -3,5 +3,5 @@
 ## Bu proje
 
 - ctrl: `{{ROOT}}/{{NAME}}-ctrl`, oturum `{{NAME}}-ctrl`
-- kayıt: `{{ROOT}}/{{NAME}}-ctrl/kayit.md`
-- ilerleme notu: `ilerleme.md`, bu dizinde, git dışı
+- kayıt: `{{ROOT}}/{{NAME}}-ctrl/record.md`
+- devir notu: `handoff.md`, bu dizinde, git dışı

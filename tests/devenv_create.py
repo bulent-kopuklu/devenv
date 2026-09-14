@@ -69,7 +69,7 @@ check("yeni: ust dizin repo degil", not (root / ".git").exists())
 check("yeni: impl repo, ctrl degil", (impl / ".git").is_dir() and not (ctrl / ".git").exists())
 check("yeni: ust CLAUDE.md protokolu import eder", f"@{CFG}/roles/protocol.md" in (root / "CLAUDE.md").read_text())
 check("yeni: ctrl CLAUDE.md rolu import eder", f"@{CFG}/roles/ctrl.md" in (ctrl / "CLAUDE.md").read_text())
-check("yeni: ctrl kayit.md, uc bolum", (ctrl / "kayit.md").read_text().count("\n## ") == 3)
+check("yeni: ctrl record.md, uc bolum", (ctrl / "record.md").read_text().count("\n## ") == 3)
 check("yeni: impl CLAUDE.local.md rolu import eder", f"@{CFG}/roles/impl.md" in (impl / "CLAUDE.local.md").read_text())
 check("yeni: baslik proje adi, dizin adi degil", (impl / "CLAUDE.md").read_text().startswith("# ornek\n"))
 check("yeni: yer tutucu kalmadi", not any("{{" in p.read_text() for p in root.rglob("*")
@@ -84,7 +84,7 @@ check("yeni: impl ctrl'e yazamaz, CLAUDE.md'sini okuyamaz",
 check("yeni: impl spike cagiramaz", "Skill(spike)" in ls["deny"] and "Skill(spike *)" in ls["deny"])
 excl = (impl / ".git/info/exclude").read_text()
 check("yeni: yerel dosyalar exclude'da",
-      all(f in excl for f in ("CLAUDE.local.md", ".claude/settings.local.json", "ilerleme.md")))
+      all(f in excl for f in ("CLAUDE.local.md", ".claude/settings.local.json", "handoff.md")))
 status = subprocess.run(["git", "-C", str(impl), "status", "--porcelain"], capture_output=True, text=True).stdout
 check("yeni: yerel dosyalar git status'ta yok", "CLAUDE.local.md" not in status and "settings.local" not in status)
 
@@ -113,7 +113,7 @@ check("alma: kurulu Spec Kit ezilmedi", "atlandi: speckit" in out and "[speckit]
 t = WORK / "nokta" / "nokta"; t.mkdir(parents=True)
 out, code = devenv(t, "create", ".", "go")
 check("nokta: cikis 0", ok(code))
-check("nokta: impl ve ctrl bulunulan dizinde", (t / "nokta-impl/.git").is_dir() and (t / "nokta-ctrl/kayit.md").is_file())
+check("nokta: impl ve ctrl bulunulan dizinde", (t / "nokta-impl/.git").is_dir() and (t / "nokta-ctrl/record.md").is_file())
 check("nokta: ic ice dizin yok", not (t / "nokta").exists())
 check("nokta: baslik dizinin adi", (t / "nokta-impl/CLAUDE.md").read_text().startswith("# nokta\n"))
 

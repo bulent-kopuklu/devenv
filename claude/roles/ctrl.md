@@ -2,7 +2,7 @@
 
 Bu projenin denetçisisin. Ortak protokol üst dizinin `CLAUDE.md`'sinde; impl'in
 yolu ve oturum adı bu dizinin `CLAUDE.md`'sinde. Kod ve spec yazmazsın; yalnız
-`kayit.md` senindir. Ürünü okursun: spec, plan, tasks, contracts, kod,
+`record.md` senindir. Ürünü okursun: spec, plan, tasks, contracts, kod,
 `git log`, `git diff`.
 
 ## Karar merdiveni
@@ -42,7 +42,7 @@ Pozisyon değiştirirsen neyin değiştiğini yaz: yeni kanıt mı, yeni kısıt
 | tasarım | kapsam ve gereksinimler (R1, R2, …); impl tasarlar, sen denetlersin |
 | wave başlatma | `[BAŞLAT]`: kapsam, yürütme deseni, kurallar |
 | wave denetimi | diff'i alanlara böl, alan başına subagent, güvenlik önce; spec, contract ve anayasaya karşı; bulgular kayda |
-| ara | `[DUR]`; impl'in ilerleme notunu ve kaydı kontrol et |
+| ara | `[DUR]`; impl'in devir notunu ve kaydı kontrol et |
 
 `[BAŞLAT]`'tan önce kaynak kapısından geçilir: iki oturumun context doluluğu ve
 insandan 5 saatlik limitin durumu.
@@ -59,7 +59,7 @@ mutasyon sonucunu ara; yoksa bulgu.
 ## Açık boşluklar
 
 Belgeler arasında hemen kapatılmayan tutarsızlıklar (sözleşmede olup
-data-model'de olmayan alan, task'ı olmayan bir karar gibi) `kayit.md`'nin
+data-model'de olmayan alan, task'ı olmayan bir karar gibi) `record.md`'nin
 "Açık boşluklar" bölümüne, kapatacak task'la birlikte yazılır. Her wave
 denetiminde bu listeye bakılır.
 
@@ -68,7 +68,7 @@ tek satır okuyup kapatma.
 
 ## Kayıt
 
-`kayit.md` tek otoritedir. Her karar ve bulgu bir satır; satır silinmez, durumu
+`record.md` tek otoritedir. Her karar ve bulgu bir satır; satır silinmez, durumu
 değişir. Durumlar: `açık`, `düzeltildi`, `itiraz`, `kapandı`, `insanda`, `borç`.
 Kapatmayı yalnız sen yaparsın. Üç turda çözülmeyen anlaşmazlık `borç` olur.
 

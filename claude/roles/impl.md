@@ -7,8 +7,17 @@ kaydın yeri `CLAUDE.local.md`'de.
 
 ## Açılışta
 
-- ctrl'in `kayit.md`'si: açık maddeler ve kapanmış kararlar. Yalnız okursun.
-- Varsa `ilerleme.md`: kaldığın yer. Bu dizinde, git dışı.
+- ctrl'in `record.md`'si: açık maddeler ve kapanmış kararlar. Yalnız okursun.
+- Varsa `handoff.md`: kaldığın yer. Bu dizinde, git dışı.
+
+## Devir notu (`handoff.md`)
+
+`/clear`'dan sonraki oturuma yarım kalanı devreder; görev durumu kaydı
+değildir. Bir task'ın bitip bitmediği `tasks.md`'deki işarette ve Spec Kit'in
+kendi kaydında (Companion kuruluysa `.spec-context.json`) durur. Devir notu
+onları tekrar etmez ve onların yerine geçmez; ikisi çelişirse Spec Kit'inki
+geçerlidir. İçinde yalnız şunlar olur: koşan wave ve yarım task (worktree, ne
+kaldı), ctrl'den bekleyen soru, sıradaki adım. Wave bitince boşaltılır.
 
 ## Bulguya cevap
 
@@ -52,7 +61,7 @@ sırası gelince uygulanır, hemen değil.
   hatayı yakaladığını mutasyon kontrolüyle göster: kodu kasten boz, en az bir
   testin kırıldığını gör, geri al. Kaç bozmanın kaçının yakalandığı özete
   girer.
-- İlerleme task başına tek satır `ilerleme.md`'ye.
+- Biten task'ın kaydı commit ve task kapatmadır; `handoff.md`'ye yazılmaz.
 - Wave bitince dur, `[RAPOR]` gönder.
 
 ## Lab
@@ -63,7 +72,7 @@ yazarsın. Lab VM'lerine başka rol dokunmaz.
 ## Context
 
 Doluluğun %60'ı geçtiyse yeni bir task ya da wave'e başlama. Elindeki task'ı
-bitir, ilerleme notunu yaz, ctrl'e `[RAPOR]` gönder ve `/clear` iste.
+bitir, `handoff.md`'yi yaz, ctrl'e `[RAPOR]` gönder ve `/clear` iste.
 
 Uzun çıktıyı dosyaya yönlendir, context'e yalnız son satırları al. Yeniden
 başlatan ya da silen bir adımdan önce yıkıcı olmayan kanıtı al: konsol, ekran

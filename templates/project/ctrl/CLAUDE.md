@@ -5,6 +5,6 @@
 ## Bu proje
 
 - impl: `{{ROOT}}/{{NAME}}-impl`, oturum `{{NAME}}-impl`
-- kayıt: `kayit.md`, bu dizinde
-- impl'in ilerleme notu: `{{ROOT}}/{{NAME}}-impl/ilerleme.md`
+- kayıt: `record.md`, bu dizinde
+- impl'in devir notu: `{{ROOT}}/{{NAME}}-impl/handoff.md`
 - wiki: `{{WIKI}}`
