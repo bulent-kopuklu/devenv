@@ -4,40 +4,18 @@ Açık işler. Kapananlar silinir. Harita ve ilkeler `CLAUDE.md`'de.
 
 ## Şablon (yeni projeler için)
 
-- [ ] Anayasa şablonuna (`templates/speckit/constitution.md`) güvenlik ilkesi.
-      Kullanıcı onayladı. Metin:
-      "Güvenlik tasarımında önce standart desen aranır. Kendini ispatlamış bir
-      çözüm varsa o kullanılır: RFC ya da yayımlanmış bir standart, yaygın ve
-      bakımlı bir kütüphane, bilinen bir protokol. Özel çözüm ancak adayların
-      incelenip neden yetmediğinin kaynakla yazılmasından sonra tasarlanır.
-      Kripto primitifi ve protokol kendimiz yazılmaz. Kanıt biçimi: güvenlik
-      kararı, incelenen adaylar ve kaynaklarıyla research.md'de durur."
-      Şablonun ilke numaralamasına ve sürüm kaydına uy.
-- [ ] CLAUDE.md şablonuna (`templates/claude/CLAUDE.md`) `doc/` kuralı.
-      Kullanıcı onayladı. Metin: "`doc/` yalnız insan içindir. Ajan oraya
-      istendiğinde yazar ve düzenlerken okuyabilir. Ama `doc/` otorite değildir:
-      oturum açılışında okunmaz; spec, plan, tasks ve kod ona dayanmaz ve
-      referans vermez. `doc/` ile spec/plan çelişirse spec/plan esastır, `doc/`
-      güncellenir." `doc/` kökte izinli dizinler listesine girer.
 - [ ] CLAUDE.md şablonu `flake.nix`'i yalnız devshell olarak anlatıyor. Proje
       flake'ten release paketi de çıkarıyorsa `make dist` ölü ama doğru görünen
       ikinci bir yol olur; şablon bunu söylemeli.
 - [ ] `devenv` CLAUDE.md'deki `Diller: LANGS` satırını doldurmuyor.
-- [ ] Makefile: yalnız kütüphane içeren bir Go modülünde `make build` "go: no
-      main packages to build" veriyor (`go build -o $(BIN)/ ./...` main paketi
-      bulamıyor). Düzeltme: önce `go build ./...`, sonra `-o` yalnız
-      `go list` ile bulunan main paketlerine.
-- [ ] Makefile: Go cross build devshell'in içinde çalışmıyor. Devshell `CC=gcc`
-      export ediyor (nix stdenv); `CC` tanımlıyken Go cross derlemede cgo'yu
-      açıyor ve host gcc'si hedef assembly'yi derleyemiyor. Düzeltme: cross
-      hedeflerde `CGO_ENABLED=0`. Şablonun cross testi devshell'in içinde
-      yapılmalı; önceki test dışında yapıldığı için hatayı görmedi.
-- [ ] Makefile: node bileşeninin çıktısı bileşenin içinde kalıyor, `dist`'e
-      girmiyor. Gradle (java, android) sürülmüyor; öyle bir bileşen "manifest
-      yok" hatası verir.
-- [ ] Base `.gitignore`'da `__pycache__/` yok. `build-pipeline.py`
-      `.specify/extensions/companion/scripts/__pycache__/` bırakıyor ve kurulum
-      commit'ine `.pyc` giriyor.
+- [ ] Makefile: node bileşeninin çıktısı `dist`'e girmiyor; Makefile'ın
+      başında yazılı. Toplamak için bir çıktı dizini sözleşmesi gerekiyor
+      (`dist/`, `build/`, framework'e göre değişiyor); ilk gerçek node
+      bileşeninde karar verilir. Gradle (java, android) sürülmüyor; öyle bir
+      bileşen "manifest yok" hatası verir.
+- [ ] Makefile: `go_test` ve `go_lint` `go generate` koşmuyor. Üretilen kod
+      commit'lenmiyorsa temiz ağaçta `make test` ve `make lint`, `make`'ten önce
+      koşulunca düşer. Gerçek bir projede aynı düzeltme yapıldı.
 - [ ] `lib.mkEnv` Rust toolchain'ini de döndürsün. Release paketini flake'ten
       derleyen bir proje bugün toolchain'e devenv'in iç input'u
       (`rust-overlay`) üzerinden uzanıyor; devshell `rust-toolchain.toml`
