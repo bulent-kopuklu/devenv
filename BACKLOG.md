@@ -108,6 +108,20 @@ Açık işler. Kapananlar silinir. Harita ve ilkeler `CLAUDE.md`'de.
       Tasarım'daki ağaç maddesi uygulanırsa bu madde düşer.
 - [ ] `~/workspace/ai-rules/rust.md` kuralın ikinci kopyası; tek kaynak
       `templates/rules/`.
+- [ ] `devenv` kurduğunu geri alamıyor. Spec Kit'in yönetim alanı dışında
+      kurdukları: `.specify/companion/nodes/` altındaki node replacement
+      (`plan-doc`), kökteki `living-specs.yml`, `extensions.yml`'de kapatılan
+      git commit hook'ları. `specify extension remove` bunları bilmez. dbaas'ta
+      orkestrasyon 2026-09-14'te söküldü: extension ve workflow `specify` ile,
+      hakem, `Stop` hook'u, `implement-exec` ve spike kopyası elle, ardından
+      `build-pipeline.py`. `devenv update` ile birlikte düşünülmeli.
+- [ ] Kurulu kopya kaynaktan ayrışınca bunu gören bir kontrol yok: config'teki
+      `roles/` ve `skills/`, projedeki `plan-doc`. `devenv --version` yalnız
+      kurulu `bin/devenv`'in commit'ini söylüyor.
+- [ ] Branch adını Spec Kit'in git extension'ı, spec dizininin adını Companion
+      ayrı ayrı türetiyor. Bir specify koşusunda aynı çıkıyor mu bilinmiyor.
+      Çıkmazsa bir şey kırılmaz (Spec Kit dizini `feature.json`'dan buluyor),
+      yalnız branch ile dizin eşleşmez.
 
 ## Rol metinleri
 
@@ -123,4 +137,21 @@ Açık işler. Kapananlar silinir. Harita ve ilkeler `CLAUDE.md`'de.
       verilmeli; bunu `devenv create` çıktısı ve README söylemeli.
 - [ ] Kaynak kapısı için araç: oturumun transcript'inden context doluluğunu
       okuyan küçük bir script. Rol metni "doluluk transcript'teki son
-      `usage`'dan okunur" diyor, ama okuyan bir araç yok.
+      `usage`'dan okunur" diyor, ama okuyan bir araç yok. Başlangıç noktası:
+      orkestrasyon reposundaki `scripts/token_stats.py`
+      (`git.kopuklu.io:speckit-orchestrator.git`). Subagent'ların ayrı
+      transcript'lerini de okuyor.
+- [ ] Sınama: ctrl, D37 türü bir çelişkiyi kendiliğinden buluyor mu? dbaas'ta
+      (2026-09-11) analyze bir bulguyu kapatırken yeni bir tasarım kararı verdi:
+      gateway'e CA anahtarı (D37). Karar, aynı turda verilen D36'yı boşa
+      çıkarıyordu, çünkü mühür anahtarı gateway'den geçiyordu. Karar tablosunda
+      yine de ✓ vardı; arkasında kanıt değil argüman duruyordu. Açığı başka bir
+      oturum yakaladı. Sınama: D37'li hâl dbaas transcript'inden geri kurulur ve
+      ctrl rol metniyle o hâle bakar. Bulamazsa rol metni düzeltilir.
+- [ ] Denetçi varken yazan model ucuzlatılabilir mi (Sonnet yazar, güçlü
+      denetçi)? Implement için olası, plan için belirsiz. impl'in modeli task
+      subagent'larına da geçer. Ölçüm: aynı işi iki yazar koşar; bulgu, kalan
+      hata ve toplam token karşılaştırılır.
+- [ ] impl'in ctrl dizinine Bash üzerinden yazması (`cp`, `sed -i`, `git`)
+      Edit yasağına takılmıyor; bugün bunu yalnız rol metni tutuyor. Bir
+      `PreToolUse` hook'uyla kapatılabilir mi, ölçülmedi.
