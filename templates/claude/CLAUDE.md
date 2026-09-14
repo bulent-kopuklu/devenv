@@ -22,10 +22,14 @@
 - Yeni bileşen = `components/` altında yeni dizin. `Makefile`'a dokunulmaz;
   bileşenin dilini manifest'inden okur.
 - Kökte yalnız projenin geneline ait olan durur: `Makefile`, `flake.nix`,
-  formatter/linter config'leri, `CLAUDE.md`, `README.md`, `install/`, `proof/`.
-  Spec Kit kullanılıyorsa onun yerleri de: `specs/`, `.specify/`, living
+  formatter/linter config'leri, `CLAUDE.md`, `README.md`, `install/`, `proof/`,
+  `doc/`. Spec Kit kullanılıyorsa onun yerleri de: `specs/`, `.specify/`, living
   specs'in `living-specs.yml`'ı ve `capabilities/`'i. Kök dizine kaynak kodu ya
   da bunların dışında yeni dizin eklenmez.
+- `doc/` yalnız insan içindir. Ajan oraya istendiğinde yazar ve düzenlerken
+  okuyabilir. Ama `doc/` otorite değildir: oturum açılışında okunmaz; spec,
+  plan, tasks ve kod ona dayanmaz ve referans vermez. `doc/` ile spec/plan
+  çelişirse spec/plan esastır, `doc/` güncellenir.
 - Bileşenler arası sözleşme (proto, OpenAPI) kendi bileşeninde durur
   (`components/<ad>/`, manifest `buf.yaml`). Kodunu onu kullanan her bileşen
   kendi build'inde üretir: Go `//go:generate`, Rust `build.rs`.
