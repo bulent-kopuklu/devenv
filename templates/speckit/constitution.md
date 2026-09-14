@@ -1,5 +1,5 @@
 <!--
-Çekirdek ilkeler. Bunlar her projede geçerlidir; projeye özel ilkeler VIII'den
+Çekirdek ilkeler. Bunlar her projede geçerlidir; projeye özel ilkeler IX'dan
 itibaren ALTINA eklenir. Buradaki maddeler silinmez, yalnız Yönetişim
 bölümündeki usulle değiştirilir.
 -->
@@ -116,6 +116,21 @@ Gerekçe: Üretimde yıllarca sınanmış bir çözüm, sıfırdan bulunan yakla
 karşılaşmadığı arızaları çoktan görmüştür. Onu yeniden keşfetmek, aynı arızaları
 sırayla yeniden yaşamaktır.
 
+### VIII. Güvenlikte Önce Standart Desen
+
+Güvenlik tasarımında önce standart desen aranır. Kendini ispatlamış bir çözüm
+varsa o kullanılır: RFC ya da yayımlanmış bir standart, yaygın ve bakımlı bir
+kütüphane, bilinen bir protokol. Özel çözüm ancak adayların incelenip neden
+yetmediğinin kaynakla yazılmasından sonra tasarlanır. Kripto primitifi ve
+protokol kendimiz yazılmaz.
+
+Kanıt biçimi: güvenlik kararı, incelenen adaylar ve kaynaklarıyla research.md'de
+durur.
+
+Gerekçe: Güvenlik mekanizmasının hatası işlevsel testte görünmez; ancak biri onu
+kırmaya çalıştığında ortaya çıkar. Kendini ispatlamış bir standart bu denemeleri
+bizden önce görmüştür (İlke VII).
+
 ## Spike
 
 İlke I'in (b) yolu **spike**'tır: dış dünyanın davranışı hakkında bir iddiaya
@@ -177,7 +192,7 @@ gösteremez.
 - **Değişiklik usulü**: Değişiklik önerisi, hangi ilkeyi neden değiştirdiğini ve
   etkilediği mevcut kararları yazılı olarak belirtir. Proje sahibi onaylamadan
   hiçbir ilke eklenemez, değiştirilemez veya kaldırılamaz.
-- **Çekirdek ilkeler**: I–VII ortaktır ve projeye özel ilkeler VIII'den itibaren
+- **Çekirdek ilkeler**: I–VIII ortaktır ve projeye özel ilkeler IX'dan itibaren
   eklenir. Çekirdekte yapılan bir değişiklik yalnız bu projede kalır; başka
   projelerde de geçerli olması isteniyorsa çekirdeğin kendisine taşınmalıdır,
   yoksa bir sonraki projede o madde yoktur.
@@ -187,4 +202,4 @@ gösteremez.
   edilir. İlkeden sapma; ya reddedilir ya da gerekçesi ve süresi yazılı bir
   istisna olarak kaydedilir. Sessiz sapma kabul edilmez.
 
-**Version**: 1.1.0
+**Version**: 1.2.0
