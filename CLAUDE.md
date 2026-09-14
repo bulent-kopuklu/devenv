@@ -54,6 +54,10 @@ Kurulumu `install.sh` yapar ve kopyalar, symlink kurmaz. Bu makinede
 
 - `python3 -B tests/devenv_create.py`: yeni proje, ikinci koşu, var olan repoyu
   alma, `create .`, reddedilen çağrılar. Nix build'i atlar, geçici dizinde koşar.
+- `templates/make/Makefile` değişirse bir devshell'in içinde, cross hedefle
+  birlikte dene. Devshell `CC`'yi export eder; dışında görünmeyen hatalar
+  içinde çıkar. Değişiklikten önceki Makefile'ı aynı düzenekte koş: hatayı
+  gösteremeyen deneme düzeltmeyi de kanıtlamaz.
 - `install.sh`'i gerçek config'e dokunmadan dene:
   `CLAUDE_CONFIG_DIR=$(mktemp -d) BINDEST=$(mktemp -d) XDG_DATA_HOME=$(mktemp -d) NO_PI=1 ./install.sh`
 - Gerçek `./install.sh` global config'i değiştirir: kullanıcının onayıyla.

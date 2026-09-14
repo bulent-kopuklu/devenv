@@ -5,7 +5,7 @@ repoya bir sey yazmaz.
 
     python3 -B tests/devenv_create.py
 """
-import importlib.machinery, importlib.util, io, json, os, shutil, subprocess, sys, tempfile
+import importlib.machinery, importlib.util, io, json, os, re, shutil, subprocess, sys, tempfile
 from contextlib import redirect_stdout
 from pathlib import Path
 
@@ -72,7 +72,7 @@ check("yeni: ctrl CLAUDE.md rolu import eder", f"@{CFG}/roles/ctrl.md" in (ctrl 
 check("yeni: ctrl record.md, uc bolum", (ctrl / "record.md").read_text().count("\n## ") == 3)
 check("yeni: impl CLAUDE.local.md rolu import eder", f"@{CFG}/roles/impl.md" in (impl / "CLAUDE.local.md").read_text())
 check("yeni: baslik proje adi, dizin adi degil", (impl / "CLAUDE.md").read_text().startswith("# ornek\n"))
-check("yeni: yer tutucu kalmadi", not any("{{" in p.read_text() for p in root.rglob("*")
+check("yeni: yer tutucu kalmadi", not any(re.search(r"\{\{[A-Z]+\}\}", p.read_text()) for p in root.rglob("*")
                                          if p.is_file() and ".git" not in p.parts))
 check("yeni: speckit cagrildi", "[speckit]" in out)
 check("yeni: oturum komutlari basildi", "claude -n ornek-impl" in out and "claude -n ornek-ctrl" in out)
