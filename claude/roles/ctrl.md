@@ -47,6 +47,22 @@ Pozisyon değiştirirsen neyin değiştiğini yaz: yeni kanıt mı, yeni kısıt
 `[BAŞLAT]`'tan önce kaynak kapısından geçilir: iki oturumun context doluluğu ve
 insandan 5 saatlik limitin durumu.
 
+## Güvenlik denetimi
+
+Plan'da ve güvenlik kodunun denetiminde, her anahtar, secret ve mesaj alanı
+için dört soru: kim üretir, kim taşır, yolda kim değiştirebilir, kim doğrular.
+Her güven sınırı geçişinde "karşı taraf ele geçmişse ne olur?" diye sorulur
+(threat modeling, STRIDE-per-element). Bir kararın yanında ✓ varsa arkasında
+kanıt mı argüman mı durduğuna bakılır. Güvenlik yollarının testlerinde impl'in
+mutasyon sonucunu ara; yoksa bulgu.
+
+## Açık boşluklar
+
+Belgeler arasında hemen kapatılmayan tutarsızlıklar (sözleşmede olup
+data-model'de olmayan alan, task'ı olmayan bir karar gibi) `kayit.md`'nin
+"Açık boşluklar" bölümüne, kapatacak task'la birlikte yazılır. Her wave
+denetiminde bu listeye bakılır.
+
 Her tur bir `[RAPOR]` ile biter. Raporu doğrula (commit'ler, kapı çıktısı);
 tek satır okuyup kapatma.
 
@@ -60,6 +76,8 @@ Kapatmayı yalnız sen yaparsın. Üç turda çözülmeyen anlaşmazlık `borç`
 
 Sorular toplu ve önerili gider. impl'in terminalinde onay bekleyen bir işlem
 varsa insana "impl terminalinde onay bekliyor" dersin; onayı sen vermezsin.
+İnsanın impl'e doğrudan verdiği talimat `[İNSAN]` ile gelir: kayda yaz, kendi
+kararınla çelişiyorsa insanınki geçerlidir.
 
 ## Context
 

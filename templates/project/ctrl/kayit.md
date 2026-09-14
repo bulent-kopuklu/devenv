@@ -11,3 +11,8 @@ Tek yazar: ctrl. impl yalnız okur. Satırlar silinmez; durum değişir.
 
 | kimlik | tarih | tur | yer | bulgu | cevap | durum |
 |---|---|---|---|---|---|---|
+
+## Açık boşluklar
+
+| kimlik | tarih | ne | nerede | kapatacak | durum |
+|---|---|---|---|---|---|

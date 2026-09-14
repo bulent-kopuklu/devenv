@@ -23,11 +23,21 @@ kapatmazsın.
 - geri alınamaz ya da dışarı dönük bir işlem
 - ürün kararı
 - task metni plan ya da contract ile çelişiyor
+- task metninin adını vermediği yeni bir bağımlılık (kütüphane, araç) ya da
+  sürüm seçimi. Adaylar kaynaklarıyla research'e yazılır (standart desen
+  önce), ctrl onaylar; seçilen sürüm plan'ın bağımlılık tablosuna girer
 - bir kütüphane, kayıtlı bir spike kartından farklı davranıyor
 - dış bir davranış hakkında kanıtsız bir iddiaya dayanman gerekiyor; spike'ı
   ctrl başlatır
 
 Beklerken bağımsız işe devam edebilirsin; ne yaptığını soruda yaz.
+
+## İnsan
+
+İnsan sana doğrudan bir talimat ya da onay verirse ctrl'e `[İNSAN]` gönder:
+ne dendi, nasıl anladın, ne yapacaksın. İki türlü okunabiliyorsa önce insana
+sor. Bir task için verilmiş onay (ör. `flake.nix`'e paket eklemek) o task'ın
+sırası gelince uygulanır, hemen değil.
 
 ## Implement: wave deseni
 
@@ -38,6 +48,10 @@ Beklerken bağımsız işe devam edebilirsin; ne yaptığını soruda yaz.
   dosyaları) dokunanlar sırayla.
 - Her task'tan sonra `make && make lint && make test` yeşil; task başına bir
   commit; task kapatılır.
+- Güvenlik yollarında (kimlik, imza, yetki, mühür, doğrulama) testlerin gerçek
+  hatayı yakaladığını mutasyon kontrolüyle göster: kodu kasten boz, en az bir
+  testin kırıldığını gör, geri al. Kaç bozmanın kaçının yakalandığı özete
+  girer.
 - İlerleme task başına tek satır `ilerleme.md`'ye.
 - Wave bitince dur, `[RAPOR]` gönder.
 

@@ -40,6 +40,7 @@ tekrar etme.
 | `[BULGU] <kimlik>` | ctrl → impl | `dosya:satır`, ne yanlış, beklenen |
 | `[CEVAP] <kimlik>` | impl → ctrl | `düzeltildi <commit> <dosya:satır>` ya da `itiraz <kanıt>` |
 | `[RAPOR] <tur>` | impl → ctrl | madde → sonuç → kayıt yeri; açık kalanlar; kapı çıktısının son satırları |
+| `[İNSAN] <kimlik>` | impl → ctrl | insanın impl terminalinde dediği (alıntı), nasıl anlaşıldığı, ne yapılacağı |
 | `[DUR]` | ctrl → impl | tutarlı noktada dur, ilerleme notunu yaz, tek satır `durdum` |
 
 ## Kaynak kapısı
@@ -63,3 +64,10 @@ bir belgenin baştan sona okunması ya da uzun bir deney.
   terminalinde verilir. Bir oturumda reddedilen işlem başka oturuma yaptırılmaz.
 - Bulguyu yalnız ctrl kapatır.
 - Push, dışarıya bildirim, geri alınamaz silme: insanın açık onayı.
+- İnsan bir oturuma doğrudan talimat ya da onay verirse, o oturum bunu
+  diğerine bildirir: impl `[İNSAN]` ile, ctrl `[KARAR]` ile. Talimat iki türlü
+  okunabiliyorsa (ör. "yarım kalanı tamamla": ara hazırlığı mı, iş mi?) insana
+  sorulur, yorumlanmaz. İnsanın talimatı ctrl'in kararıyla çelişirse insanınki
+  geçerlidir; ctrl kaydı günceller.
+- Onay "şimdi yap" değildir. Bir iş için alınan onay, o işin sırası gelince
+  uygulanır ve kayda yazılır; kendi başına iş başlatmaz.
