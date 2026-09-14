@@ -1,9 +1,15 @@
 ---
 name: spike
 description: Dış dünyanın davranışını ölçerek öğren ve kaydını bırak. Bir karar "şu araç/servis/kütüphane şöyle davranıyor" cümlesine dayanıyor ve arkasında koşulmuş bir ölçüm yoksa bu skill'i yükle. Tetikleyen durumlar - bir API'nin kısıtı, bir aracın sürüme bağlı davranışı, bir yapılandırmanın gerçekten işe yarayıp yaramadığı, bir performans ya da izolasyon iddiası, "acaba destekliyor mu" diye başlayan her soru. Girdi ne olursa olsun (spec, ticket, tek cümlelik soru) çalışır.
+context: fork
 ---
 
 # Spike
+
+Girdi (çağıranın verdiği): $ARGUMENTS
+
+Ayrı bir subagent'ta koşarsın; çağıranın konuşmasını görmezsin. Bildiğin yalnız
+bu metin ve yukarıdaki girdidir. Çağırana dönen tek şey sonuç özetidir.
 
 Bilmediğin bir dış davranışı **ölçerek** öğrenirsin ve kaydını bırakırsın. Kayıt
 olmadan yapılan spike, bir sonraki soruda yeniden yapılır ve o zaman da
@@ -26,7 +32,7 @@ spike'ın yerini **tutmaz**:
 - Cevap kendi kodumuzun içindeyse — orası testin işi.
 - Tek makul yol varsa — orada karar yoktur.
 - Soru bir tercihse (iki yol da çalışıyor, hangisini isteriz) — kanıt tercih
-  yapmaz, o soru insana gider.
+  yapmaz, o soru çağırana döner.
 
 ## Sözleşme
 
@@ -34,6 +40,25 @@ Seni çağıran taraf tek şey bekler: **bir kanıt kaydının yolu.** Kayıt va
 ölçme, yolu hemen döndür. Yoksa spike'ı koş, kaydı tamamla, sonra yolu döndür.
 Ölçüm yapılamadıysa yol yerine `ÖLÇÜLEMEDİ` ve neyin eksik olduğu döner — çağıran
 taraf kararını ona göre açık bırakır.
+
+## Çağrı sözleşmesi
+
+- **Girdi:** tek cümlelik soru, kabul ölçütü, tahminler, bağlam (sürümler,
+  ortam). Tahmin yoksa ölçmeden önce kendin yaz ve kartta "ölçümden önce
+  yazıldı" diye işaretle.
+- **Karar vermezsin.** Sonuç, önceden yazılmış ölçüte göre `KABUL · RED ·
+  ÖLÇÜLEMEDİ`'dir. "Hangisini kullanalım" yazmazsın.
+- **Yalnız wiki'ye yazarsın.** Bir projenin dizinine yazmazsın, ürün kodunu
+  import etmezsin; bir ürünün lab'ına ya da VM'lerine dokunmazsın. Gerekiyorsa
+  kendi geçici ortamını kurar, iş bitince sökersin.
+- **Host'a kurulum yok, sudo yok.** Araçlar `nix-shell -p` ya da `nix run` ile
+  gelir. Yetmiyorsa dur ve `ÖLÇÜLEMEDİ` ile neyin eksik olduğunu dön.
+- **Uzun ölçüm:** Yaklaşık 20 dakikayı geçecekse düzeneği kur, ölçümü arka
+  planda başlat, durumu `temp/<ad>-<tarih>/durum.md`'ye yaz ve dön. Sonucu
+  ikinci bir çağrı okur ve kartı tamamlar; bir limit ya da kesinti ölçümü
+  öldürmesin.
+- **Dönüş** en fazla 10 satır: sonuç, kart yolu, tahminler tuttu mu, sapmalar,
+  açık kalan.
 
 ## Önce var olana bak
 

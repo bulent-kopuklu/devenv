@@ -40,6 +40,20 @@ rm -f "$config/CLAUDE.md"
 install -m 644 "$here/claude/CLAUDE.md" "$config/CLAUDE.md"
 echo "kopyalandi: $config/CLAUDE.md"
 
+# Rol metinleri ve global skill'ler. Projeler bunlari kopyalamaz: rol metnini
+# import eder, skill'i global'den cagirir. Guncelleme bu script'in bir kez
+# kosmasidir, proje proje dolasmak degil.
+rm -rf "$config/roles"
+cp -r "$here/claude/roles" "$config/roles"
+echo "kopyalandi: $config/roles"
+mkdir -p "$config/skills"
+for skill in "$here"/claude/skills/*/; do
+  name=$(basename "$skill")
+  rm -rf "${config:?}/skills/$name"
+  cp -r "${skill%/}" "$config/skills/$name"
+  echo "kopyalandi: $config/skills/$name"
+done
+
 # Sunucu tarafi: newrepo orada kosar, bin/newrepo onu ssh ile cagirir.
 PI_HOST="${PI_HOST:-dietpi@mediagw.local}"
 PI_BIN="${PI_BIN:-/home/dietpi/.local/bin}"
