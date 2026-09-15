@@ -148,9 +148,11 @@ açık maddeler metinde `AÇIK` diye duruyor. Kaynak okumaları cc-workspace'te:
       exclude'dan ve rol metninden kalktı. protocol.md ve impl.md yalnız
       yönlendirmeye indi, gerisi ctrl.md'ye taşındı. impl'in ctrl'e erişimi
       kalktı: `additionalDirectories` yok, `Read` ctrl'in bütün dizinine
-      yasak, `record.md` gösterilmiyor.
-- [ ] Gerçek `./install.sh` koşulmadı: global `~/.config/claude/roles` hâlâ
-      eski metin.
+      yasak, `record.md` gösterilmiyor. `da39d57`, `0a1b7fd`
+- [x] Global `CLAUDE.md`'nin wiki kuralından proje adı çıktı: "dağıtılan araç
+      (kendi reposunun işi)". `16b319b`
+- [ ] Gerçek `./install.sh` koşulmadı: kurulu `~/.config/claude/roles` ve
+      `~/.config/claude/CLAUDE.md` hâlâ eski metin.
 
 ## Tasarım (konuşuldu, uygulanmadı)
 
