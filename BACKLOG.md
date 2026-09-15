@@ -67,8 +67,9 @@ açık maddeler metinde `AÇIK` diye duruyor. Kaynak okumaları cc-workspace'te:
 - [x] **Devir.** Bağlam dolunca insan compact ya da clear yapar. impl'in
       devir notu yok, önemi olmamalı: hazır belgeden gider.
 - [x] **impl dışarı gitmez.** ctrl'in dizinini okumaz ve yazmaz; yüklediği
-      dosyalarda (`CLAUDE.local.md`, üst dizinin `CLAUDE.md`'si) ctrl'in yolu,
-      `record.md`'si ya da wiki yok, yalnız ctrl'in oturum adı.
+      dosyalarda (`CLAUDE.local.md`, üst dizinin `CLAUDE.md`'si) ctrl'in yolu
+      ve `record.md`'si yok, yalnız ctrl'in oturum adı. Wiki global kuraldır,
+      bu kararın dışında.
 - [x] **impl'in gördüğü metin yalnız yönlendirme.** protocol.md ve impl.md'de
       yalnız komutlar, adımı kimin başlattığı, sorunun ve itirazın yolu,
       yazma alanı. ctrl'in kuralları, gerekçeler ve açık maddeler ctrl.md'de.
@@ -109,9 +110,6 @@ açık maddeler metinde `AÇIK` diye duruyor. Kaynak okumaları cc-workspace'te:
 - [ ] implement ve sonrası: commit, push, review, merge, insan onayı.
 - [ ] Tek kaynak: impl'in dışarı gitmediği kesin. ctrl'in cevaplarının
       impl'deki belgelere (spec, plan) yazılması teyit edilmedi.
-- [ ] Global `CLAUDE.md`'nin cc-workspace bölümü impl'e de yükleniyor:
-      "konuya girmeden wiki'yi oku, bulguyu wiki'ye yaz". "impl dışarı
-      gitmez" kararıyla çelişiyor.
 - [ ] Companion implement stock `tasks.md` ile: task ID'leri tanınıyor
       (0.21.0 `task_sync.py:38`, `**` isteğe bağlı); dalga (`⟶ Wait`) ve
       `Files:` satırları yok, paralelleştirme haritası eksik. İlk koşuda
@@ -150,7 +148,7 @@ açık maddeler metinde `AÇIK` diye duruyor. Kaynak okumaları cc-workspace'te:
       exclude'dan ve rol metninden kalktı. protocol.md ve impl.md yalnız
       yönlendirmeye indi, gerisi ctrl.md'ye taşındı. impl'in ctrl'e erişimi
       kalktı: `additionalDirectories` yok, `Read` ctrl'in bütün dizinine
-      yasak, `record.md` ve wiki gösterilmiyor.
+      yasak, `record.md` gösterilmiyor.
 - [ ] Gerçek `./install.sh` koşulmadı: global `~/.config/claude/roles` hâlâ
       eski metin.
 
