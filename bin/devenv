@@ -398,7 +398,7 @@ def setup(a, langs, targets, subs):
     # Rol import'u ve izinler makineye ozgu (mutlak yollar), commit'lenmez:
     # repoyu baska makinede acan kirik bir import gormesin.
     render("impl", Path("."), subs)
-    created.extend(["CLAUDE.local.md", ".claude/settings.local.json", "handoff.md"])
+    created.extend(["CLAUDE.local.md", ".claude/settings.local.json"])
 
     already = Path(".git/info/exclude").read_text().splitlines()
     excluded = [f for f in created + [".direnv/"] if f not in ("flake.nix", "Makefile") and f not in already]

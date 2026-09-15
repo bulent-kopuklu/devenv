@@ -82,9 +82,9 @@ permissions. Updating a role is one `./install.sh`, not a walk through projects.
   import and the permissions carry absolute paths, so they go to
   `CLAUDE.local.md` and `.claude/settings.local.json`, both in
   `.git/info/exclude`.
-- impl may not edit the reviewer's directory, read its `CLAUDE.md`, roadmap
-  or input copies, or call the `spike` skill; the reviewer may read impl but
-  not edit it. `Edit` deny
+- impl may not read or edit the reviewer's directory, and nothing it loads
+  points there; it may not call the `spike` skill. The reviewer may read impl
+  but not edit it. `Edit` deny
   rules also stop the Write tool and `>` redirects, not `cp` or `git commit`
   from Bash; that part is the role text's rule.
 - Names inside the product come from the argument, never from the directory:

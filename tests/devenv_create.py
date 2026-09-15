@@ -80,14 +80,15 @@ check("yeni: oturum komutlari basildi", "claude -n ornek-impl" in out and "claud
 cs, ls = settings(ctrl / ".claude/settings.json"), settings(impl / ".claude/settings.local.json")
 check("yeni: ctrl impl'e yazamaz", f"Edit(/{impl}/**)" in cs["deny"] and cs["deny"][0].startswith("Edit(//"))
 check("yeni: ctrl impl'i ve wiki'yi okur", str(impl) in cs["additionalDirectories"] and len(cs["additionalDirectories"]) == 2)
-check("yeni: impl ctrl'e yazamaz, CLAUDE.md'sini okuyamaz",
-      f"Edit(/{ctrl}/**)" in ls["deny"] and f"Read(/{ctrl}/CLAUDE.md)" in ls["deny"])
+check("yeni: impl ctrl'e yazamaz, ctrl'i okuyamaz",
+      f"Edit(/{ctrl}/**)" in ls["deny"] and f"Read(/{ctrl}/**)" in ls["deny"]
+      and str(ctrl) not in ls.get("additionalDirectories", []))
 check("yeni: impl spike cagiramaz", "Skill(spike)" in ls["deny"] and "Skill(spike *)" in ls["deny"])
-check("yeni: impl roadmap'i ve girdi kopyalarini okuyamaz",
-      f"Read(/{ctrl}/roadmap.md)" in ls["deny"] and f"Read(/{ctrl}/inputs/**)" in ls["deny"])
+check("yeni: impl'in yuklediklerinde ctrl'in yolu yok",
+      str(ctrl) not in (impl / "CLAUDE.local.md").read_text() and "record.md" not in (root / "CLAUDE.md").read_text())
 excl = (impl / ".git/info/exclude").read_text()
 check("yeni: yerel dosyalar exclude'da",
-      all(f in excl for f in ("CLAUDE.local.md", ".claude/settings.local.json", "handoff.md")))
+      all(f in excl for f in ("CLAUDE.local.md", ".claude/settings.local.json")))
 status = subprocess.run(["git", "-C", str(impl), "status", "--porcelain"], capture_output=True, text=True).stdout
 check("yeni: yerel dosyalar git status'ta yok", "CLAUDE.local.md" not in status and "settings.local" not in status)
 

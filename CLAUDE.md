@@ -49,7 +49,7 @@ Kurulumu `install.sh` yapar ve kopyalar, symlink kurmaz. Bu makinede
 - **Ürünsüz.** Şablonlara ve rol metinlerine hiçbir projenin adı, kararı ya da
   örneği girmez.
 - **Adlar İngilizce, içerik Türkçe.** Dosya ve dizin adları İngilizcedir
-  (`record.md`, `handoff.md`), metnin kendisi Türkçedir.
+  (`record.md`, `roadmap.md`), metnin kendisi Türkçedir.
 
 ## Değişiklikten sonra
 
