@@ -2,10 +2,10 @@
 
 Açık işler. Kapananlar silinir. Harita ve ilkeler `CLAUDE.md`'de.
 
-## İki rollü akış (konuşuldu 2026-09-15, uygulanmadı)
+## İki rollü akış (konuşuldu 2026-09-15)
 
-Kararlar değişebilir. `claude/roles/` altındaki eski rol metinleri bunlara göre
-baştan yazılacak; onlara dayanılmaz. Kaynak okumaları cc-workspace'te:
+Kararlar değişebilir. `claude/roles/` bunlara göre baştan yazıldı; aşağıdaki
+açık maddeler metinde `AÇIK` diye duruyor. Kaynak okumaları cc-workspace'te:
 `docs/sdlc/speckit-komutlari.md`, `companion-komutlari.md`,
 `speckit-hook-duzlemleri.md`.
 
@@ -113,14 +113,12 @@ baştan yazılacak; onlara dayanılmaz. Kaynak okumaları cc-workspace'te:
       kontrol. Değiştiriyorsa "impl stock kalır" kararı editöre bağlı kalır.
 - [ ] Anayasa şablonu 8 ilke ve 5 bölüm, 205 satır; wiki bulgusu 6-10
       yanlışlanabilir ilke. Constitution Check her ilke için satır yazıyor.
-
-### Uygulama
-
-- [ ] `claude/roles/{protocol,ctrl,impl}.md` kararlara göre baştan yazılır.
-- [ ] `templates/project/`: ctrl'in dizininde roadmap ve spec girdisi
-      kopyaları için yer; `record.md` yeni akışa göre.
-- [ ] Rol metinleri yazılınca `README.md`'nin "Two-role projects" bölümü,
-      devenv `CLAUDE.md` haritası ve `tests/devenv_create.py` güncellenir.
+- [ ] Oturumun bağlamı dolunca devir: `handoff.md` şablonda ve exclude'da
+      duruyor, akışta yeri konuşulmadı.
+- [ ] Rol metinlerindeki çıkarımlar, kullanıcı onayladı ama canlıda
+      denenmedi: belirsizlikte ctrl'in clarify koşturması; plan kontrolünün
+      üç sorusu (dayanak kanıt mı, anayasa/spec çelişkisi, aynı turdaki kararı
+      boşa çıkarma); tasks kontrolü; ctrl.md'deki sürüm kartı.
 
 ## Tasarım (konuşuldu, uygulanmadı)
 
