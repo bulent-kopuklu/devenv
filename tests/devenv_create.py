@@ -70,6 +70,7 @@ check("yeni: impl repo, ctrl degil", (impl / ".git").is_dir() and not (ctrl / ".
 check("yeni: ust CLAUDE.md protokolu import eder", f"@{CFG}/roles/protocol.md" in (root / "CLAUDE.md").read_text())
 check("yeni: ctrl CLAUDE.md rolu import eder", f"@{CFG}/roles/ctrl.md" in (ctrl / "CLAUDE.md").read_text())
 check("yeni: ctrl record.md, uc bolum", (ctrl / "record.md").read_text().count("\n## ") == 3)
+check("yeni: ctrl roadmap.md", (ctrl / "roadmap.md").is_file())
 check("yeni: impl CLAUDE.local.md rolu import eder", f"@{CFG}/roles/impl.md" in (impl / "CLAUDE.local.md").read_text())
 check("yeni: baslik proje adi, dizin adi degil", (impl / "CLAUDE.md").read_text().startswith("# ornek\n"))
 check("yeni: yer tutucu kalmadi", not any(re.search(r"\{\{[A-Z]+\}\}", p.read_text()) for p in root.rglob("*")
@@ -82,6 +83,8 @@ check("yeni: ctrl impl'i ve wiki'yi okur", str(impl) in cs["additionalDirectorie
 check("yeni: impl ctrl'e yazamaz, CLAUDE.md'sini okuyamaz",
       f"Edit(/{ctrl}/**)" in ls["deny"] and f"Read(/{ctrl}/CLAUDE.md)" in ls["deny"])
 check("yeni: impl spike cagiramaz", "Skill(spike)" in ls["deny"] and "Skill(spike *)" in ls["deny"])
+check("yeni: impl roadmap'i ve girdi kopyalarini okuyamaz",
+      f"Read(/{ctrl}/roadmap.md)" in ls["deny"] and f"Read(/{ctrl}/inputs/**)" in ls["deny"])
 excl = (impl / ".git/info/exclude").read_text()
 check("yeni: yerel dosyalar exclude'da",
       all(f in excl for f in ("CLAUDE.local.md", ".claude/settings.local.json", "handoff.md")))

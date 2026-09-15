@@ -6,6 +6,8 @@
     "deny": [
       "Edit(/{{ROOT}}/{{NAME}}-ctrl/**)",
       "Read(/{{ROOT}}/{{NAME}}-ctrl/CLAUDE.md)",
+      "Read(/{{ROOT}}/{{NAME}}-ctrl/roadmap.md)",
+      "Read(/{{ROOT}}/{{NAME}}-ctrl/inputs/**)",
       "Skill(spike)",
       "Skill(spike *)"
     ]

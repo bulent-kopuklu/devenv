@@ -1,18 +1,21 @@
 # {{NAME}}: denetim kaydı
 
 Tek yazar: ctrl. impl yalnız okur. Satırlar silinmez; durum değişir.
+Adım: constitution, specify, clarify, plan, tasks, analyze, implement.
 
 ## Kararlar
 
-| kimlik | tarih | tur | konu | karar | dayanak | durum |
+ctrl'in verdiği cevaplar ve kararlar.
+
+| kimlik | tarih | adım | soru | karar | dayanak | durum |
 |---|---|---|---|---|---|---|
 
-## Bulgular
+## İtirazlar
 
-| kimlik | tarih | tur | yer | bulgu | cevap | durum |
+| kimlik | tarih | adım | yer | itiraz | sonuç | durum |
 |---|---|---|---|---|---|---|
 
-## Açık boşluklar
+## Açık
 
 | kimlik | tarih | ne | nerede | kapatacak | durum |
 |---|---|---|---|---|---|
