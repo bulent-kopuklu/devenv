@@ -65,11 +65,15 @@ devenv create ornek go rust --speckit
 ornek/                 not a git repo; nobody runs Claude here
 ├── CLAUDE.md          imports the shared protocol
 ├── ornek-impl/        the product repo (remote: ornek.git); everything above happens here
-└── ornek-ctrl/        the reviewer: CLAUDE.md, .claude/settings.json, record.md
+└── ornek-ctrl/        the reviewer: CLAUDE.md, .claude/settings.json, record.md, roadmap.md
 ```
 
 One session writes (`claude -n ornek-impl`), one reviews (`claude -n ornek-ctrl`);
-they talk over `SendMessage`. The role texts live once, in `claude/roles/`, and
+they talk over `SendMessage`. impl runs the stock `/speckit-*` commands one
+step at a time and `/speckit-companion-implement`; the reviewer starts each
+step, checks what it produced, answers impl's questions and runs analyze
+itself. The other Companion commands and the workflow engine are not used:
+they move to the next step on their own. The role texts live once, in `claude/roles/`, and
 `install.sh` copies them to `$CLAUDE_CONFIG_DIR/roles/`. Project files only
 import them and carry what is specific to the project: names, paths,
 permissions. Updating a role is one `./install.sh`, not a walk through projects.
@@ -78,8 +82,9 @@ permissions. Updating a role is one `./install.sh`, not a walk through projects.
   import and the permissions carry absolute paths, so they go to
   `CLAUDE.local.md` and `.claude/settings.local.json`, both in
   `.git/info/exclude`.
-- impl may not edit the reviewer's directory, read its `CLAUDE.md`, or call
-  the `spike` skill; the reviewer may read impl but not edit it. `Edit` deny
+- impl may not edit the reviewer's directory, read its `CLAUDE.md`, roadmap
+  or input copies, or call the `spike` skill; the reviewer may read impl but
+  not edit it. `Edit` deny
   rules also stop the Write tool and `>` redirects, not `cp` or `git commit`
   from Bash; that part is the role text's rule.
 - Names inside the product come from the argument, never from the directory:
@@ -93,7 +98,7 @@ permissions. Updating a role is one `./install.sh`, not a walk through projects.
   reviewer decides.
 
 `spike` is a global skill (`claude/skills/spike`, `context: fork`): it runs in
-its own subagent and writes only to the wiki.
+its own subagent, opens no agents of its own and writes only to the wiki.
 
 ## Claude Code skill
 

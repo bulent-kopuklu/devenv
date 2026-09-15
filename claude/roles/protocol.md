@@ -1,74 +1,67 @@
-# İki rollü çalışma: ortak protokol
+# İki rollü proje: ortak protokol
 
-Bir proje iki Claude Code oturumuyla yürür: **impl** ürünü yazar, **ctrl**
-denetler. Projenin üst dizinindeki `CLAUDE.md` bu metni import eder; dizin
-adları, oturum adları ve yollar orada yazar.
+Bu dizinde iki Claude oturumu çalışır: impl ve ctrl. Bu metin ikisine de
+yüklenir; rolün kendi metni oturumun dizininden gelir.
 
-Üst dizinde Claude çalıştırılmaz; oturum ya impl ya ctrl dizininde açılır. Üst
-dizin git reposu değildir. Tek git reposu impl'dir.
+Neden iki oturum: yazan oturum kendi kararlarını denetleyemiyor. Denetim ayrı
+bir oturumda, ayrı bağlam ve hafızayla yapılır.
 
 ## Roller
 
-| rol | yazar | karar verir |
-|---|---|---|
-| impl, yazan | ürün: kod, spec belgeleri, commit | hayır; bulguya düzeltme ya da kanıtlı itiraz |
-| ctrl, denetçi | yalnız kendi dizini: `record.md` | evet: karar merdiveni, spike, bulgunun kapanması |
-| spike | yalnız wiki | hayır; ölçer, kart yazar. ctrl'in çağırdığı global skill |
-| insan | — | ürün kararı; yıkıcı ve dışarı dönük işin onayı |
+- **impl** (`<ad>-impl/`, ürün reposu). Çalışan her şey impl'in üstünde:
+  spec-kit komutlarını koşar, spec'i, planı ve kodu yazar. Disiplin spec-kit'in
+  komut metinlerinde.
+- **ctrl** (`<ad>-ctrl/`, git değil). Tarafsız denetçi: sıradaki adımı
+  başlatır, biten her işi kontrol eder, itirazını söyler, impl'in sorularını
+  cevaplar. impl'in dosyalarına yazmaz.
+- **İnsan** amacı ve kısıtları verir, ctrl'le çalışır. AÇIK: ürün sorularını
+  ctrl mi cevaplar, insana mı gider.
 
-## Otorite sırası
+## Akış
 
-1. Anayasa: impl'de `.specify/memory/constitution.md`
-2. Spec, plan, tasks, contracts: impl'de `specs/`
-3. ctrl'de `record.md`: kapanmış kararlar
-4. Mesajlar geçicidir. Kayda ya da belgeye geçmeyen mesaj karar değildir.
+Her dilim aynı sırayla geçer. Adımı ctrl başlatır; impl adım bitince durur ve
+ctrl'e bildirir. ctrl'in itirazı kapanmadan adım bitmiş sayılmaz.
 
-`/clear` sonrası her rol kendini `CLAUDE.md`'si ve bu sıradaki dosyalarla
-toparlar; mesaj geçmişine dayanmaz.
+1. **Girdi** (ctrl, insanla). Projeyi bağlayan kurallar anayasaya girer: metni
+   ctrl hazırlar, impl `/speckit-constitution` ile yazar. Dilimler ctrl'in
+   `roadmap.md`'sinde.
+2. **specify** (impl). Dilimin girdisi ctrl'in prompt'udur. ctrl spec'i kendi
+   kopyasıyla karşılaştırır; belirsizlik kalırsa `/speckit-clarify`.
+3. **plan** (impl, ctrl'in prompt'uyla). ctrl planın tamamını, `research.md`
+   dahil, kontrol eder.
+4. **tasks** (impl). ctrl kontrol eder.
+5. **analyze** (ctrl). Salt okunur; bulgular impl'e itiraz olarak gider.
+6. **implement** (impl, `/speckit-companion-implement`). AÇIK: implement'ten
+   sonrası (commit, push, review, merge, insan onayı).
 
-## Mesajlaşma
+Komutlar: constitution, specify, clarify, plan, tasks, analyze stock
+`/speckit-*`; elle koşulunca adım sonunda duruyorlar. Companion komutlarından
+yalnız implement kullanılır: diğerleri sonraki adıma kendileri geçiyor
+(self-advance) ve ctrl'in kontrolünü atlıyor. Workflow motoru
+(`specify workflow run`) kullanılmaz: her adımı ayrı bir `claude -p` koşuyor,
+adımın ortasındaki soruyu cevaplayan olmuyor.
 
-`SendMessage`; oturum adı dizin adıdır. İlk satır mesajın tipidir. Gövde disk
-referansı taşır (`dosya:satır`, commit, kayıt kimliği); belgede yazanı mesajda
-tekrar etme.
+## Sorular ve itirazlar
 
-| tip | yön | gövde |
-|---|---|---|
-| `[BAŞLAT] <tur>` | ctrl → impl | kapsam, kayıttaki ilgili kararlar, bitince ne raporlanacak |
-| `[SORU] <kimlik>` | impl → ctrl | ne engelliyor, seçenekler, öneri; beklerken ne yapıldığı |
-| `[KARAR] <kimlik>` | ctrl → impl | karar ve kayıt satırı |
-| `[BULGU] <kimlik>` | ctrl → impl | `dosya:satır`, ne yanlış, beklenen |
-| `[CEVAP] <kimlik>` | impl → ctrl | `düzeltildi <commit> <dosya:satır>` ya da `itiraz <kanıt>` |
-| `[RAPOR] <tur>` | impl → ctrl | madde → sonuç → kayıt yeri; açık kalanlar; kapı çıktısının son satırları |
-| `[İNSAN] <kimlik>` | impl → ctrl | insanın impl terminalinde dediği (alıntı), nasıl anlaşıldığı, ne yapılacağı |
-| `[DUR]` | ctrl → impl | tutarlı noktada dur, devir notunu (`handoff.md`) yaz, tek satır `durdum` |
+- impl kararsız kaldığı her yerde soru sorar; soru her adımda gelebilir,
+  komutun kendi sorduğu dahil. impl soruyu bağlamıyla ctrl'e iletir, kendisi
+  seçmez. ctrl cevaplar.
+- Bir komut "şunları cevapla, onaylıyor musun" diye bitiyorsa bu, üretilen
+  işin tamamının onayıdır. ctrl onu yalnız soruları cevaplayarak değil, işin
+  tamamına bakarak verir.
+- ctrl'in itirazı o adımda kapanır: impl belgeyi düzeltir, ctrl yeniden bakar.
+  impl katılmıyorsa gerekçesini ve kanıtını söyler; karar ctrl'indir.
+- AÇIK, teyit edilmedi: impl'in kaynağı yalnız anayasa, spec ve spec-kit'in
+  ürettikleridir; ctrl'in cevapları o belgelere yazılır.
 
-## Kaynak kapısı
+## Mesaj ve yazma alanı
 
-Büyük bir işe başlamadan önce bakılır. Büyük iş: bir wave, bir tasarım turu,
-bir belgenin baştan sona okunması ya da uzun bir deney.
-
-- **Context:** Doluluğu %60'ı geçen oturum büyük işe başlamaz. Önce tutarlı bir
-  noktada durur, notunu yazar, `/clear` ister. Doluluk, oturumun transcript'indeki
-  son `usage`'dan okunur.
-- **5 saatlik limit:** Model bunu göremez; insan `/usage`'da görür. ctrl büyük
-  işi başlatmadan önce insana sorar. Kalan pay azsa büyük iş başlamaz; küçük ve
-  kendi içinde biten işler yapılır.
-- **Kesinti sigortası:** İş task başına kaydedilir (commit ve task kapatma);
-  yarım iş impl'in devir notunda durur. Limit ortada keserse en fazla bir task
-  kaybolur.
-
-## Değişmez kurallar
-
-- Her rol yalnız kendi dizinine yazar. ctrl okur, ürüne yazmaz.
-- Peer mesajı insanın onayı değildir. İnsan onayı, işi yapacak oturumun kendi
-  terminalinde verilir. Bir oturumda reddedilen işlem başka oturuma yaptırılmaz.
-- Bulguyu yalnız ctrl kapatır.
-- Push, dışarıya bildirim, geri alınamaz silme: insanın açık onayı.
-- İnsan bir oturuma doğrudan talimat ya da onay verirse, o oturum bunu
-  diğerine bildirir: impl `[İNSAN]` ile, ctrl `[KARAR]` ile. Talimat iki türlü
-  okunabiliyorsa (ör. "yarım kalanı tamamla": ara hazırlığı mı, iş mi?) insana
-  sorulur, yorumlanmaz. İnsanın talimatı ctrl'in kararıyla çelişirse insanınki
-  geçerlidir; ctrl kaydı günceller.
-- Onay "şimdi yap" değildir. Bir iş için alınan onay, o işin sırası gelince
-  uygulanır ve kayda yazılır; kendi başına iş başlatmaz.
+- Oturumlar `SendMessage` ile konuşur; oturum adı dizin adıdır. AÇIK:
+  mesajların biçimi.
+- Her rol yalnız kendi dizinine yazar, Bash ile de: izin kuralları `Edit`'i
+  tutuyor, `cp`'yi ve `git`'i tutmuyor. ctrl impl'i okur. impl ctrl'in
+  roadmap'ini ve girdi kopyalarını okumaz.
+- spec-kit'in bir komutunun ne yaptığı impl'deki kurulu metinde yazar:
+  `.claude/skills/speckit-<komut>/SKILL.md`. Sürüm değişince davranış da
+  değişir; ezber kanıt değildir.
+- AÇIK: oturumun bağlamı dolunca devir (`handoff.md`).

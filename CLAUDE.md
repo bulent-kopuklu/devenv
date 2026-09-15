@@ -25,7 +25,8 @@ Kurulumu `install.sh` yapar ve kopyalar, symlink kurmaz. Bu makinede
 ```
 <ad>/            git değil; Claude burada çalışmaz; CLAUDE.md protokolü import eder
 ├── <ad>-impl/   ürün, tek git reposu (remote <ad>.git); yazan oturum
-└── <ad>-ctrl/   denetçi; git değil; yalnız record.md'ye yazar, karar verir
+└── <ad>-ctrl/   denetçi; git değil; yalnız kendi dizinine yazar (record.md,
+                 roadmap.md, inputs/), karar verir
 ```
 
 ## İlkeler
