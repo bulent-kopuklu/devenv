@@ -203,17 +203,21 @@ Fix(auth): Fixed the login bug.
   oturumluk dosyalar scratchpad.
 
 ## Kalıcı Bilgi: cc-workspace
-`~/workspace/cc-workspace/` dış kaynaklı araştırma, ölçüm ve spike kayıtlarının wiki'si;
+`~/workspace/cc-workspace/` spike kayıtlarının ve spike'larda kurulan ortamların wiki'si;
 kuralları README'sinde.
-- Okuma: bir konuya girmeden önce **yalnızca** `README.md`'deki alan tablosunu oku. Uyan alan varsa o
-  alanın `docs/<alan>/INDEX.md`'sini oku; `sonuç` sütunu yetiyorsa belgeyi açma. Açman gerekiyorsa
-  doğrudan aç — bir wiki okuması için subagent açma, spawn'ın sabit maliyeti okunacak metinden büyük.
-- Yazma **sorulmaz, tetiklenir**: dış kaynağa ya da ölçüme dayanan, tekrar üretilebilir bir bulgu
-  çıktığı anda yazılır. Filtre kanıtın biçimidir — kaynak URL'i ya da komut+çıktı yoksa belge açılmaz.
-- Buraya yazılır: ölçüm sonuçları, spike kayıtları, bir aracın nasıl kurulduğu ve hangi ayarın neden
-  yapıldığı (kurulum bilgisi spike'tan spike'a aynı belgede birikir).
-- Buraya yazılmaz: bir aracın kullanım kuralları (aracın kendi dosyasında durur), tasarım ve karar
-  tartışması, oturum günlüğü, proje gerçeği (memory'nin işi), dağıtılan araç (kendi reposunun işi).
+- Okuma: bir spike açmadan ya da bir ortam kurmadan önce **yalnızca** `README.md`'deki alan
+  tablosunu oku. Uyan alan varsa o alanın `docs/<alan>/INDEX.md`'sini oku; `sonuç` sütunu yetiyorsa
+  belgeyi açma. Açman gerekiyorsa doğrudan aç — bir wiki okuması için subagent açma, spawn'ın sabit
+  maliyeti okunacak metinden büyük.
+- Yazma **sorulmaz, tetiklenir**: bir spike bittiği ya da bir ortam kurulduğu anda yazılır. Filtre
+  kanıtın biçimidir — komut+çıktı ya da koşulabilir script yoksa belge açılmaz.
+- Buraya yazılır: spike kayıtları ve ölçüm sonuçları; spike'ta kullanılan ya da öğrenilen kurulum:
+  bir aracın nasıl kurulduğu, hangi ayarın neden yapıldığı, VM yaratıldıysa nasıl ve hangi
+  image'larla. Bir daha bakan sıfırdan keşfetmesin; kurulum bilgisi spike'tan spike'a aynı belgede
+  birikir.
+- Buraya yazılmaz: bir ürünün ya da rakibin nasıl çalıştığının incelemesi (projede kalır), bir
+  aracın kullanım kuralları (aracın kendi dosyasında durur), tasarım ve karar tartışması, oturum
+  günlüğü, proje gerçeği (memory'nin işi), dağıtılan araç (kendi reposunun işi).
 - Ham agent çıktısı `temp/`e gider; `docs/` altına yalnız derlenmiş ve kontrol edilmiş metin girer.
 - Aynı konuda ikinci belge açma: mevcut belgeyi güncelle, `## Değişiklikler`'e tarihli tek satır yaz.
   Okurken yanlış bulduğun belgeyi o oturumda düzelt. Anahtarlar İngilizce, içerik Türkçe. Sonra
