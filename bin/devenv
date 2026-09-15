@@ -17,7 +17,7 @@ shared protocol. Role texts are not copied: the project files import them from
 the Claude config directory, so one install updates them all. `devenv create .`
 takes the current directory as <name>/ and its name as the project name.
 """
-import argparse, json, os, shutil, subprocess, sys, tempfile
+import argparse, json, os, shutil, subprocess, sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -33,14 +33,17 @@ LANGS = ["rust", "cpp", "go", "node", "java", "android"]
 ALIAS = {"c++": "cpp", "cxx": "cpp", "c": "cpp", "ts": "node", "js": "node",
          "typescript": "node", "golang": "go", "arm64": "aarch64", "arm": "armv7", "armv7l": "armv7"}
 
-#: Companion'in release zip'i build toolchain'ini (build-pipeline.py, nodes/,
-#: fragments/) gondermiyor ve onlarsiz pipeline ozellestirilemez; bu yuzden
-#: extension'lar klondan, `--dev` ile kurulur.
 #: Dile ozgu AI kurallari. Secilen her dil icin `templates/rules/<dil>.md`
 #: aranir; varsa `.claude/rules/` altina KOPYALANIR ve CLAUDE.md oradan import
 #: eder. Proje disina link verilmez: agac kendi kendine yeter.
 AI_RULES = TEMPLATES / "rules"
-COMPANION = os.environ.get("SPECKIT_COMPANION", "https://github.com/alfredoperez/speckit-companion")
+#: Companion release zip'ten kurulur: yalniz komutlar ve script'ler. Klondan
+#: `--dev` kurulum extension'in butun agacini urun reposuna koyar ve skill'leri
+#: onun icindeki bir cache'e symlink yapar. Yerel bir extension koku de verilebilir
+#: (mutlak yol).
+COMPANION = os.environ.get(
+    "SPECKIT_COMPANION",
+    "https://github.com/alfredoperez/speckit-companion/releases/download/speckit-ext-v0.21.0/companion-0.21.0.zip")
 #: Rol metinlerini install.sh buraya kurar (`roles/`); proje dosyalari onlari
 #: buradan import eder. Wiki, denetcinin ve spike'in yazdigi yer.
 CONFIG = Path(os.environ.get("CLAUDE_CONFIG_DIR", Path.home() / ".claude"))
@@ -140,41 +143,10 @@ def run(*cmd):
         sys.exit(f"basarisiz: {' '.join(cmd)}")
 
 
-def add_extension(source):
-    """Extension'i yerel bir dizinden kurar; kaynak URL ise once klonlar.
-
-    Extension'in kokunu `extension.yml` belirler, deponun koku degil: bazi
-    depolar onu bir alt dizinde tutuyor (companion `speckit-extension/`'da).
-    """
-    src, tmp = Path(source).expanduser(), None
-    if not src.is_dir():
-        tmp = Path(tempfile.mkdtemp(prefix="speckit-ext-"))
-        run("git", "clone", "--depth", "1", "-q", source, str(tmp))
-        src = tmp
-    if not (src / "extension.yml").is_file():
-        # Depoda birden fazla `extension.yml` olabilir: kurulu bir kopya
-        # (`.specify/extensions/*`), ornekler, test verileri. Bunlar elenir ve
-        # kalanlardan koke en yakini alinir; iki aday ayni derinlikteyse
-        # secilmez, cunku yanlis extension sessizce kurulur.
-        noise = {".git", ".specify", "examples", "test", "tests", "fixtures", "node_modules"}
-        hits = [h for h in src.rglob("extension.yml") if not noise & set(h.parts)]
-        hits.sort(key=lambda h: len(h.parts))
-        if not hits:
-            sys.exit(f"extension.yml bulunamadi: {source}")
-        if len(hits) > 1 and len(hits[0].parts) == len(hits[1].parts):
-            sys.exit("birden fazla extension koku: "
-                     + ", ".join(str(h.parent.relative_to(src)) for h in hits))
-        src = hits[0].parent
-    run("specify", "extension", "add", str(src), "--dev", "--force")
-    print(f"extension: {src.name} <- {source}")
-    if tmp:
-        shutil.rmtree(tmp, ignore_errors=True)
-
-
 def speckit():
-    """Spec Kit'i bu projeye kurar: CLI guncel, init, extension'lar, anayasa.
+    """Spec Kit'i bu projeye kurar: CLI guncel, init ve extension'lar, anayasa.
 
-    Sira onemli. `init` .specify/ agacini yaratir; extension'lar ona yazar;
+    Sira onemli. `init` .specify/ agacini yaratir ve extension'lari kurar;
     anayasa en sona kalir cunku init kendi sablonunu birakiyor ve bizimki onun
     yerine gecmeli.
 
@@ -185,8 +157,11 @@ def speckit():
         sys.exit("specify yok: uv tool install specify-cli --from git+https://github.com/github/spec-kit.git")
     run("specify", "self", "upgrade")
     run("specify", "init", "--here", "--force", "--non-interactive",
-        "--script", "sh", "--integration", "claude", "--extension", "git", "--extension", "agent-context")
-    add_extension(COMPANION)
+        "--script", "sh", "--integration", "claude", "--extension", "git", "--extension", "agent-context",
+        "--extension", COMPANION, "--trust-extension-urls")
+    # init kurulamayan extension'i tabloda hata olarak basip 0 ile cikiyor.
+    if not Path(".specify/extensions/companion/extension.yml").is_file():
+        sys.exit(f"companion kurulamadi: {COMPANION}; nedeni init'in tablosunda")
 
     src = TEMPLATES / "speckit" / "constitution.md"
     dst = Path(".specify/memory/constitution.md")
@@ -197,30 +172,19 @@ def speckit():
         shutil.copy2(src, dst)
         print(f"created: {dst} (cekirdek anayasa; urune ozel ilkeleri sen eklersin)")
 
-    # Companion kendi workflow'unu extension agacina birakiyor ama KURMUYOR;
-    # kurulmadan `specify workflow run speckit-companion` calismaz ve stock
-    # workflow companion komutlarini degil `speckit.*` komutlarini cagirir.
-    wf = Path(".specify/extensions/companion/workflows/speckit-companion.workflow.yml")
-    if wf.is_file():
-        run("specify", "workflow", "add", str(wf))
-    else:
-        print(f"atlandi: companion workflow ({wf} yok)")
-
-    node_replacement()
     optional_hooks()
 
-    # Living specs Companion'da opt-in. Bos ve acik bir registry specify/plan'a
-    # bir sey yuklemez; implement sahipsiz dosyalar icin capability'yi kendisi
-    # kaydeder, boylece capability niyetten dogar, sonradan koddan turetilmez.
+    # Living specs ilk surumden sonra elle acilir: `enabled: true`, sonra
+    # living-adopt. Dosya yoksa da kapali sayilir, ama capability kaydeden her
+    # komut (register-capability) eksik dosyayi `enabled: true` ile yaratir;
+    # var olan dosyanin bayragini korur.
     ls = Path("living-specs.yml")
     if ls.exists():
         print(f"kept:    {ls}")
     else:
-        ls.write_text("enabled: true\ncapabilities: []\n")
+        ls.write_text("enabled: false\ncapabilities: []\n")
         subprocess.run(["git", "add", "-N", str(ls)], check=True)
-        print(f"created: {ls} (living specs acik, bos; git add it to keep it)")
-
-
+        print(f"created: {ls} (living specs kapali; git add it to keep it)")
 
 
 def optional_hooks():
@@ -266,34 +230,6 @@ def optional_hooks():
     print(f"edited:  {p} ({sayac['git']} git commit hook'u kapatildi, "
           f"{sayac['agent-context']} agent-context hook'u zorunlu yapildi)")
 
-def node_replacement():
-    """Companion'in plan-doc node'unun yerine bizimkini koyar: plan'in yerlesim
-    kurali sablondan.
-
-    Extension `provides:` yalnizca commands/templates/scripts aliyor, yani bir
-    extension proje overlay'ine (`.specify/companion/nodes/`) yazamaz. Kopyayi
-    burasi atar. Replacement hala bir node'dur: id'sini, phase'ini ve `reads:`
-    alanini korur, ona takili hook'lar fire etmeye devam eder. Geri almak icin
-    dosyayi silmek yeter.
-    """
-    kok = TEMPLATES / "speckit" / "nodes"
-    dosyalar = sorted(kok.rglob("*.md")) if kok.is_dir() else []
-    if not dosyalar:
-        print("atlandi: node replacement (kaynak yok)")
-        return
-    for src in dosyalar:
-        dst = Path(".specify/companion/nodes") / src.relative_to(kok)
-        dst.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(src, dst)
-        print(f"created: {dst}")
-    build = Path(".specify/extensions/companion/scripts/build-pipeline.py")
-    if build.is_file():
-        run("python3", str(build))
-    else:
-        print(f"atlandi: pipeline build ({build} yok) — replacement govdeye islenmedi")
-
-
-
 
 ORNEKLER = """ornekler:
   devenv create ornek go rust --speckit   ./ornek/ornek-impl ve ./ornek/ornek-ctrl
@@ -336,7 +272,7 @@ def parser():
     c.add_argument("--node", help=".nvmrc icin node major surumu, ornek 22")
     c.add_argument("--speckit", action="store_true",
                    help="Spec Kit kur: self upgrade, init + git (spec basina branch) + agent-context "
-                        "(CLAUDE.md blogu), companion, living specs acik, generic anayasa")
+                        "(CLAUDE.md blogu), companion, living specs kapali, generic anayasa")
     return ap
 
 

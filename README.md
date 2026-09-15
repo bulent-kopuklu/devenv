@@ -51,10 +51,9 @@ make clean                             # build/
 make distclean                         # + dist/, components/*/{node_modules,target}
 ```
 
-Output goes to `build/<target>/<variant>/bin`. With `--speckit`, `devenv` also
-replaces Companion's `plan-doc` node so a plan places its paths in this layout
-instead of Spec Kit's `src/` default; the rule itself is in the `CLAUDE.md`
-template under `## Yerleşim`.
+Output goes to `build/<target>/<variant>/bin`. The rule itself is in the
+`CLAUDE.md` template under `## Yerleşim`. Spec Kit's plan template proposes its
+own `src/` tree; the reviewer gives this layout in the plan prompt.
 
 ## Two-role projects (`devenv create`)
 
