@@ -108,9 +108,6 @@ açık maddeler metinde `AÇIK` diye duruyor. Kaynak okumaları cc-workspace'te:
       `devenv` 0.21.0'ı kuruyor; wiki notları main'e (9fd7ebae, 136 commit
       ileride) göre: 0.21.0 implement task'ları varsayılan olarak kendisi
       yazıyor ve capability kaydetmiyor.
-- [ ] VS Code eklentisi proje ilk açıldığında `companion-standard` preset'ini
-      sormadan kurup 7 stock `speckit-*` skill'ini değiştiriyor mu: bir kez
-      kontrol. Değiştiriyorsa "impl stock kalır" kararı editöre bağlı kalır.
 - [ ] Anayasa şablonu 8 ilke ve 5 bölüm, 205 satır; wiki bulgusu 6-10
       yanlışlanabilir ilke. Constitution Check her ilke için satır yazıyor.
 - [ ] Oturumun bağlamı dolunca devir: `handoff.md` şablonda ve exclude'da
@@ -176,6 +173,17 @@ açık maddeler metinde `AÇIK` diye duruyor. Kaynak okumaları cc-workspace'te:
 - [ ] Dil kuralları (`templates/rules/<dil>.md`) projeye kopyalanıyor:
       güncellemede proje proje dolaşma sorunu. Ama ürün reposu başka makinede
       de kendi kendine yetmeli. Karar gerekiyor.
+- [ ] Companion sürümü artarken zip'te `presets/` var mı bakılır. VS Code
+      eklentisi (0.32.0) proje açılınca ve Companion dizini değişince,
+      `.specify/presets/companion-standard` yoksa sormadan
+      `specify preset add --dev .specify/extensions/companion/presets/companion-standard`
+      koşuyor; preset 7 stock `speckit-*` skill'ini değiştirir. 0.21.0 zip'inde
+      `presets/` yok, komut düşüyor ve yalnız log'a yazılıyor; stock kalıyor.
+- [ ] dbaas'ta 7 stock skill `preset:companion-standard`'dan geliyor
+      (Companion klondan kurulmuştu, VS Code preset'i kurdu); yeni rol metni
+      stock varsayıyor. Muhtemel düzeltme, denenmedi: Companion'ı zip'ten
+      `--force` ile yeniden kur, sonra `specify preset remove companion-standard`;
+      sıra ters olursa VS Code preset'i geri kurar.
 - [ ] Repo adı `devenv`, iç adlar hâlâ `dev-templates`: yerel dizin,
       `~/.local/share/dev-templates`, `DEV_TEMPLATES_REF`, flake input adı.
 - [ ] README'deki "Claude Code skill" bölümü `skills/devenv`'i anlatıyor; repoda
