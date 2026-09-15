@@ -213,7 +213,7 @@ kuralları README'sinde.
 - Buraya yazılır: ölçüm sonuçları, spike kayıtları, bir aracın nasıl kurulduğu ve hangi ayarın neden
   yapıldığı (kurulum bilgisi spike'tan spike'a aynı belgede birikir).
 - Buraya yazılmaz: bir aracın kullanım kuralları (aracın kendi dosyasında durur), tasarım ve karar
-  tartışması, oturum günlüğü, proje gerçeği (memory'nin işi), dağıtılan araç (dev-templates'in işi).
+  tartışması, oturum günlüğü, proje gerçeği (memory'nin işi), dağıtılan araç (kendi reposunun işi).
 - Ham agent çıktısı `temp/`e gider; `docs/` altına yalnız derlenmiş ve kontrol edilmiş metin girer.
 - Aynı konuda ikinci belge açma: mevcut belgeyi güncelle, `## Değişiklikler`'e tarihli tek satır yaz.
   Okurken yanlış bulduğun belgeyi o oturumda düzelt. Anahtarlar İngilizce, içerik Türkçe. Sonra
