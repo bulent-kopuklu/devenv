@@ -14,11 +14,11 @@ açık maddeler metinde `AÇIK` diye duruyor. Kaynak okumaları cc-workspace'te:
 - [ ] **Amaç.** devenv geliştirme ortamını kurar; geliştirme proje dizininde
       spec-kit ve Companion ile yapılır. `devenv create` ile yaratılan
       projede her şey hazır olmalı. Yeni dil ekleme belki sonra.
-- [ ] **Roller.** Çalışan her şey impl'in üstünde: komutları koşar, kodu
+- [x] **Roller.** Çalışan her şey impl'in üstünde: komutları koşar, kodu
       yazar. ctrl tarafsız denetçidir ve bir sonraki adımı başlatır; biten
       her işi kontrol eder, itirazını söyler, gelen soruları cevaplar.
       Disiplin impl'deki spec-kit'te.
-- [ ] **Komutlar.** specify, clarify, plan, tasks, analyze stock
+- [x] **Komutlar.** specify, clarify, plan, tasks, analyze stock
       `/speckit-*`: elle koşulunca adım sonunda duruyor. Companion komutları
       kendi kendine sonraki adıma geçiyor (self-advance) ve bunu kapatan bir
       ayar yok. implement `/speckit-companion-implement` ile (kullanıcı
@@ -27,7 +27,7 @@ açık maddeler metinde `AÇIK` diye duruyor. Kaynak okumaları cc-workspace'te:
       ve kayıt sürüyor. Workflow motoru (`specify workflow run`) kullanılmaz:
       her adım `claude -p`, adımın ortasındaki soruyu kimse cevaplamaz, soru
       sorup biten adım başarılı sayılır.
-- [ ] **Akış.**
+- [x] **Akış.**
   - ctrl spec girdisini hazırlar (bkz. Spec girdisi).
   - impl specify'ı koşar. ctrl spec'i kendi kopyasıyla karşılaştırır: her
     madde girmiş mi, Assumptions'ta sessiz karar var mı. İtiraz varsa spec
@@ -37,41 +37,53 @@ açık maddeler metinde `AÇIK` diye duruyor. Kaynak okumaları cc-workspace'te:
     anda değiştirilir.
   - impl tasks'ı koşar; tasks bitince ctrl analyze'ı koşar; sonra
     implement. implement'ten sonrası konuşulmadı.
-- [ ] **Sorular.** impl her adımda, kararsız kaldığı her yerde soru
+- [x] **Sorular.** impl her adımda, kararsız kaldığı her yerde soru
       sorabilir; akış soruların belli noktalarda geleceğine dayanmaz. impl
       soruyu bağlamıyla ctrl'e iletir, ctrl cevaplar. Plan sonundaki "şu
       soruları cevapla, onaylıyor musun" bütün planın onayıdır; ctrl onu
       planın tamamını inceleyerek verir.
-- [ ] **Plan'a müdahale: önden cevap ve sonra kontrol.** Research plan'ın
+- [x] **Plan'a müdahale: önden cevap ve sonra kontrol.** Research plan'ın
       içinde (Phase 0); araya girilecek bir durak yok. ctrl bildiği büyük
       kararları plan prompt'una yazar, plan bitince kontrol eder. İki
       adımlı plan ("Technical Context'ten sonra dur") ancak çevrilen
       research kararı çok çıkarsa denenir.
-- [ ] **analyze'ı ctrl koşar.** Salt okunur, subagent açmıyor, script'i
+- [x] **analyze'ı ctrl koşar.** Salt okunur, subagent açmıyor, script'i
       yazmıyor; impl koşsa yazan kendi işini denetlemiş olur. ctrl impl'deki
       `.claude/skills/speckit-analyze/SKILL.md`'yi okuyup impl'in feature
       dizinine uygular; bulgular impl'e itiraz olarak gider.
-- [ ] **ctrl'in cevap yolu, maliyete göre.** Bilmediği soruda önce wiki;
+- [x] **ctrl'in cevap yolu, maliyete göre.** Bilmediği soruda önce wiki;
       özellik sorusuysa referans projelerin ne yaptığı; teknoloji seçimiyse
       web search yetiyorsa o, yetmiyorsa spike. Sonucu görüp karar verir.
-- [ ] **Subagent.** ctrl subagent açmaz. Spike `context: fork` ile açılır,
+- [x] **Subagent.** ctrl subagent açmaz. Spike `context: fork` ile açılır,
       bu kabul; fork kendi içinde ajan açmaz. Kural impl için geçerli değil:
       spec-kit ve Companion kendi ajanlarını kullanır, limiti tükettikleri
-      görülmedi.
-- [ ] **impl stock kalır.** Oraya yapılan her müdahale upgrade'in önünde
-      engel. Research ajanlarının kararlarının sağlığı açık soru; cevabına
-      göre dokunulabilir, amaç dokunmamak.
-- [ ] **Plan varsayılan ağacı kullanmaz.** Yerleşim README'deki "Layout and
+      görülmedi. Ajan kuralı ctrl'in kuralıdır, impl'in gördüğü yerlerde
+      (protocol, impl.md) durmaz.
+- [x] **impl stock kalır.** Oraya yapılan her müdahale upgrade'in önünde
+      engel. impl hiçbir şeye zorlanmaz; stock plan'ın research'ü ne
+      yapıyorsa yapsın, bizi ilgilendirmiyor.
+- [x] **Ürün soruları ctrl cevaplar.** Referans ürünlerden yararlanır;
+      roadmap hazırlanırken bir referans ürün seçilir.
+- [x] **Devir.** Bağlam dolunca insan compact ya da clear yapar. impl'in
+      devir notu yok, önemi olmamalı: hazır belgeden gider.
+- [x] **impl dışarı gitmez.** ctrl'in dizinini okumaz ve yazmaz; yüklediği
+      dosyalarda (`CLAUDE.local.md`, üst dizinin `CLAUDE.md`'si) ctrl'in yolu,
+      `record.md`'si ya da wiki yok, yalnız ctrl'in oturum adı.
+- [x] **impl'in gördüğü metin yalnız yönlendirme.** protocol.md ve impl.md'de
+      yalnız komutlar, adımı kimin başlattığı, sorunun ve itirazın yolu,
+      yazma alanı. ctrl'in kuralları, gerekçeler ve açık maddeler ctrl.md'de.
+      impl'e spec-kit'in üstüne kural konmaz; rol metni context'i zehirleyebilir.
+- [x] **Plan varsayılan ağacı kullanmaz.** Yerleşim README'deki "Layout and
       the root Makefile" ve `CLAUDE.md`'nin `## Yerleşim`'i. ctrl bunu
       plan'ı başlatırken prompt'la verir ya da plan bitince "burayı şöyle
       değiştir" der; node replacement ile değil. Plan anında dizin
       yaratılmaz, yalnız `plan.md` değişir; tasks yolları `plan.md`'den alır.
-- [ ] **Living spec başta kapalı.** İlk versiyondan sonra elle açılır
+- [x] **Living spec başta kapalı.** İlk versiyondan sonra elle açılır
       (`living-specs.yml`'de `enabled: true`, sonra living-adopt). Stock
       specify ve plan living spec yüklemez; yükleme yalnız
       `speckit-companion-*` komutlarında. implement Companion ile olursa
       delta ve fold'u o yapar.
-- [ ] **Spec girdisi.** Sen kısıtları ve amacı verirsin; ctrl rakipleri
+- [x] **Spec girdisi.** Sen kısıtları ve amacı verirsin; ctrl rakipleri
       web'den inceler; olmazsa olmaz özelliklerde mutabık kalınır.
   - Bütün projeyi bağlayan kurallar, platform kısıtları dahil, anayasaya
     girer (`/speckit-constitution`, impl'de). specify teknik detayı spec'ten
@@ -84,7 +96,7 @@ açık maddeler metinde `AÇIK` diye duruyor. Kaynak okumaları cc-workspace'te:
     kapsam sınırı prompt'ta yazar; ctrl kopyasını kendi dizininde tutar.
     Prompt çerçeveyi taşır: "her madde girsin; atılanı adıyla ve
     gerekçesiyle yaz; adları değiştirme".
-- [ ] **ctrl davranışı sürüme göre.** Rol metninde amaç sabit; spec-kit
+- [x] **ctrl davranışı sürüme göre.** Rol metninde amaç sabit; spec-kit
       davranışı kopyalanmaz, kurulu komut metninden okunur. İlk fazda ctrl
       şu an kurulu sürüme göre hazırlanır. `/ctrl-upgrade` (proje skill'i,
       global değil) ve davranış kartının yeri sonraki faz; projelerin
@@ -93,14 +105,13 @@ açık maddeler metinde `AÇIK` diye duruyor. Kaynak okumaları cc-workspace'te:
 ### Açık
 
 - [ ] Roadmap nasıl hazırlanacak.
-- [ ] Ürün soruları ctrl mi cevaplar, insana mı gider?
 - [ ] ctrl ile impl arasındaki mesajların biçimi.
 - [ ] implement ve sonrası: commit, push, review, merge, insan onayı.
-- [ ] "Tek kaynak" yorumu: impl'e dışarıdan kaynak girmez; kaynak anayasa,
-      spec ve spec-kit'in ürettikleri; ctrl'in cevapları bu belgelere
-      yazılır. Teyit edilmedi.
-- [ ] Stock plan research için ajan açıyor. ctrl'in prompt'u "research'ü
-      ajan açmadan kendin yap" tutar mı, denenecek.
+- [ ] Tek kaynak: impl'in dışarı gitmediği kesin. ctrl'in cevaplarının
+      impl'deki belgelere (spec, plan) yazılması teyit edilmedi.
+- [ ] Global `CLAUDE.md`'nin cc-workspace bölümü impl'e de yükleniyor:
+      "konuya girmeden wiki'yi oku, bulguyu wiki'ye yaz". "impl dışarı
+      gitmez" kararıyla çelişiyor.
 - [ ] Companion implement stock `tasks.md` ile: task ID'leri tanınıyor
       (0.21.0 `task_sync.py:38`, `**` isteğe bağlı); dalga (`⟶ Wait`) ve
       `Files:` satırları yok, paralelleştirme haritası eksik. İlk koşuda
@@ -110,12 +121,38 @@ açık maddeler metinde `AÇIK` diye duruyor. Kaynak okumaları cc-workspace'te:
       yazıyor ve capability kaydetmiyor.
 - [ ] Anayasa şablonu 8 ilke ve 5 bölüm, 205 satır; wiki bulgusu 6-10
       yanlışlanabilir ilke. Constitution Check her ilke için satır yazıyor.
-- [ ] Oturumun bağlamı dolunca devir: `handoff.md` şablonda ve exclude'da
-      duruyor, akışta yeri konuşulmadı.
+- [ ] ctrl'in bağlamı dolunca bir devir notu gerekli mi: emin değiliz; not
+      context'i zehirleyebilir. ctrl'in kalıcı hâli bugün `record.md`,
+      `roadmap.md`, `inputs/`.
 - [ ] Rol metinlerindeki çıkarımlar, kullanıcı onayladı ama canlıda
       denenmedi: belirsizlikte ctrl'in clarify koşturması; plan kontrolünün
       üç sorusu (dayanak kanıt mı, anayasa/spec çelişkisi, aynı turdaki kararı
       boşa çıkarma); tasks kontrolü; ctrl.md'deki sürüm kartı.
+- [x] VS Code eklentisi `companion-standard` preset'ini sormadan kuruyor mu:
+      kuruyor, ama zip kurulumda komut düşüyor (devenv bölümündeki madde).
+
+### Uygulama (2026-09-15)
+
+- [x] `bin/devenv`: Companion 0.21.0 release zip'ten kuruluyor
+      (`specify init --extension … --trust-extension-urls`), kurulamazsa
+      durur; `node_replacement()` ve `templates/speckit/nodes/` kalktı;
+      Companion workflow'unun `workflow add`'i kalktı; `living-specs.yml`
+      `enabled: false` ile yaratılıyor. `5b60249`
+- [x] `claude/skills/spike/SKILL.md`: fork içinde ajan açma yasağı. `355e6bb`
+- [x] Çelişen eski maddeler ve "Rol metinleri" bölümü düştü. `f721362`
+- [x] `claude/roles/{protocol,ctrl,impl}.md` baştan yazıldı; açıklar metinde
+      `AÇIK`. README ve devenv `CLAUDE.md` akışa göre. `a7d12a1`
+- [x] `templates/project/`: ctrl'e `roadmap.md`; `record.md` Kararlar,
+      İtirazlar, Açık; impl'e ctrl'in roadmap'ini ve `inputs/`'unu okuma
+      yasağı; testler 35/35. `b6c3cba`
+- [x] Ürün soruları ctrl'de, roadmap'te referans ürün; research denemesi ve
+      impl.md'deki ajan satırı çıktı; impl'in `handoff.md`'si şablondan,
+      exclude'dan ve rol metninden kalktı. protocol.md ve impl.md yalnız
+      yönlendirmeye indi, gerisi ctrl.md'ye taşındı. impl'in ctrl'e erişimi
+      kalktı: `additionalDirectories` yok, `Read` ctrl'in bütün dizinine
+      yasak, `record.md` ve wiki gösterilmiyor.
+- [ ] Gerçek `./install.sh` koşulmadı: global `~/.config/claude/roles` hâlâ
+      eski metin.
 
 ## Tasarım (konuşuldu, uygulanmadı)
 
