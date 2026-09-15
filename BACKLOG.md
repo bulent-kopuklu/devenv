@@ -102,10 +102,44 @@ açık maddeler metinde `AÇIK` diye duruyor. Kaynak okumaları cc-workspace'te:
       şu an kurulu sürüme göre hazırlanır. `/ctrl-upgrade` (proje skill'i,
       global değil) ve davranış kartının yeri sonraki faz; projelerin
       spec-kit sürümleri farklı olabilir.
+- [ ] **Roadmap nasıl hazırlanır.** Rol metnine henüz girmedi.
+  1. ctrl seninle konuşur: ne yapıyoruz, kimin için, mecbur kullanacağımız
+     teknoloji ve kısıt var mı. "Bu iş yapılır mı, kime hitap ediyor"
+     sorulmaz.
+  2. ctrl bu işi yapanları araştırır, ürünleri linkleriyle listeler. Sen 1,
+     belki 2 ürünü referans seçersin.
+  3. Referansların bütün özellikleri çıkarılır: nasıl çalıştıkları, neyi
+     nasıl çözdükleri, bulunan her şey. Ölçüt: sonraki işlerde yine arama
+     yapıyorsak eksik yapılmış.
+  4. Özellikler birbirine bağımlı. ctrl, spec-kit'in user story mantığıyla
+     7-8 parçalık bir öneri listesi hazırlar.
+  5. Onayından sonra yalnız sıradaki parçanın spec'i hazırlanır; hepsinin
+     değil. Plan ve araştırma sonucu kapsam kayabilir: 2. parçaya bırakılan
+     bir şeyi 1. parçada yapmak gerekebilir.
+  - Araştırma ctrl'in dizininde durur, wiki'ye yazılmaz: wiki oturmadı,
+    wiki'ye yazan oturum 10 dakika sonra yazdığının tersini yapıyor.
+  - Biçim belki global bir skill. Örnek: claude-forge'un `/product`'ı
+    ("önce liste, onay, sonra analiz"; bulgu URL'li, yorum ayrı); müşteri
+    ve pazar kısmı alınmaz.
+- [ ] **Güvenlik kararları, ctrl'in kuralı.** Güvenlikle ilgili her karar web
+      search'e dayanır. 2026'da çözülmemiş bir şey yapmıyoruz; kendi
+      kendimize çözüm uydurmayız, neredeyse her şeyin deseni var. Referans
+      araştırmasında ve plan kontrolünde güvenlik çözümlerine özellikle
+      odaklanılır. Rol metnine henüz girmedi.
 
 ### Açık
 
-- [ ] Roadmap nasıl hazırlanacak.
+- [ ] Wiki'ye yazmama kararının kapsamı. Spike'ın metni "yalnız wiki'ye
+      yazarsın", ctrl'in cevap yolu "önce wiki" diyor; bunlar da mı? Global
+      `CLAUDE.md` wiki yazımını "sorulmaz, tetiklenir" diye kuruyor ve ctrl
+      onu yüklüyor; karar ctrl.md'de açıkça yazmazsa tutmaz.
+- [ ] Bir parça bir spec mi? Parçanın içindeki user story'leri specify mı
+      çıkarır; parça listesi user story mantığıyla mı kurulur (bağımsız test
+      edilebilir, önceliği belli, öncekine dayanan)?
+- [ ] Parçanın adı: "faz" mı, "dilim" mi? spec-kit'in `tasks.md`'sindeki
+      "Phase"le karışabilir.
+- [ ] Referans araştırmasının biçimi: global skill mi, adı, çıkarım
+      dosyasının bölümleri, ctrl'in dizinindeki yeri.
 - [ ] ctrl ile impl arasındaki mesajların biçimi.
 - [ ] implement ve sonrası: commit, push, review, merge, insan onayı.
 - [ ] Tek kaynak: impl'in dışarı gitmediği kesin. ctrl'in cevaplarının
