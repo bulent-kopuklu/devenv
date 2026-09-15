@@ -134,13 +134,13 @@ açık maddeler metinde `AÇIK` diye duruyor. Kaynak okumaları cc-workspace'te:
       kendimize çözüm uydurmayız, neredeyse her şeyin deseni var. Referans
       araştırmasında ve plan kontrolünde güvenlik çözümlerine özellikle
       odaklanılır. Rol metnine henüz girmedi.
-- [ ] **Wiki yalnız spike içindir.** Spike sonucu ve spike sırasında
+- [x] **Wiki yalnız spike içindir.** Spike sonucu ve spike sırasında
       kullanılan ya da öğrenilen kurulumlar oraya yazılır: nasıl kurulduğu,
       VM yaratıldıysa nasıl ve hangi image'larla. Bir daha bakan her şeyi
-      sıfırdan keşfetmesin. Bir ürünün nasıl çalıştığının incelemesi wiki'ye
-      gitmez, ctrl'in dizininde kalır. Global `CLAUDE.md`'nin wiki bölümü
-      buna göre daralacak: bugün "dış kaynaklı araştırma … bulgu çıktığı anda
-      yazılır" diyor ve ürün incelemelerini wiki'ye götüren cümle bu.
+      sıfırdan keşfetmesin. Wiki spike açmadan önce okunur. Bir ürünün nasıl
+      çalıştığının incelemesi wiki'ye gitmez, ctrl'in dizininde kalır. Global
+      `CLAUDE.md`'nin wiki bölümü buna göre daraldı; wiki'nin kendisine
+      (README, mevcut belgeler) dokunulmadı.
 
 ### Açık
 
