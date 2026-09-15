@@ -51,9 +51,12 @@ açık maddeler metinde `AÇIK` diye duruyor. Kaynak okumaları cc-workspace'te:
       yazmıyor; impl koşsa yazan kendi işini denetlemiş olur. ctrl impl'deki
       `.claude/skills/speckit-analyze/SKILL.md`'yi okuyup impl'in feature
       dizinine uygular; bulgular impl'e itiraz olarak gider.
-- [x] **ctrl'in cevap yolu, maliyete göre.** Bilmediği soruda önce wiki;
-      özellik sorusuysa referans projelerin ne yaptığı; teknoloji seçimiyse
-      web search yetiyorsa o, yetmiyorsa spike. Sonucu görüp karar verir.
+- [ ] **ctrl'in cevap yolu, maliyete göre.** Bilmediği soruda önce kendi
+      dizinindeki inceleme; ürün sorusuysa referans ürünün ve rakiplerin ne
+      yaptığı; teknoloji seçimiyse web search yetiyorsa o, yetmiyorsa spike.
+      Sonucu görüp karar verir. ctrl wiki'yi okumaz; spike kendi eski
+      kayıtlarına wiki'de kendisi bakar. 2026-09-15'te değişti ("önce wiki"
+      kalktı); ctrl.md güncellenecek.
 - [x] **Subagent.** ctrl subagent açmaz. Spike `context: fork` ile açılır,
       bu kabul; fork kendi içinde ajan açmaz. Kural impl için geçerli değil:
       spec-kit ve Companion kendi ajanlarını kullanır, limiti tükettikleri
@@ -112,12 +115,17 @@ açık maddeler metinde `AÇIK` diye duruyor. Kaynak okumaları cc-workspace'te:
      nasıl çözdükleri, bulunan her şey. Ölçüt: sonraki işlerde yine arama
      yapıyorsak eksik yapılmış.
   4. Özellikler birbirine bağımlı. ctrl, spec-kit'in user story mantığıyla
-     7-8 parçalık bir öneri listesi hazırlar.
-  5. Onayından sonra yalnız sıradaki parçanın spec'i hazırlanır; hepsinin
-     değil. Plan ve araştırma sonucu kapsam kayabilir: 2. parçaya bırakılan
-     bir şeyi 1. parçada yapmak gerekebilir.
+     7-8 BL'lik bir öneri listesi hazırlar.
+  5. Onayından sonra yalnız sıradaki BL'nin spec'i hazırlanır; hepsinin
+     değil. Plan ve araştırma sonucu kapsam kayabilir: BL2'ye bırakılan bir
+     şeyi BL1'de yapmak gerekebilir.
   - Araştırma ctrl'in dizininde durur, wiki'ye yazılmaz: wiki oturmadı,
     wiki'ye yazan oturum 10 dakika sonra yazdığının tersini yapıyor.
+  - BL1, BL2, …: her BL bir feature seti, task değil. Örnek: "backup ve
+    backup'tan geri dönüş" tek BL. Bir BL bir spec'tir; içindeki user
+    story'leri specify çıkarır. Liste user story mantığıyla kurulur: her BL
+    bağımsız test edilebilir, önceliği belli, öncekine dayanır. Dosya
+    `roadmap.md` kalır.
   - Biçim belki global bir skill. Örnek: claude-forge'un `/product`'ı
     ("önce liste, onay, sonra analiz"; bulgu URL'li, yorum ayrı); müşteri
     ve pazar kısmı alınmaz.
@@ -126,20 +134,22 @@ açık maddeler metinde `AÇIK` diye duruyor. Kaynak okumaları cc-workspace'te:
       kendimize çözüm uydurmayız, neredeyse her şeyin deseni var. Referans
       araştırmasında ve plan kontrolünde güvenlik çözümlerine özellikle
       odaklanılır. Rol metnine henüz girmedi.
+- [ ] **Wiki yalnız spike içindir.** Spike sonucu ve spike sırasında
+      kullanılan ya da öğrenilen kurulumlar oraya yazılır: nasıl kurulduğu,
+      VM yaratıldıysa nasıl ve hangi image'larla. Bir daha bakan her şeyi
+      sıfırdan keşfetmesin. Bir ürünün nasıl çalıştığının incelemesi wiki'ye
+      gitmez, ctrl'in dizininde kalır. Global `CLAUDE.md`'nin wiki bölümü
+      buna göre daralacak: bugün "dış kaynaklı araştırma … bulgu çıktığı anda
+      yazılır" diyor ve ürün incelemelerini wiki'ye götüren cümle bu.
 
 ### Açık
 
-- [ ] Wiki'ye yazmama kararının kapsamı. Spike'ın metni "yalnız wiki'ye
-      yazarsın", ctrl'in cevap yolu "önce wiki" diyor; bunlar da mı? Global
-      `CLAUDE.md` wiki yazımını "sorulmaz, tetiklenir" diye kuruyor ve ctrl
-      onu yüklüyor; karar ctrl.md'de açıkça yazmazsa tutmaz.
-- [ ] Bir parça bir spec mi? Parçanın içindeki user story'leri specify mı
-      çıkarır; parça listesi user story mantığıyla mı kurulur (bağımsız test
-      edilebilir, önceliği belli, öncekine dayanan)?
-- [ ] Parçanın adı: "faz" mı, "dilim" mi? spec-kit'in `tasks.md`'sindeki
-      "Phase"le karışabilir.
 - [ ] Referans araştırmasının biçimi: global skill mi, adı, çıkarım
-      dosyasının bölümleri, ctrl'in dizinindeki yeri.
+      dosyasının bölümleri, ctrl'in dizinindeki yeri. Öneri, cevaplanmadı:
+      dosya neyin incelendiğini (kaynak, sürüm, başlık) yazar ve her
+      başlığı "incelendi, yok" ya da "incelenmedi" diye işaretler, çünkü
+      okuyan ajan ikisini ayıramıyor; ctrl her cevabın dayanağını
+      `record.md`'ye yazar, yazdığını kullanıp kullanmadığı görülsün.
 - [ ] ctrl ile impl arasındaki mesajların biçimi.
 - [ ] implement ve sonrası: commit, push, review, merge, insan onayı.
 - [ ] Tek kaynak: impl'in dışarı gitmediği kesin. ctrl'in cevaplarının
