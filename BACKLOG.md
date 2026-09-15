@@ -2,39 +2,128 @@
 
 Açık işler. Kapananlar silinir. Harita ve ilkeler `CLAUDE.md`'de.
 
+## İki rollü akış (konuşuldu 2026-09-15, uygulanmadı)
+
+Kararlar değişebilir. `claude/roles/` altındaki eski rol metinleri bunlara göre
+baştan yazılacak; onlara dayanılmaz. Kaynak okumaları cc-workspace'te:
+`docs/sdlc/speckit-komutlari.md`, `companion-komutlari.md`,
+`speckit-hook-duzlemleri.md`.
+
+### Kararlar
+
+- [ ] **Amaç.** devenv geliştirme ortamını kurar; geliştirme proje dizininde
+      spec-kit ve Companion ile yapılır. `devenv create` ile yaratılan
+      projede her şey hazır olmalı. Yeni dil ekleme belki sonra.
+- [ ] **Roller.** Çalışan her şey impl'in üstünde: komutları koşar, kodu
+      yazar. ctrl tarafsız denetçidir ve bir sonraki adımı başlatır; biten
+      her işi kontrol eder, itirazını söyler, gelen soruları cevaplar.
+      Disiplin impl'deki spec-kit'te.
+- [ ] **Komutlar.** specify, clarify, plan, tasks, analyze stock
+      `/speckit-*`: elle koşulunca adım sonunda duruyor. Companion komutları
+      kendi kendine sonraki adıma geçiyor (self-advance) ve bunu kapatan bir
+      ayar yok. implement `/speckit-companion-implement` ile (kullanıcı
+      önerdi, "mahsuru yoksa"); ondan sonra başlatılacak adım yok.
+      Companion'ın `after_*` hook'ları stock komutlarda da çalışıyor, panel
+      ve kayıt sürüyor. Workflow motoru (`specify workflow run`) kullanılmaz:
+      her adım `claude -p`, adımın ortasındaki soruyu kimse cevaplamaz, soru
+      sorup biten adım başarılı sayılır.
+- [ ] **Akış.**
+  - ctrl spec girdisini hazırlar (bkz. Spec girdisi).
+  - impl specify'ı koşar. ctrl spec'i kendi kopyasıyla karşılaştırır: her
+    madde girmiş mi, Assumptions'ta sessiz karar var mı. İtiraz varsa spec
+    o anda değiştirilir.
+  - impl plan'ı ctrl'in prompt'uyla koşar. ctrl planın tamamını,
+    `research.md`'deki kararlar dahil, kontrol eder; itiraz varsa plan o
+    anda değiştirilir.
+  - impl tasks'ı koşar; tasks bitince ctrl analyze'ı koşar; sonra
+    implement. implement'ten sonrası konuşulmadı.
+- [ ] **Sorular.** impl her adımda, kararsız kaldığı her yerde soru
+      sorabilir; akış soruların belli noktalarda geleceğine dayanmaz. impl
+      soruyu bağlamıyla ctrl'e iletir, ctrl cevaplar. Plan sonundaki "şu
+      soruları cevapla, onaylıyor musun" bütün planın onayıdır; ctrl onu
+      planın tamamını inceleyerek verir.
+- [ ] **Plan'a müdahale: önden cevap ve sonra kontrol.** Research plan'ın
+      içinde (Phase 0); araya girilecek bir durak yok. ctrl bildiği büyük
+      kararları plan prompt'una yazar, plan bitince kontrol eder. İki
+      adımlı plan ("Technical Context'ten sonra dur") ancak çevrilen
+      research kararı çok çıkarsa denenir.
+- [ ] **analyze'ı ctrl koşar.** Salt okunur, subagent açmıyor, script'i
+      yazmıyor; impl koşsa yazan kendi işini denetlemiş olur. ctrl impl'deki
+      `.claude/skills/speckit-analyze/SKILL.md`'yi okuyup impl'in feature
+      dizinine uygular; bulgular impl'e itiraz olarak gider.
+- [ ] **ctrl'in cevap yolu, maliyete göre.** Bilmediği soruda önce wiki;
+      özellik sorusuysa referans projelerin ne yaptığı; teknoloji seçimiyse
+      web search yetiyorsa o, yetmiyorsa spike. Sonucu görüp karar verir.
+- [ ] **Subagent.** ctrl subagent açmaz. Spike `context: fork` ile açılır,
+      bu kabul; fork kendi içinde ajan açmaz. Kural impl için geçerli değil:
+      spec-kit ve Companion kendi ajanlarını kullanır, limiti tükettikleri
+      görülmedi.
+- [ ] **impl stock kalır.** Oraya yapılan her müdahale upgrade'in önünde
+      engel. Research ajanlarının kararlarının sağlığı açık soru; cevabına
+      göre dokunulabilir, amaç dokunmamak.
+- [ ] **Plan varsayılan ağacı kullanmaz.** Yerleşim README'deki "Layout and
+      the root Makefile" ve `CLAUDE.md`'nin `## Yerleşim`'i. ctrl bunu
+      plan'ı başlatırken prompt'la verir ya da plan bitince "burayı şöyle
+      değiştir" der; node replacement ile değil. Plan anında dizin
+      yaratılmaz, yalnız `plan.md` değişir; tasks yolları `plan.md`'den alır.
+- [ ] **Living spec başta kapalı.** İlk versiyondan sonra elle açılır
+      (`living-specs.yml`'de `enabled: true`, sonra living-adopt). Stock
+      specify ve plan living spec yüklemez; yükleme yalnız
+      `speckit-companion-*` komutlarında. implement Companion ile olursa
+      delta ve fold'u o yapar.
+- [ ] **Spec girdisi.** Sen kısıtları ve amacı verirsin; ctrl rakipleri
+      web'den inceler; olmazsa olmaz özelliklerde mutabık kalınır.
+  - Bütün projeyi bağlayan kurallar, platform kısıtları dahil, anayasaya
+    girer (`/speckit-constitution`, impl'de). specify teknik detayı spec'ten
+    siler, o yüzden spec girdisine konmazlar. Neyin anayasaya gireceğini
+    bilmek için ctrl spec-kit'in davranışını iyi bilmeli.
+  - Roadmap ctrl'le birlikte hazırlanır, ctrl'in dizininde durur, impl'e
+    girmez. Dilim başına: amaç, kapsam ve kapsam dışı, bağımlılık, durum,
+    spec yolu.
+  - Her dilim ayrı bir specify'dır. Girdi dosya değil prompt olarak verilir,
+    kapsam sınırı prompt'ta yazar; ctrl kopyasını kendi dizininde tutar.
+    Prompt çerçeveyi taşır: "her madde girsin; atılanı adıyla ve
+    gerekçesiyle yaz; adları değiştirme".
+- [ ] **ctrl davranışı sürüme göre.** Rol metninde amaç sabit; spec-kit
+      davranışı kopyalanmaz, kurulu komut metninden okunur. İlk fazda ctrl
+      şu an kurulu sürüme göre hazırlanır. `/ctrl-upgrade` (proje skill'i,
+      global değil) ve davranış kartının yeri sonraki faz; projelerin
+      spec-kit sürümleri farklı olabilir.
+
+### Açık
+
+- [ ] Roadmap nasıl hazırlanacak.
+- [ ] Ürün soruları ctrl mi cevaplar, insana mı gider?
+- [ ] ctrl ile impl arasındaki mesajların biçimi.
+- [ ] implement ve sonrası: commit, push, review, merge, insan onayı.
+- [ ] "Tek kaynak" yorumu: impl'e dışarıdan kaynak girmez; kaynak anayasa,
+      spec ve spec-kit'in ürettikleri; ctrl'in cevapları bu belgelere
+      yazılır. Teyit edilmedi.
+- [ ] Stock plan research için ajan açıyor. ctrl'in prompt'u "research'ü
+      ajan açmadan kendin yap" tutar mı, denenecek.
+- [ ] Companion implement stock `tasks.md` ile: task ID'leri tanınıyor
+      (0.21.0 `task_sync.py:38`, `**` isteğe bağlı); dalga (`⟶ Wait`) ve
+      `Files:` satırları yok, paralelleştirme haritası eksik. İlk koşuda
+      gözlenir. Companion implement spec'i kendisi `completed` yapıyor.
+      `devenv` 0.21.0'ı kuruyor; wiki notları main'e (9fd7ebae, 136 commit
+      ileride) göre: 0.21.0 implement task'ları varsayılan olarak kendisi
+      yazıyor ve capability kaydetmiyor.
+- [ ] VS Code eklentisi proje ilk açıldığında `companion-standard` preset'ini
+      sormadan kurup 7 stock `speckit-*` skill'ini değiştiriyor mu: bir kez
+      kontrol. Değiştiriyorsa "impl stock kalır" kararı editöre bağlı kalır.
+- [ ] Anayasa şablonu 8 ilke ve 5 bölüm, 205 satır; wiki bulgusu 6-10
+      yanlışlanabilir ilke. Constitution Check her ilke için satır yazıyor.
+
+### Uygulama
+
+- [ ] `claude/roles/{protocol,ctrl,impl}.md` kararlara göre baştan yazılır.
+- [ ] `templates/project/`: ctrl'in dizininde roadmap ve spec girdisi
+      kopyaları için yer; `record.md` yeni akışa göre.
+- [ ] Rol metinleri yazılınca `README.md`'nin "Two-role projects" bölümü,
+      devenv `CLAUDE.md` haritası ve `tests/devenv_create.py` güncellenir.
+
 ## Tasarım (konuşuldu, uygulanmadı)
 
-- [ ] **Proje ağacı plandan sonra belirlenir.** Bugün iki yerden dayatılıyor:
-      CLAUDE.md şablonunun `## Yerleşim`'i (`components/<ad>/` zorunlu; her
-      oturumda yüklü olduğu için stock `/speckit-plan`'ı da bağlar) ve plan-doc
-      node'u (Companion'ın orijinalinden tek farkı "layout is already decided"
-      cümlesi). Spec Kit'in plan şablonunda kararın yeri zaten var: Project
-      Structure ve "Structure Decision".
-  - Baştan kalanlar, dil sayısından bağımsız ilkeler: üretim, kurulum
-    (`install/`) ve ölçüm (`proof/`) kodu ayrı dizinlerde (anayasa III);
-    sözleşme kendi biriminde, kodunu tüketici üretir; köke rastgele dizin
-    açılmaz. Bir de kökte `make build`, `make lint`, `make test` sözleşmesi
-    (GitLab CI maddesi).
-  - Plandan sonra karar verilenler: ağaç (`components/` ve dağıtıcı Makefile
-    ya da dilin kendi ağacı ve ince bir Makefile), dil listesi, cross için
-    gereken (tek dilli C++'ta `CMakePresets.json`). Ölçüt dil sayısı değil,
-    kökten sürülen ayrı build aracı sayısı: Go ve proto tek araçtır
-    (`go generate`); `proof/`'taki Python make'e girmez.
-  - Karar anı plan ile tasks arası, ctrl'in plan turunda: tasks yolları yazar,
-    ağaç sonra değişirse tasks baştan yazılır. ctrl önerir, insan onaylar,
-    `record.md`'ye girer.
-  - ctrl'e bir skill: ölçüt, iki ağaç, cross notu, karardan sonra impl'in
-    güncelleyecekleri. ctrl.md'ye değil skill'e, çünkü proje başına bir kez
-    lazım. `context: fork` değil, çünkü karar ctrl'in context'inde verilir.
-    impl'de yasak.
-  - Mekanik kısım devenv'de (`devenv update`'in parçası): seçilen dillerle
-    Makefile ve Yerleşim bölümü. Seçilmeyen dilin satırları Makefile'a girmez;
-    o dilde bir bileşen "bu projede seçili değil, `flake.nix` langs'e ekle"
-    hatası alır. impl elle yalnız plan.md'nin Proje Yapısı'nı ve `flake.nix`
-    dillerini (insan onayıyla) günceller.
-  - Sonuçları: `create` `components/` kuralını koymaz; plan-doc replacement'ı
-    gider; Companion'ı klondan (`--dev`) kurma gereği muhtemelen gider (build
-    toolchain'ini başka kullanan var mı, bakılır).
 - [ ] **GitLab CI.** Ekip GitLab CI kullanıyor; projeler bir noktadan sonra
       CI'ya bağlanacak.
   - Kapı tek yerde tanımlı: CI, ajan ve insan aynı `make` hedeflerini çağırır;
@@ -89,69 +178,24 @@ Açık işler. Kapananlar silinir. Harita ve ilkeler `CLAUDE.md`'de.
 - [ ] Dil kuralları (`templates/rules/<dil>.md`) projeye kopyalanıyor:
       güncellemede proje proje dolaşma sorunu. Ama ürün reposu başka makinede
       de kendi kendine yetmeli. Karar gerekiyor.
-- [ ] Companion'ın `companion-standard` preset'i kurulmuyor. VS Code eklentisi
-      proje ilk açıldığında sormadan kuruyor ve 7 stock `speckit-*` skill'ini
-      değiştiriyor; proje durumu editörle açılıp açılmamasına bağlı kalıyor.
-      `specify preset add --dev <companion>/presets/companion-standard`.
-- [ ] Extension kurulurken kaynağın `.git`'i de kopyalanıyordu (gömülü repo,
-      gitlink). Bugün yalnız Companion kuruluyor, URL'den klonlanarak; hâlâ
-      oluyor mu bakılmalı.
 - [ ] Repo adı `devenv`, iç adlar hâlâ `dev-templates`: yerel dizin,
       `~/.local/share/dev-templates`, `DEV_TEMPLATES_REF`, flake input adı.
 - [ ] README'deki "Claude Code skill" bölümü `skills/devenv`'i anlatıyor; repoda
       böyle bir dizin yok.
 - [ ] `SPECKIT_INTEGRATION_CLAUDE_EXTRA_ARGS` kuruluma girmiyor; koşuyu başlatma
       biçimi README'de durmalı.
-- [ ] `plan-doc` replacement'ı plan'ı `components/<ad>/` altına yazdırıyor mu,
-      gerçek koşuda görülmedi. Replacement yalnız Companion komutlarında
-      devrede; stock `/speckit-plan` Spec Kit'in `src/` varsayılanıyla geliyor.
-      Tasarım'daki ağaç maddesi uygulanırsa bu madde düşer.
 - [ ] `~/workspace/ai-rules/rust.md` kuralın ikinci kopyası; tek kaynak
       `templates/rules/`.
 - [ ] `devenv` kurduğunu geri alamıyor. Spec Kit'in yönetim alanı dışında
-      kurdukları: `.specify/companion/nodes/` altındaki node replacement
-      (`plan-doc`), kökteki `living-specs.yml`, `extensions.yml`'de kapatılan
+      kurdukları: kökteki `living-specs.yml`, `extensions.yml`'de kapatılan
       git commit hook'ları. `specify extension remove` bunları bilmez. dbaas'ta
       orkestrasyon 2026-09-14'te söküldü: extension ve workflow `specify` ile,
       hakem, `Stop` hook'u, `implement-exec` ve spike kopyası elle, ardından
       `build-pipeline.py`. `devenv update` ile birlikte düşünülmeli.
 - [ ] Kurulu kopya kaynaktan ayrışınca bunu gören bir kontrol yok: config'teki
-      `roles/` ve `skills/`, projedeki `plan-doc`. `devenv --version` yalnız
+      `roles/` ve `skills/`. `devenv --version` yalnız
       kurulu `bin/devenv`'in commit'ini söylüyor.
 - [ ] Branch adını Spec Kit'in git extension'ı, spec dizininin adını Companion
       ayrı ayrı türetiyor. Bir specify koşusunda aynı çıkıyor mu bilinmiyor.
       Çıkmazsa bir şey kırılmaz (Spec Kit dizini `feature.json`'dan buluyor),
       yalnız branch ile dizin eşleşmez.
-
-## Rol metinleri
-
-- [ ] Canlıda doğrulanmadı: dış import'un onay penceresi, `/context`'te rol
-      metninin görünmesi, impl'de `Skill(spike)` yasağının ve ctrl'de impl'e
-      Edit yasağının tuttuğu. İlk pilot projede bakılır.
-      2026-09-14, dbaas'ta `claude -p` ile görülen: onaysız dizinde dış
-      import açılmıyor, model yalnız `@~/...` satırını görüyor. Onay proje
-      başına `.claude.json`'da (`hasClaudeMdExternalIncludesApproved`).
-      ctrl'ün `.claude/settings.json`'daki `additionalDirectories`'i trust
-      verilmemiş dizinde yok sayılıyor. impl'in `settings.local.json`'u için
-      bu uyarı çıkmadı. Her dizin bir kez etkileşimli açılıp iki onay
-      verilmeli; bunu `devenv create` çıktısı ve README söylemeli.
-- [ ] Kaynak kapısı için araç: oturumun transcript'inden context doluluğunu
-      okuyan küçük bir script. Rol metni "doluluk transcript'teki son
-      `usage`'dan okunur" diyor, ama okuyan bir araç yok. Başlangıç noktası:
-      orkestrasyon reposundaki `scripts/token_stats.py`
-      (`git.kopuklu.io:speckit-orchestrator.git`). Subagent'ların ayrı
-      transcript'lerini de okuyor.
-- [ ] Sınama: ctrl, D37 türü bir çelişkiyi kendiliğinden buluyor mu? dbaas'ta
-      (2026-09-11) analyze bir bulguyu kapatırken yeni bir tasarım kararı verdi:
-      gateway'e CA anahtarı (D37). Karar, aynı turda verilen D36'yı boşa
-      çıkarıyordu, çünkü mühür anahtarı gateway'den geçiyordu. Karar tablosunda
-      yine de ✓ vardı; arkasında kanıt değil argüman duruyordu. Açığı başka bir
-      oturum yakaladı. Sınama: D37'li hâl dbaas transcript'inden geri kurulur ve
-      ctrl rol metniyle o hâle bakar. Bulamazsa rol metni düzeltilir.
-- [ ] Denetçi varken yazan model ucuzlatılabilir mi (Sonnet yazar, güçlü
-      denetçi)? Implement için olası, plan için belirsiz. impl'in modeli task
-      subagent'larına da geçer. Ölçüm: aynı işi iki yazar koşar; bulgu, kalan
-      hata ve toplam token karşılaştırılır.
-- [ ] impl'in ctrl dizinine Bash üzerinden yazması (`cp`, `sed -i`, `git`)
-      Edit yasağına takılmıyor; bugün bunu yalnız rol metni tutuyor. Bir
-      `PreToolUse` hook'uyla kapatılabilir mi, ölçülmedi.
