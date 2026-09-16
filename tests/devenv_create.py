@@ -71,6 +71,8 @@ check("yeni: ust CLAUDE.md protokolu import eder", f"@{CFG}/roles/protocol.md" i
 check("yeni: ctrl CLAUDE.md rolu import eder", f"@{CFG}/roles/ctrl.md" in (ctrl / "CLAUDE.md").read_text())
 check("yeni: ctrl record.md, uc bolum", (ctrl / "record.md").read_text().count("\n## ") == 3)
 check("yeni: ctrl roadmap.md", (ctrl / "roadmap.md").is_file())
+check("yeni: ctrl skill'leri", all((ctrl / ".claude/skills" / s / "SKILL.md").is_file()
+                                   for s in ("reference", "constitution")))
 check("yeni: impl CLAUDE.local.md rolu import eder", f"@{CFG}/roles/impl.md" in (impl / "CLAUDE.local.md").read_text())
 check("yeni: baslik proje adi, dizin adi degil", (impl / "CLAUDE.md").read_text().startswith("# ornek\n"))
 check("yeni: yer tutucu kalmadi", not any(re.search(r"\{\{[A-Z]+\}\}", p.read_text()) for p in root.rglob("*")

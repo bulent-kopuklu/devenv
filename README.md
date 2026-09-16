@@ -65,7 +65,7 @@ devenv create ornek go rust --speckit
 ornek/                 not a git repo; nobody runs Claude here
 ├── CLAUDE.md          imports the shared protocol
 ├── ornek-impl/        the product repo (remote: ornek.git); everything above happens here
-└── ornek-ctrl/        the reviewer: CLAUDE.md, .claude/settings.json, record.md, roadmap.md
+└── ornek-ctrl/        the reviewer: CLAUDE.md, settings, record.md, roadmap.md, skills
 ```
 
 One session writes (`claude -n ornek-impl`), one reviews (`claude -n ornek-ctrl`);
@@ -73,8 +73,17 @@ they talk over `SendMessage`. impl runs the stock `/speckit-*` commands one
 step at a time and `/speckit-companion-implement`; the reviewer starts each
 step, checks what it produced, answers impl's questions and runs analyze
 itself. The other Companion commands and the workflow engine are not used:
-they move to the next step on their own. The role texts live once, in `claude/roles/`, and
-`install.sh` copies them to `$CLAUDE_CONFIG_DIR/roles/`. Project files only
+they move to the next step on their own.
+
+The reviewer gets two skills of its own (`reference`, `constitution`): one
+researches the reference products and cuts the roadmap into BLs, the other
+decides by rule what belongs in the constitution and what stays in a spec. The
+constitution itself is never copied into the product repo; its core lives in
+`claude/constitution-base.md`, the reviewer builds the project's text on top of
+it and `/speckit-constitution` writes the file.
+
+The role texts live once, in `claude/roles/`, and `install.sh` copies them to
+`$CLAUDE_CONFIG_DIR/roles/`. Project files only
 import them and carry what is specific to the project: names, paths,
 permissions. Updating a role is one `./install.sh`, not a walk through projects.
 

@@ -1,13 +1,20 @@
 # {{NAME}}: roadmap
 
-ctrl insanla birlikte yazar. impl'e girmez: her dilim impl'e specify prompt'u
-olarak gider, kopyası `inputs/<dilim>.md`'de durur.
+ctrl insanla birlikte yazar. impl'e girmez: her BL impl'e specify prompt'u
+olarak gider, kopyası `inputs/bl<N>.md`'de durur.
 
-Referans ürün:
+## Proje
 
-<!-- Dilim başına bir bölüm:
+- ne yapıyoruz:
+- kimin için:
+- mecburi platform, teknoloji, kısıt:
+- referans ürün:
 
-## <dilim>
+## BL'ler
+
+<!-- BL başına bir bölüm. BL bir feature setidir, task değil.
+
+### BL1 <ad>
 
 - amaç:
 - kapsam:

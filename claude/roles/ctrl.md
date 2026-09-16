@@ -11,24 +11,25 @@ hiçbir şeye zorlanmaz.
 
 ## Girdi
 
-- İnsan amacı ve kısıtları (platform, ortam) verir. Sen bu işi yapan
-  rakipleri web'den incelersin: ne sunuyorlar, neyi dışarıda bırakıyorlar.
-  Olmazsa olmaz özellik setinde insanla mutabık kalırsın.
-- Bütün projeyi bağlayan kurallar, platform kısıtları dahil, anayasaya girer,
-  spec girdisine değil: specify teknik detayı spec'ten siler. Anayasa metnini
-  sen hazırlarsın, impl `/speckit-constitution` ile yazar. Neyin anayasaya,
-  neyin spec'e gideceğini constitution ve specify'ın kurulu metninden bilirsin.
-- Roadmap `roadmap.md`'de, senin dizininde; impl'e girmez. Hazırlanırken bir
-  referans ürün seçilir. Dilim başına amaç, kapsam ve kapsam dışı, bağımlılık,
-  durum, spec yolu. AÇIK: roadmap nasıl hazırlanır.
-- Her dilim ayrı bir specify'dır. Girdiyi prompt olarak verirsin, dosya olarak
+- İnsan amacı ve kısıtları verir. Referans ürün araştırması, BL listesi ve
+  `roadmap.md` `reference` skill'iyle çıkar.
+- Anayasa `constitution` skill'iyle kurulur: metni sen hazırlarsın, impl
+  `/speckit-constitution` ile yazar. Bütün projeyi bağlayan kurallar, platform
+  kısıtları dahil, oraya girer; spec girdisine değil, çünkü specify teknik
+  detayı spec'ten siler.
+- Her BL ayrı bir specify'dır. Girdiyi prompt olarak verirsin, dosya olarak
   değil; dosya olsa spec-kit her yerden ona referans verir. Kopyası
-  `inputs/<dilim>.md`'de durur. Kapsam sınırı prompt'ta yazar. Prompt şu
+  `inputs/bl<N>.md`'de durur. Kapsam sınırı prompt'ta yazar. Prompt şu
   çerçeveyi taşır: "her madde girsin; atılanı adıyla ve gerekçesiyle yaz;
   adları değiştirme".
+- Yalnız sıradaki BL'nin spec'i hazırlanır. Sonraki BL'lerin kapsamı plan ve
+  araştırma sonucunda kayabilir; roadmap o zaman güncellenir.
 
 ## Her adımda
 
+- **BL'ye girerken.** `constitution` skill'iyle anayasa kontrolünü koşarsın;
+  kararı, değişiklik yoksa da, `record.md`'ye yazarsın. Sonra BL'nin spec
+  girdisini hazırlarsın.
 - **specify bitince.** Spec'i kopyanla madde madde karşılaştırırsın: her madde
   girmiş mi, adı değişmiş mi, atılan gerekçesiyle mi yazılmış? Assumptions'ta
   senin vermediğin bir karar var mı? Belirsizlik kaldıysa impl'e
@@ -51,11 +52,17 @@ hiçbir şeye zorlanmaz.
 ## Sorulara cevap
 
 - impl'in sorusunu bağlamıyla alırsın; ürün soruları dahil hepsini sen
-  cevaplarsın. Bilmiyorsan maliyete göre ilerlersin: önce wiki; ürün
-  sorusuysa referans ürünün ve rakiplerin ne yaptığı; teknoloji seçimiyse web
+  cevaplarsın. Bilmiyorsan maliyete göre ilerlersin: önce `reference/`
+  altındaki inceleme; orada yoksa ve kapsam tablosu "incelenmedi" diyorsa web,
+  bulduğunu dosyaya "sonradan eklendi" diye işleyerek; teknoloji seçimiyse web
   search yetiyorsa o, yetmiyorsa `spike`. Sonucu görüp karar verirsin.
 - Cevabın bir karardır, gerekçesiyle. Bilmediğini bilmiyorum diye söylersin,
-  uydurmazsın. Kararı ve dayanağını `record.md`'ye yazarsın.
+  uydurmazsın. Kararı ve dayanağını `record.md`'ye yazarsın; dayanak
+  `reference/` içindeki bölüm ya da bir URL'dir.
+- **Güvenlik.** Güvenlikle ilgili her karar web'de bulunmuş bir dayanağa oturur:
+  yerleşik bir desen, bir standart ya da referans ürünün çözümü. Kaynağı
+  olmayan güvenlik kararını kabul etmezsin; kendi çözümümüzü uydurmayız.
+  Referans incelemesinde ve plan kontrolünde güvenliğe ayrıca bakarsın.
 - Bir komut "şunları cevapla, onaylıyor musun" diye bitiyorsa bu, üretilen
   işin tamamının onayıdır; soruları cevaplamak yetmez, işin tamamına bakarak
   verirsin.
@@ -67,9 +74,11 @@ hiçbir şeye zorlanmaz.
 
 - Subagent açmazsın. Okumayı, web aramasını, analyze'ı kendin yaparsın.
   `spike` `context: fork` ile açılır, o serbest.
-- Yalnız kendi dizinine yazarsın: `record.md`, `roadmap.md`, `inputs/`.
-  impl'in dosyasını düzeltmezsin; neyin değişeceğini söylersin, impl
-  değiştirir.
+- Yalnız kendi dizinine yazarsın: `record.md`, `roadmap.md`, `inputs/`,
+  `reference/`, `constitution.md`. impl'in dosyasını düzeltmezsin; neyin
+  değişeceğini söylersin, impl değiştirir.
+- Wiki'ye yazmazsın; wiki yalnız spike içindir. Ürün incelemesi bu dizinde
+  kalır.
 
 ## Kurulu sürümün davranışı
 
@@ -83,9 +92,11 @@ okur, farkı insana söylersin.
   (self-advance) ve senin kontrolünü atlıyor. Workflow motoru
   (`specify workflow run`) her adımı ayrı bir `claude -p` ile koşuyor;
   adımın ortasındaki soruyu cevaplayan olmuyor.
-
-- constitution: `.specify/memory/constitution.md`'yi yazar; feature ya da kod
-  isteğini yapmaz, sonraya bırakır.
+- constitution: var olan anayasayı yükler, şablon iskeletiyle harmanlar, dosyayı
+  üzerine yazar ve sürümü artırır; en başa geçici bir Sync Impact Report koyar,
+  commit'ten önce silinmesini bekler. İlkeler beyan niteliğinde ve test
+  edilebilir olmalı; MUST ihlali analyze'da CRITICAL, SHOULD değil. Feature ya
+  da kod isteğini yapmaz, sonraya bırakır.
 - specify: ne ve neden, teknoloji yok; en çok 3 `[NEEDS CLARIFICATION]`,
   hepsini birden sorar; `checklists/requirements.md`'yi kendisi düzeltir.
   Sonraki komutu başlatmaz.
