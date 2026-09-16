@@ -65,13 +65,18 @@ taraf kararını ona göre açık bırakır.
 
 ## Önce var olana bak
 
-Spike açmadan önce `INDEX.md`'yi oku. Üç sonuçtan biri çıkar:
+Spike açmadan önce iki indeksi oku: `<wiki>/spike/INDEX.md` ve wiki'nin
+`README.md`'sindeki alan tablosundan soruya uyan alanın `<wiki>/<alan>/INDEX.md`'si.
+Aynı soru bir alan belgesinde ölçülmüş ya da kaynağından okunmuş olabilir;
+`sonuç` sütunu yetiyorsa belgeyi açma. Üç sonuçtan biri çıkar:
 
-1. **İşe yarayan, güncel bir kayıt var** — ölçme, ona bağlan. İş bitti.
+1. **İşe yarayan, güncel bir kayıt var** — spike kartı ya da alan belgesi.
+   Ölçme, ona bağlan. İş bitti.
 2. **Kayıt var ama bayat** — ölçülen sürüm artık kullandığın sürüm değil, ya da
    ortam değişmiş. `setup.sh` ve `measure.sh` elinde hazır: sürümü güncelle,
    yeniden koş, **aynı kartı güncelle**. Yeni kart açma — bir soru bir kart
-   tutar, geçmişi kartın kendi içinde birikir.
+   tutar, geçmişi kartın kendi içinde birikir. Bayat olan bir alan belgesiyse
+   spike açılır ve belge karta bağlanır.
 3. **Kayıt yok** — spike açılır. Ama sıfırdan başlama: `INDEX.md`'nin *kurulan
    teknolojiler* sütununa bak, ihtiyacın olan ortamı daha önce kuran bir spike
    varsa onun `setup.sh`'ini **kopyala ve düzenle**. Ortamı keşfetmenin bedeli
@@ -157,8 +162,8 @@ sorulmuş mu" diye bakabildiği yer burasıdır:
 *Kurulan teknolojiler* sütunu arama içindir: yeni bir spike'ın ihtiyacı olan
 ortamı daha önce kimin kurduğu buradan görülür ve o `setup.sh` kopyalanır.
 
-Yeni bir dış davranış sorusuyla karşılaştığında **önce `INDEX.md`'ye bak**.
-Kayıt varsa ve bayat değilse spike açma, ona bağlan.
+Yeni bir dış davranış sorusuyla karşılaştığında **önce bu tabloya ve alan
+indeksine bak**. Kayıt varsa ve bayat değilse spike açma, ona bağlan.
 
 `card.md` şunları taşır:
 
