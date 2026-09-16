@@ -252,6 +252,14 @@ açık maddeler metinde `AÇIK` diye duruyor. Kaynak okumaları cc-workspace'te:
       uydururdu; ölçüm gerektiren iddiada impl ctrl'e soruyor (`impl.md`).
 - [x] VS Code eklentisi `companion-standard` preset'ini sormadan kuruyor mu:
       kuruyor, ama zip kurulumda komut düşüyor (devenv bölümündeki madde).
+- [x] Anayasa I daraltıldı (review bulgusu 1): yalnız davranış iddiaları
+      (performans, sınır, garanti, sürüme bağlı davranış) ölçüm ister; kanıt
+      ürün belgesinde özet olarak durur, wiki yolu tek kanıt olamaz; ölçümün
+      iç kuralları (kontrol, üçlü sonuç, bayatlama) spike'ta kaldı. Teknoloji
+      seçimi V'e geçti ve web kaynağı yeter. V'e lisans kontrolü: seçilen her
+      dış bileşenin lisansı gerekçede yazılır, ürüne girince sorun
+      çıkarabilecek lisans uyarı olarak yazılır. ctrl plan kontrolünde buna
+      bakar.
 - [ ] Gerçek `./install.sh` koşulmadı: kurulu `~/.config/claude/roles` ve
       `~/.config/claude/CLAUDE.md` hâlâ eski metin.
 

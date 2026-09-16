@@ -53,6 +53,10 @@ Oturum açılışında iki yere bakarsın, ikisi de zaten üretilmiş şeyler:
   dahil. Her karar için: dayanağı kanıt mı, argüman mı; anayasayla ve spec'le
   çelişiyor mu; aynı turdaki başka bir kararı boşa çıkarıyor mu? Yerleşim
   yanlışsa "burayı şöyle değiştir" dersin; impl yalnız `plan.md`'yi düzeltir.
+  Seçilen her dış bileşenin lisansına bakarsın: ürüne girdiğinde sorun
+  çıkarabilecek bir lisans (güçlü copyleft, kullanımı kısıtlı, ticari kullanımı
+  yasaklayan ya da belirsiz) kararın gerekçesinde uyarı olarak yazılmamışsa
+  itiraz edersin.
 - **tasks bitince.** Yollar `plan.md`'den mi ve yerleşime uyuyor mu; spec'in her
   gereksinimi bir task'a bağlı mı.
 - **analyze.** Sen koşarsın: impl'in `speckit-analyze/SKILL.md`'sini okur,
@@ -73,8 +77,9 @@ Oturum açılışında iki yere bakarsın, ikisi de zaten üretilmiş şeyler:
 - impl'in sorusunu bağlamıyla alırsın; ürün soruları dahil hepsini sen
   cevaplarsın. Bilmiyorsan maliyete göre ilerlersin: önce `reference/`
   altındaki inceleme; orada yoksa ve kapsam tablosu "incelenmedi" diyorsa web,
-  bulduğunu dosyaya "sonradan eklendi" diye işleyerek; teknoloji seçimiyse web
-  search yetiyorsa o, yetmiyorsa `spike`. Sonucu görüp karar verirsin.
+  bulduğunu dosyaya "sonradan eklendi" diye işleyerek. Teknoloji seçimi
+  kaynaklı incelemedir, web yeter. Davranış iddiası (performans, sınır,
+  garanti) ölçüm ister, web yetmez: `spike`. Sonucu görüp karar verirsin.
 - Cevabın bir karardır, gerekçesiyle ve dayanağıyla. Bilmediğini bilmiyorum
   diye söylersin, uydurmazsın.
 - Cevabın belgeye girer: komut kendi belgesine yazmıyorsa cevabı sonraki adımın

@@ -14,39 +14,26 @@ değil "Ek Kısıtlar"a girer.
 
 ## Core Principles
 
-### I. Kanıtsız Teknik İddia Yasak
+### I. Davranış İddiası Ölçümsüz Kurulmaz
 
-Bir teknolojinin uygunluğu ancak çalıştırılıp ölçülerek, bir garanti ancak ihlal
-denemesi yapılıp başarısız olduğu görülerek kabul edilir (MUST). Dokümandan
-okunan rakam karar gerekçesi olamaz; modelin eğitim bilgisinden gelen davranış
-iddiası hiç olamaz, hangi sürümün davranışı olduğu bilinmez.
+Bir aracın ya da ürünün performansı, sınırı, garantisi (dayanıklılık, tutarlılık,
+izolasyon, güvenlik) ya da sürüme bağlı davranışı hakkındaki bir iddia ancak
+ölçümle kabul edilir (MUST). Dokümandaki rakam ve modelin eğitim bilgisi bu
+iddiayı taşımaz; hangi sürümün davranışı olduğu bilinmez.
 
-Dış dünyanın davranışına dayanan bir iddia kurulduğu anda üç yoldan biri
-zorunludur (MUST):
+İddiaya dayanan karar ölçümün özetini kendi gerekçesinde yazar: ne ölçüldü, hangi
+sürüm ve ortamda, sonuç ne, nasıl yeniden koşulur (MUST). Dış bir kayda bağlantı
+eklenebilir ama tek kanıt o olamaz; ürünün belgeleri kendi kendine yetmelidir.
 
-- kayıt zaten var → ona bağlanır,
-- ölçüm burada üretilebiliyor → ölçülür, sürümü ve tarihiyle yazılır, bağlanır,
-- üretilemiyor → iddia kurulmaz; ölçüm borcu yazılır, iddiaya dayanan iş "tamam"
-  sayılmaz ve karar soru olarak yukarı gider.
+Ölçülemiyorsa iddia kurulmaz; ölçüm borcu yazılır ve iddiaya dayanan iş "tamam"
+sayılmaz (MUST).
 
-Ölçüm önce kendini kanıtlar: her ölçümün bir kontrolü olmalıdır (MUST). Pozitif
-kontrol ölçüm noktasının canlı olduğunu, negatif kontrol iddianın
-yanlışlanabildiğini gösterir. Kontrolü olmayan ölçüm başarısız sayılır; hiçbir
-şey ölçmeyen bir sayaç da sıfır gösterir. Bozuk bir düzenekte başlayan koşu
-ölçtüğünü değil düzeneğini raporlar; çıktı üretilmediyse sonuç sıfır değil
-hatadır.
+Teknoloji seçimi bu ilkeye değil İlke V'e tabidir. Seçimin gerekçesi bir davranış
+iddiasına dayanıyorsa yalnız o iddia buraya girer.
 
-Sonuç kümesi ikili değil üçlüdür: geçti, kaldı, ölçülemedi. Ölçülemeyeni geçti
-ya da kaldı diye kaydetmek yasaktır (MUST NOT); ikisi de yalandır.
-
-Kararı taşıyan artefakt dayandığı kaydın yolunu yazar (MUST); yol yoksa gerekçe
-de yoktur. Ölçümün geçerlilik sınırı da yazılır: hangi ortamda yapıldıysa o.
-Ortam ya da sürüm değişince ölçüm bayattır, yeniden koşulmadan kullanılamaz.
-
-Gerekçe: Belgelenen davranış ile gözlenen davranış ayrışır, kararı yalnız
-gözlenen taşır. Ölçüm arızalarının neredeyse tamamı ölçülen şeyin sonucu gibi
-görünür ve sessizce kabul edilir; en tehlikelisi doğru sayının yanlış sorunun
-cevabı olmasıdır. Yazılmayan ölçüm bir sonraki soruda yeniden sorulur.
+Gerekçe: Belgelenen davranış ile gözlenen davranış ayrışır, kararı yalnız gözlenen
+taşır. Ürün belgesinde durmayan kanıt, belgeyi okuyan için yoktur; yazılmayan
+ölçüm bir sonraki soruda yeniden sorulur.
 
 ### II. Kanıt Ölçtüğü Şeyin İçinden Çıkmaz
 
@@ -99,11 +86,16 @@ referans verdiyse inceleme ondan başlar.
 Örnek, problemin bağlamını paylaşan çözümler arasından seçilir; bağlamı farklı
 bir örnek, farkı yazılmadan dayanak sayılmaz. Örnekte ne yapıldığı modelin
 hafızasından değil kaynağından okunur ve her karar kaynağıyla (repo, dosya,
-doküman, sürüm) yazılır. Gerekçesiz sapma kanıtsız teknik iddia sayılır
-(İlke I).
+doküman, sürüm) yazılır. Gerekçesiz sapma kabul edilmez.
 
 Örnek, yaklaşımın kaynağıdır, davranışının kanıtı değildir: hız, dayanıklılık ve
 ölçek iddiaları İlke I'e tabidir.
+
+Seçilen her dış bileşenin lisansı kontrol edilir ve kararın gerekçesinde
+yazılır (MUST). Ürüne girdiğinde sorun çıkarabilecek bir lisans — güçlü copyleft
+(GPL, AGPL), kaynağı açık ama kullanımı kısıtlı lisanslar (SSPL, BUSL, Elastic
+License), ticari kullanımı yasaklayan ya da lisansı belirsiz bileşen — açıkça
+uyarı olarak yazılır (MUST).
 
 Güvenlikte istisna yoktur ve ölçü daha serttir. Standart desen aranır: RFC ya da
 yayımlanmış bir standart, yaygın ve bakımlı bir kütüphane, bilinen bir protokol.
@@ -130,9 +122,6 @@ mekanizmasının hatası işlevsel testte görünmez, ancak biri onu kırmaya
 
 - Her spec, plan ve task ilgili olduğu ilkelere geri izlenebilir olmalıdır
   (MUST); hiçbir ilkeye bağlanamayan iş kapsam dışıdır.
-- Kanıt gerektiren bir iddia kanıtsız kaldıysa ilgili iş "tamamlandı" olarak
-  işaretlenemez (MUST NOT); eksik kanıt açıkça yazılır.
-- "Ölçemedim" hâli "iddia doğrulandı" hâlinden ayrı raporlanır (MUST).
 - Ölçülmemiş adımların listesi, ölçülmüş sonuçlar kadar bir artefakttır ve bu
   listede olmayan hiçbir şey varsayım değildir. Her madde ne bilinmediğini ve
   neden önemli olduğunu yazar.
