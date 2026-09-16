@@ -354,7 +354,7 @@ açık maddeler metinde `AÇIK` diye duruyor. Kaynak okumaları cc-workspace'te:
       `--force` ile yeniden kur, sonra `specify preset remove companion-standard`;
       sıra ters olursa VS Code preset'i geri kurar.
 - [ ] Repo adı `devenv`, iç adlar hâlâ `dev-templates`: yerel dizin,
-      `~/.local/share/dev-templates`, `DEV_TEMPLATES_REF`, flake input adı.
+      `DEV_TEMPLATES_REF`, flake input adı.
 - [ ] README'deki "Claude Code skill" bölümü `skills/devenv`'i anlatıyor; repoda
       böyle bir dizin yok.
 - [ ] `SPECKIT_INTEGRATION_CLAUDE_EXTRA_ARGS` kuruluma girmiyor; koşuyu başlatma

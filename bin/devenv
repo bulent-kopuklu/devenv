@@ -22,10 +22,10 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 #: Sablonlar iki yerde olabilir: depoda `<kok>/templates`, kurulumda ise
-#: `~/.local/share/dev-templates/templates`. install.sh bu script'i KOPYALIYOR,
+#: `~/.local/share/devenv/templates`. install.sh bu script'i KOPYALIYOR,
 #: yani kurulu halde `__file__` artik depoda degil ve depo-goreli yol bos cikar.
 #: Depo once denenir; boylece klondan calistirmak da calisir.
-SHARE = Path(os.environ.get("XDG_DATA_HOME", Path.home() / ".local/share")) / "dev-templates"
+SHARE = Path(os.environ.get("XDG_DATA_HOME", Path.home() / ".local/share")) / "devenv"
 TEMPLATES = next((c for c in (ROOT / "templates", SHARE / "templates") if c.is_dir()),
                  ROOT / "templates")
 REF = os.environ.get("DEV_TEMPLATES_REF", "github:bulent-kopuklu/devenv")
@@ -49,7 +49,7 @@ COMPANION = os.environ.get(
 CONFIG = Path(os.environ.get("CLAUDE_CONFIG_DIR", Path.home() / ".claude"))
 WIKI = Path(os.environ.get("CC_WORKSPACE", Path.home() / "workspace/cc-workspace"))
 
-VERSION = "2.0.0"
+VERSION = "3.0.0"
 #: install.sh kopyalarken bunu deponun commit'iyle degistirir; depodan
 #: calistirilinca yerinde kalir ve git'ten okunur.
 BUILD = "@BUILD@"
@@ -220,10 +220,10 @@ def optional_hooks():
 
 
 ORNEKLER = """ornekler:
-  devenv create ornek go rust --speckit   ./ornek/ornek-impl ve ./ornek/ornek-ctrl
-  devenv create . go rust                 bulundugun dizin proje dizini, adi proje adi
-  devenv create ornek cpp --target aarch64
-  devenv create ornek node --node 22"""
+  devenv create ornek -l go -l rust --speckit   ./ornek/ornek-impl ve ./ornek/ornek-ctrl
+  devenv create . --lang go --lang rust         bulundugun dizin proje dizini, adi proje adi
+  devenv create ornek -l cpp --target aarch64
+  devenv create ornek -l node --node 22"""
 
 CREATE = """Iki rollu bir proje kurar:
 
@@ -238,7 +238,7 @@ dev-templates'te install.sh calismis olmali. Var olan dosyalara dokunulmaz,
 izin listeleri birlestirilir.
 
 Mevcut bir repoyu almak icin: repoyu <ad>/<ad>-impl'e tasi, <ad>/ icinde
-`devenv create . <diller>` calistir (--speckit'siz; kurulu Spec Kit ezilmez)."""
+`devenv create . -l <dil>` calistir (--speckit'siz; kurulu Spec Kit ezilmez)."""
 
 
 def parser():
@@ -254,7 +254,8 @@ def parser():
     c.add_argument("name", metavar="ad",
                    help="proje adi, ya da `.`: bulundugun dizin proje dizinidir ve adi proje adidir. "
                         "Urunun icindeki adlar bundan gelir, dizin adindan degil")
-    c.add_argument("langs", metavar="dil", nargs="+", help=" | ".join(LANGS))
+    c.add_argument("-l", "--lang", dest="langs", action="append", required=True, metavar="dil",
+                   help=" | ".join(LANGS) + " (tekrarlanabilir)")
     c.add_argument("--target", action="append", default=[],
                    help="capraz derleme hedefi: aarch64 | armv7 (tekrarlanabilir)")
     c.add_argument("--node", help=".nvmrc icin node major surumu, ornek 22")

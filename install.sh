@@ -29,7 +29,7 @@ echo "surum:      $("$bindest/devenv" --version)"
 
 # Sablonlar: devenv onlari kurulu halde buradan okur. Aynalama (once sil, sonra
 # kopyala) cunku depodan kaldirilan bir sablon kurulumda kalmamali.
-share="${XDG_DATA_HOME:-$HOME/.local/share}/dev-templates"
+share="${XDG_DATA_HOME:-$HOME/.local/share}/devenv"
 rm -rf "$share/templates"
 mkdir -p "$share"
 cp -r "$here/templates" "$share/templates"

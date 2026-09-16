@@ -58,7 +58,7 @@ own `src/` tree; the reviewer gives this layout in the plan prompt.
 ## Two-role projects (`devenv create`)
 
 ```bash
-devenv create ornek go rust --speckit
+devenv create ornek -l go -l rust --speckit
 ```
 
 ```
@@ -102,9 +102,9 @@ permissions. Updating a role is one `./install.sh`, not a walk through projects.
   from Bash; that part is the role text's rule.
 - Names inside the product come from the argument, never from the directory:
   the `CLAUDE.md` title is `ornek`, not `ornek-impl`.
-- `devenv create . <langs>` takes the current directory as `ornek/` and its
+- `devenv create . -l <lang>` takes the current directory as `ornek/` and its
   name as the project name. An existing repo is adopted that way: move it to
-  `ornek/ornek-impl`, then run `devenv create . <langs>` inside `ornek/`,
+  `ornek/ornek-impl`, then run `devenv create . -l <lang>` inside `ornek/`,
   without `--speckit`; existing files are kept and permission lists are merged.
 - `devenv` does not install the orchestration extension: its judge and
   `after_*` hooks decide inside the writing session, and in this layout the
@@ -125,7 +125,7 @@ be green. Install once (symlinks into `~/.claude/skills`, so `git pull` updates 
 ```
 
 `install.sh` kopyalar, symlink kurmaz: `bin/` → `~/.local/bin`, `templates/` →
-`~/.local/share/dev-templates/templates`, `claude/roles/` ve `claude/skills/*` →
+`~/.local/share/devenv/templates`, `claude/roles/` ve `claude/skills/*` →
 Claude config dizini. `devenv` şablonları önce depoda
 (`<kök>/templates`), yoksa oradan okur — klondan çalıştırmak da kurulu hâli
 kullanmak da çalışır. `devenv --version` sürümü ve kurulu kopyanın geldiği

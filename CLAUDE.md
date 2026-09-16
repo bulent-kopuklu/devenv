@@ -8,13 +8,13 @@ bu dosya repoyu geliştirene.
 
 | yol | ne | kurulunca nereye |
 |---|---|---|
-| `bin/devenv` | `devenv create <ad\|.> <diller> [--speckit]`: iki rollü proje | `~/.local/bin` |
+| `bin/devenv` | `devenv create <ad\|.> -l <dil>... [--speckit]`: iki rollü proje | `~/.local/bin` |
 | `bin/newrepo`, `pi/` | git sunucusunda repo açma | laptop, sunucu |
 | `claude/CLAUDE.md` | kullanıcının global CLAUDE.md'si | `$CLAUDE_CONFIG_DIR/CLAUDE.md` |
 | `claude/roles/` | rol metinleri: `protocol`, `ctrl`, `impl` | `$CLAUDE_CONFIG_DIR/roles/` |
 | `claude/constitution-base.md` | anayasanın çekirdeği; denetçi okur, projeye kopyalanmaz | `$CLAUDE_CONFIG_DIR/` |
 | `claude/skills/` | global skill'ler (`spike`, `context: fork`) | `$CLAUDE_CONFIG_DIR/skills/` |
-| `templates/` | projeye kopyalanan şablonlar; `project/` rol dizinlerinin yer tutuculu dosyaları | `~/.local/share/dev-templates/templates` |
+| `templates/` | projeye kopyalanan şablonlar; `project/` rol dizinlerinin yer tutuculu dosyaları | `~/.local/share/devenv/templates` |
 | `lib/` | `lib.mkEnv`: projelerin `flake.nix`'inin kullandığı devshell kütüphanesi | flake input'u |
 | `tests/` | `devenv create` senaryoları | — |
 

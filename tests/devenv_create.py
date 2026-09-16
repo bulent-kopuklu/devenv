@@ -62,7 +62,7 @@ def git_init(path):
 
 # yeni proje
 t = WORK / "yeni"; t.mkdir()
-out, code = devenv(t, "create", "ornek", "go", "--speckit")
+out, code = devenv(t, "create", "ornek", "--lang", "go", "--speckit")
 root, impl, ctrl = t / "ornek", t / "ornek/ornek-impl", t / "ornek/ornek-ctrl"
 check("yeni: cikis 0", ok(code))
 check("yeni: ust dizin repo degil", not (root / ".git").exists())
@@ -94,7 +94,7 @@ status = subprocess.run(["git", "-C", str(impl), "status", "--porcelain"], captu
 check("yeni: yerel dosyalar git status'ta yok", "CLAUDE.local.md" not in status and "settings.local" not in status)
 
 # ikinci kosu
-out, code = devenv(t, "create", "ornek", "go")
+out, code = devenv(t, "create", "ornek", "-l", "go")
 check("ikinci: cikis 0", ok(code))
 check("ikinci: yeni dosya yok", "created:" not in out)
 check("ikinci: exclude tekrarlanmadi", (impl / ".git/info/exclude").read_text().count("CLAUDE.local.md") == 1)
@@ -107,7 +107,7 @@ git_init(impl2)
 (impl2 / ".claude").mkdir()
 (impl2 / ".claude/settings.local.json").write_text(
     json.dumps({"permissions": {"allow": ["Bash(ls)"], "deny": ["Read(./.env)"]}}))
-out, code = devenv(t / "eski", "create", ".", "go", "--speckit")
+out, code = devenv(t / "eski", "create", ".", "--lang", "go", "--speckit")
 s = settings(impl2 / ".claude/settings.local.json")
 check("alma: cikis 0", ok(code))
 check("alma: CLAUDE.md korundu", (impl2 / "CLAUDE.md").read_text() == "# eski\n\nmevcut\n")
@@ -116,7 +116,7 @@ check("alma: kurulu Spec Kit ezilmedi", "atlandi: speckit" in out and "[speckit]
 
 # create . : bulunulan dizin proje dizini
 t = WORK / "nokta" / "nokta"; t.mkdir(parents=True)
-out, code = devenv(t, "create", ".", "go")
+out, code = devenv(t, "create", ".", "--lang", "go")
 check("nokta: cikis 0", ok(code))
 check("nokta: impl ve ctrl bulunulan dizinde", (t / "nokta-impl/.git").is_dir() and (t / "nokta-ctrl/roadmap.md").is_file())
 check("nokta: ic ice dizin yok", not (t / "nokta").exists())
@@ -124,12 +124,14 @@ check("nokta: baslik dizinin adi", (t / "nokta-impl/CLAUDE.md").read_text().star
 
 # reddedilenler
 t = WORK / "red"; (t / "repo").mkdir(parents=True); git_init(t / "repo")
-out, code = devenv(t, "create", "repo", "go")
+out, code = devenv(t, "create", "repo", "--lang", "go")
 check("red: ust dizin repo ise", not ok(code) and "ust dizin repo olamaz" in str(code))
 out, code = devenv(t, "go")
 check("red: alt komutsuz cagri", not ok(code))
-out, code = devenv(t, "create", "x/y", "go")
+out, code = devenv(t, "create", "x/y", "--lang", "go")
 check("red: adda '/'", not ok(code))
+out, code = devenv(t, "create", "ornek", "go")
+check("red: dil -l'siz", not ok(code))
 
 m = load()
 check("tilde: home altinda ~", m.tilde(Path.home() / ".config/claude") == "~/.config/claude")
