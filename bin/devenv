@@ -158,7 +158,7 @@ def speckit():
         sys.exit("specify yok: uv tool install specify-cli --from git+https://github.com/github/spec-kit.git")
     run("specify", "self", "upgrade")
     run("specify", "init", "--here", "--force", "--non-interactive",
-        "--script", "sh", "--integration", "claude", "--extension", "git", "--extension", "agent-context",
+        "--script", "sh", "--integration", "claude", "--extension", "agent-context",
         "--extension", COMPANION, "--trust-extension-urls")
     # init kurulamayan extension'i tabloda hata olarak basip 0 ile cikiyor.
     if not Path(".specify/extensions/companion/extension.yml").is_file():
@@ -180,21 +180,18 @@ def speckit():
 
 
 def optional_hooks():
-    """Optional hook'lari insansiz kosuya gore ayarlar.
+    """agent-context'in optional hook'larini zorunlu yapar.
 
-    Companion optional bir hook'u calistirmaz, "calistirayim mi?" diye basar;
-    insansiz kosuda bu bir bekleme noktasidir. Iki extension'in optional
-    hook'lari var ve ikisi ayri cozulur:
+    Optional bir hook calistirilmaz, "calistirayim mi?" diye basilir; insansiz
+    kosuda bu bir bekleme noktasidir. agent-context CLAUDE.md'deki SPECKIT
+    START/END blogunu gunceller; hook'u kosmazsa blogu kimse doldurmaz.
 
-    - git: hepsi `speckit.git.commit`. Kapatilir (`enabled: false`) — commit'i
-      kosuyu yapan atar; git-config.yml'de auto_commit acilsa da sabit
-      "[Spec Kit] ..." mesajiyla commit atar, Conventional Commits'e uymaz.
-      Spec basina branch acan hook zaten zorunlu, dokunulmaz.
-    - agent-context: CLAUDE.md'deki SPECKIT START/END blogunu gunceller.
-      Zorunlu yapilir (`optional: false`) — kapatilirsa blogu kimse doldurmaz.
+    git extension kurulmaz: branch'i ve commit'i denetcinin baslattigi acik
+    adimlarla impl atar. Hook'la acilan branch bulunulan HEAD'den cikiyordu ve
+    prompt yoluyla atlanabiliyordu; commit hook'larinin mesaji da Conventional
+    Commits'e uymuyordu.
     """
-    kural = {"git": ("    enabled: true\n", "    enabled: false\n"),
-             "agent-context": ("    optional: true\n", "    optional: false\n")}
+    kural = {"agent-context": ("    optional: true\n", "    optional: false\n")}
     p = Path(".specify/extensions.yml")
     if not p.is_file():
         print(f"atlandi: hook ayari ({p} yok)")
@@ -219,8 +216,7 @@ def optional_hooks():
         print(f"UYARI:   {p} icinde ayarlanacak optional hook bulunamadi; bicim degismis olabilir")
         return
     p.write_text("".join(cikti))
-    print(f"edited:  {p} ({sayac['git']} git commit hook'u kapatildi, "
-          f"{sayac['agent-context']} agent-context hook'u zorunlu yapildi)")
+    print(f"edited:  {p} ({sayac['agent-context']} agent-context hook'u zorunlu yapildi)")
 
 
 ORNEKLER = """ornekler:
@@ -263,7 +259,7 @@ def parser():
                    help="capraz derleme hedefi: aarch64 | armv7 (tekrarlanabilir)")
     c.add_argument("--node", help=".nvmrc icin node major surumu, ornek 22")
     c.add_argument("--speckit", action="store_true",
-                   help="Spec Kit kur: self upgrade, init + git (spec basina branch) + agent-context "
+                   help="Spec Kit kur: self upgrade, init + agent-context "
                         "(CLAUDE.md blogu), companion, living specs kapali; anayasayi denetci hazirlar")
     return ap
 
