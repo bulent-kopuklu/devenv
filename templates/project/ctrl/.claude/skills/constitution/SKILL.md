@@ -84,7 +84,7 @@ yok"tur.
 - Referans üründe görülen ve bütün projeye yayılması gereken bir kural.
 - Önceki BL'de verilmiş bir karar bu BL'de de mecbur hâle geldi.
 
-Kararı `record.md`'ye tek satır yazarsın: "BL2 anayasa kontrolü: değişiklik yok"
+Kararı `record/bl<N>.md`'ye tek satır yazarsın: "BL2 anayasa kontrolü: değişiklik yok"
 ya da "BL2: şu ilke eklenecek, gerekçe şu". Kontrolü yapıp yapmadığın kayıttan
 görülür.
 

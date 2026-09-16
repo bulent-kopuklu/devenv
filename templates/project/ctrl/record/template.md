@@ -1,6 +1,8 @@
-# {{NAME}}: denetim kaydı
+# {{NAME}}: BL<N> denetim kaydı
 
-Tek yazar: ctrl. impl yalnız okur. Satırlar silinmez; durum değişir.
+BL başına bir kopya: bu dosya `record/bl<N>.md` olarak çoğaltılır. Tek yazar
+ctrl. Satırlar silinmez; durum değişir. BL kapanınca kapanmamış "Açık"
+satırları yeni BL'nin dosyasına taşınır, bu dosya arşiv olur.
 Adım: constitution, specify, clarify, plan, tasks, analyze, implement.
 
 ## Kararlar

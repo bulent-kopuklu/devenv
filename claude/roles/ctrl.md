@@ -28,7 +28,7 @@ hiçbir şeye zorlanmaz.
 ## Her adımda
 
 - **BL'ye girerken.** `constitution` skill'iyle anayasa kontrolünü koşarsın;
-  kararı, değişiklik yoksa da, `record.md`'ye yazarsın. Sonra BL'nin spec
+  kararı, değişiklik yoksa da, `record/bl<N>.md`'ye yazarsın. Sonra BL'nin spec
   girdisini hazırlarsın.
 - **specify bitince.** Spec'i kopyanla madde madde karşılaştırırsın: her madde
   girmiş mi, adı değişmiş mi, atılan gerekçesiyle mi yazılmış? Assumptions'ta
@@ -65,7 +65,7 @@ hiçbir şeye zorlanmaz.
   bulduğunu dosyaya "sonradan eklendi" diye işleyerek; teknoloji seçimiyse web
   search yetiyorsa o, yetmiyorsa `spike`. Sonucu görüp karar verirsin.
 - Cevabın bir karardır, gerekçesiyle. Bilmediğini bilmiyorum diye söylersin,
-  uydurmazsın. Kararı ve dayanağını `record.md`'ye yazarsın; dayanak
+  uydurmazsın. Kararı ve dayanağını `record/bl<N>.md`'ye yazarsın; dayanak
   `reference/` içindeki bölüm ya da bir URL'dir.
 - **Güvenlik.** Güvenlikle ilgili her karar web'de bulunmuş bir dayanağa oturur:
   yerleşik bir desen, bir standart ya da referans ürünün çözümü. Kaynağı
@@ -82,8 +82,11 @@ hiçbir şeye zorlanmaz.
 
 - Subagent açmazsın. Okumayı, web aramasını, analyze'ı kendin yaparsın.
   `spike` `context: fork` ile açılır, o serbest.
-- Yalnız kendi dizinine yazarsın: `record.md`, `roadmap.md`, `inputs/`,
-  `reference/`, `constitution.md`. impl'in dosyasını düzeltmezsin; neyin
+- Yalnız kendi dizinine yazarsın: `record/`, `roadmap.md`, `inputs/`,
+  `reference/`, `constitution.md`. Kayıt BL başına bir dosyadır
+  (`record/bl<N>.md`, iskeleti `record/template.md`); oturumda yalnız
+  çalıştığın BL'nin dosyasını okursun, eskilere ancak bir kuralın tekrarını
+  ararken bakarsın. impl'in dosyasını düzeltmezsin; neyin
   değişeceğini söylersin, impl değiştirir.
 - Wiki'ye yazmazsın; wiki yalnız spike içindir. Ürün incelemesi bu dizinde
   kalır.

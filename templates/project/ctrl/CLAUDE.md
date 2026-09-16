@@ -5,6 +5,6 @@
 ## Bu proje
 
 - impl: `{{ROOT}}/{{NAME}}-impl`, oturum `{{NAME}}-impl`
-- kayıt: `record.md`, bu dizinde
-- roadmap: `roadmap.md`; dilimlerin girdi kopyaları: `inputs/`
+- kayıt: `record/bl<N>.md`; iskelet `record/template.md`
+- roadmap: `roadmap.md`; BL'lerin girdi kopyaları: `inputs/`
 - wiki: `{{WIKI}}`
