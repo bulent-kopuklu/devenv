@@ -22,17 +22,21 @@
 ## Merge
 
 - ctrl'in onayı gelmeden merge yok.
-- Sıra: `git fetch`; main ilerlediyse onu branch'e merge et, çakışmayı
-  branch'te çöz ve projenin kapısını koş (`make build`, `make lint`,
-  `make test`). Yeşil değilse durur, ctrl'e bildirirsin.
-- Kapıyı main ilerlediyse koşarsın, çakışma çıkmasa da: karşı taraf bir imzayı
-  değiştirdiyse git çakışma görmez, derleyici görür. main ilerlemediyse merge
+- Sıra: `git fetch`; `origin/main` branch'ten ileriye gittiyse onu branch'e
+  merge et, çakışmayı branch'te çöz ve projenin kapısını koş (`make build`,
+  `make lint`, `make test`). Yeşil değilse durur, ctrl'e bildirirsin.
+- Ölçüt yerel main değil `origin/main`; yerel main bayat olabilir.
+- Kapıyı `origin/main` ilerlediyse koşarsın, çakışma çıkmasa da: karşı taraf bir
+  imzayı değiştirdiyse git çakışma görmez, derleyici görür. İlerlememişse merge
   "Already up to date" olur ve kapıya gerek yoktur; branch implement'in sonunda
   zaten yeşildi.
 - Yeşilse branch'i push eder, push çıktısındaki merge request bağlantısını
   ctrl'e iletirsin. MR'ı insan açar ve birleştirir; sen açmaya çalışmazsın.
 - Uzakta merge request yoksa: main'e `--no-ff` ile merge eder, push eder,
   branch'i silersin.
+- MR birleşince main'i güncellersin: `git switch main`, `git pull --ff-only`,
+  birleşen branch'i sil. Yeni BL'nin branch'i güncel main'den açılmalı; bayat
+  main'de açılan branch eski ağaçtan başlar.
 - Yedek için her faz commit'inden sonra branch'i push edebilirsin. main'e push
   yalnız onaydan sonra.
 

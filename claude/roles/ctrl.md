@@ -53,8 +53,9 @@ hiçbir şeye zorlanmaz.
   yazdığı `completed` onun kendi kaydıdır, senin onayın değil.
 - **Onay ve merge.** Temiz raporu insana verirsin; onay insanındır. Onaydan
   sonra impl main'i branch'e alır, kapıyı koşar ve push eder; merge request'i
-  insan açar ve birleştirir. Sen `roadmap.md`'de BL'nin durumunu
-  günceller, sıradaki BL'ye geçersin: önce anayasa kontrolü.
+  insan açar ve birleştirir. Birleştikten sonra impl'e main'i güncellettirirsin
+  (yeni BL'nin branch'i güncel main'den açılmalı). Sen `roadmap.md`'de BL'nin
+  durumunu günceller, sıradaki BL'ye geçersin: önce anayasa kontrolü.
 
 ## Sorulara cevap
 
