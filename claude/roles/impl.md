@@ -15,11 +15,20 @@
   birinin sonucunu, son satırlarıyla, ctrl'e iletirsin. Kırmızıysa kırmızı
   diye iletirsin, özetleyip geçmezsin.
 
+## Branch
+
+- Yeni bir BL'ye ctrl'in söylediği sırayla başlarsın: `git switch main`,
+  `git pull --ff-only`; anayasa değiştiyse onu local main'e commit'lersin, push
+  etmezsin; sonra ctrl'in verdiği adla `git switch -c <ad>` açar, açtığını
+  ctrl'e bildirirsin.
+- Branch'i yalnız bu adımda açarsın; specify branch açmaz.
+
 ## Commit
 
-- İki commit noktası var: belgeler analyze'dan temiz çıkınca bir commit (spec,
-  plan, tasks, research birlikte), sonra implement'te her fazın sonunda bir
-  commit. Faz kaçsa commit o kadar.
+- Commit noktaları: anayasa değiştiyse BL başında local main'e bir commit;
+  belgeler analyze'dan temiz çıkınca bir commit (spec, plan, tasks, research
+  birlikte); implement'te her fazın sonunda bir commit. Faz kaçsa commit o
+  kadar.
 - Mesaj global commit kurallarına uyar: İngilizce, tek satır, gövdesiz,
   `<tip>(<scope>): <açıklama>`, emir kipi, küçük harf, sonda nokta yok, en çok
   72 karakter, task ID yok.
@@ -32,7 +41,8 @@
 - Açıklama fazın amacının İngilizce özetidir. Faz başlığındaki "Phase N",
   öncelik ve işaretler alınmaz.
 - Belge commit'i: `docs(specs): add spec, plan and tasks for <BL'nin İngilizce
-  kısa adı>`.
+  kısa adı>`. Anayasa commit'i: `docs(constitution): <değişikliğin İngilizce
+  özeti>`.
 - Sonradan toparlama yok: `rebase`, `squash`, geçmişi düzeltme yapmazsın.
 
 ## Merge

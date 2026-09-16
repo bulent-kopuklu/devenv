@@ -65,7 +65,8 @@ metinlerinde yazar.
    karşılaştır. İstenmeyen her fark itirazdır. Komutun bastığı "Sync Impact
    Report" modelin kendi beyanıdır, kanıt değil; esas olan karşılaştırma.
 8. Sync Impact Report geçicidir, komutun kendi metni commit'ten önce silinmesini
-   bekler. impl'e sildirirsin.
+   bekler. impl'e sildirir, sonra anayasayı local main'e commit'letirsin; push
+   yok, değişiklik BL'nin branch'iyle merge request'e gider.
 
 ## Her BL girişinde
 

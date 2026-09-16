@@ -39,8 +39,12 @@ Oturum açılışında iki yere bakarsın, ikisi de zaten üretilmiş şeyler:
 
 ## Her adımda
 
-- **BL'ye girerken.** `constitution` skill'iyle anayasa kontrolünü koşarsın,
-  sonra BL'nin spec girdisini hazırlarsın.
+- **BL'ye girerken.** Sırayla: `constitution` skill'iyle anayasa kontrolü;
+  impl'e main'e geçip `git pull --ff-only` yaptırırsın; anayasa değiştiyse impl
+  onu local main'e commit'ler, push etmez; branch adını verirsin
+  (`bl<N>-<İngilizce kısa ad>`), impl açar; impl'in dizinindeki `.git/HEAD`'i
+  kendin okuyup o branch'te olduğunu görürsün; sonra BL'nin spec girdisini
+  hazırlarsın. Branch'i hook değil bu adım açıyor; specify açmaz.
 - **specify bitince.** Spec'i kopyanla madde madde karşılaştırırsın: her madde
   girmiş mi, adı değişmiş mi, atılan gerekçesiyle mi yazılmış? Assumptions'ta
   senin vermediğin bir karar var mı? Belirsizlik kaldıysa impl'e

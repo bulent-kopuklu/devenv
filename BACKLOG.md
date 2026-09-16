@@ -67,12 +67,22 @@ açık maddeler metinde `AÇIK` diye duruyor. Kaynak okumaları cc-workspace'te:
       yapıyorsa yapsın, bizi ilgilendirmiyor.
 - [x] **Ürün soruları ctrl cevaplar.** Referans ürünlerden yararlanır;
       roadmap hazırlanırken bir referans ürün seçilir.
-- [x] **Commit.** Otomatik commit atan yok: git extension'ın 16 commit hook'u
-      `optional: true` ve `git-config.yml`'de `auto_commit.default: false`,
-      üstüne devenv onları `enabled: false` yapıyor; zorunlu iki hook branch
-      açıyor ve var olan repoda initialize atlıyor; Companion'ın dört hook'u
-      yalnız `write-context.py` çağırıyor; `events:` düzlemi hiç kullanılmıyor.
-      Commit'i impl atar: belgeler analyze'dan temiz çıkınca bir commit, sonra
+- [x] **git extension kurulmaz, branch'i impl açar.** Tek kullanılan işi spec
+      başına branch'ti; hook branch'i bulunulan HEAD'den açıyor, prompt yoluyla
+      atlanabiliyor ve anayasa commit'ine yer bırakmıyordu. spec-kit çekirdeği
+      branch'e bağlı değil (`common.sh` branch'i yalnız bilgi olarak basıyor,
+      feature `feature.json`'dan çözülüyor); Companion'da branch son çare.
+      `specify init --extension git` olmadan extension kurulmuyor (denendi).
+      BL başında ctrl sırayı yönetir: main'e geç, `git pull --ff-only`, anayasa
+      değiştiyse local main'e commit (push yok), ctrl'in verdiği adla branch,
+      ctrl `.git/HEAD`'i okuyup doğrular, sonra specify. Anayasa commit'i BL'nin
+      branch'iyle MR'a gider. Koşul: GitLab'da MR squash kapalı olmalı, yoksa
+      local main `origin/main`'in atası olmaz ve `--ff-only` düşer.
+- [x] **Commit.** Otomatik commit atan yok: git extension kurulmuyor,
+      Companion'ın dört hook'u yalnız `write-context.py` çağırıyor, `events:`
+      düzlemi hiç kullanılmıyor. Commit'i impl atar: anayasa değiştiyse BL
+      başında local main'e bir commit; belgeler analyze'dan temiz çıkınca bir
+      commit, sonra
       her fazın sonunda bir commit. Faz sınırı `tasks.md`'de yazılı;
       Companion'ın dalgaları stock tasks'ta yok, model tahmin ediyor, o yüzden
       sınır faz. Mesaj faz başlığından tek satır, gövdesiz; diff okunmaz,
@@ -270,6 +280,9 @@ açık maddeler metinde `AÇIK` diye duruyor. Kaynak okumaları cc-workspace'te:
       Constitution Check'i yapıyor), "girdiyi aşmalı", "ölçülmemiş adımların
       listesi", "yazıldı ama ölçülmedi". III'te girdi bir kez karşılaştırılır,
       sonra kaynak değildir.
+- [x] git extension kaldırıldı: `bin/devenv` init'ine `--extension git`
+      verilmiyor, `optional_hooks()` yalnız agent-context'i zorunlu yapıyor;
+      branch ve anayasa commit'i impl.md ve ctrl.md'de açık adım oldu.
 - [ ] Gerçek `./install.sh` koşulmadı: kurulu `~/.config/claude/roles` ve
       `~/.config/claude/CLAUDE.md` hâlâ eski metin.
 
