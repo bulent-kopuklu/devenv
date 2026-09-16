@@ -58,8 +58,10 @@
 
 - Sorun, komutun sana sorduğu dahil, ctrl'e gider: bağlamıyla iletir, cevabı
   beklersin.
-- Ölçüm ya da dış davranış doğrulaması gerektiren bir iddia çıkarsa ölçmezsin;
+- Dış bir aracın ya da servisin davranışını doğrulamak gerekiyorsa ölçmezsin;
   soruyu ctrl'e iletirsin.
+- Ürünün kendi sözünü ölçen kanıt kodu (`proof/`) ürünün parçasıdır; onu sen
+  yazar ve koşarsın.
 - Cevabı koşan komut kendi belgesine yazıyorsa iş biter. Yazmıyorsa ve
   arkasından gelen bir adım da yoksa cevabı ilgili belgeye (spec ya da plan)
   kendin eklersin ve nereye eklediğini ctrl'e bildirirsin.

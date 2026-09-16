@@ -53,12 +53,11 @@ Gerekçe: Ürün kodu değiştiğinde kanıtın da değişmesi, kanıtı ürün�
 
 Üretilen artefaktların tek kaynağı spec'tir. Ön çalışma belgeleri, tasarım
 notları ve özellik listeleri spec'in girdisidir; spec yazıldıktan sonra kaynak
-değildir. Hiçbir kontrol onlara sormaz, hiçbir artefakt onlara atıf yapmaz
-(MUST NOT).
+değildir. Spec yazılınca girdiyi eksiksiz taşıdığı bir kez karşılaştırılır;
+sonrasında hiçbir artefakt girdiye atıf yapmaz (MUST NOT).
 
 Bir kararın gerekçesi spec'te yoksa yoktur; başka bir belgede olabileceği
-varsayılamaz. Spec ve plan, girdilerinin taşıdığı bilgiyi aşmalıdır (MUST):
-aşmıyorsa ya girdinin yarısı çöptü ya spec eksik yazıldı, ikisi de kayıttır.
+varsayılamaz.
 
 Gerekçe: İki kaynak arasında senkron tutmak, tek kaynak ile kod arasında senkron
 tutmaktan pahalıdır; üçüncü kaynak onu imkânsız yapar.
@@ -120,14 +119,9 @@ mekanizmasının hatası işlevsel testte görünmez, ancak biri onu kırmaya
 
 ## Geliştirme Akışı ve Kalite Kapıları
 
-- Her spec, plan ve task ilgili olduğu ilkelere geri izlenebilir olmalıdır
-  (MUST); hiçbir ilkeye bağlanamayan iş kapsam dışıdır.
-- Ölçülmemiş adımların listesi, ölçülmüş sonuçlar kadar bir artefakttır ve bu
-  listede olmayan hiçbir şey varsayım değildir. Her madde ne bilinmediğini ve
-  neden önemli olduğunu yazar.
-- "Yazıldı ama ölçülmedi" ayrı bir hâldir: kod derleniyor, birim testi var, ama
-  gerçek ortamda hiç koşmadıysa o iş tamamlanmamıştır. Bir işaret kutusu bunu
-  gösteremez.
+<!-- Projeye özel akış ve kalite kapıları buraya. Ölçülmemiş işin tamam
+     sayılmaması İlke I'de, ilkelere uyumun izi plan'ın Constitution Check'inde
+     durur; burada tekrarlanmaz. -->
 
 ## Governance
 

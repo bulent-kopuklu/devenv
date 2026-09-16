@@ -213,6 +213,9 @@ açık maddeler metinde `AÇIK` diye duruyor. Kaynak okumaları cc-workspace'te:
       `devenv` 0.21.0'ı kuruyor; wiki notları main'e (9fd7ebae, 136 commit
       ileride) göre: 0.21.0 implement task'ları varsayılan olarak kendisi
       yazıyor ve capability kaydetmiyor.
+- [ ] `proof/` ne zaman koşar: her BL'de mi, yalnız spec'inde garanti
+      gereksinimi olan BL'de mi? make'e bilinçli olarak girmiyor; lab
+      gerektiren uzun koşular olabilir.
 - [ ] Rol metinlerindeki çıkarımlar, kullanıcı onayladı ama canlıda
       denenmedi: belirsizlikte ctrl'in clarify koşturması; plan kontrolünün
       üç sorusu (dayanak kanıt mı, anayasa/spec çelişkisi, aynı turdaki kararı
@@ -260,6 +263,13 @@ açık maddeler metinde `AÇIK` diye duruyor. Kaynak okumaları cc-workspace'te:
       dış bileşenin lisansı gerekçede yazılır, ürüne girince sorun
       çıkarabilecek lisans uyarı olarak yazılır. ctrl plan kontrolünde buna
       bakar.
+- [x] Review bulgusu 2 ve 3: iki ölçüm türü ayrıldı — dış aracın davranışını
+      impl ölçmez, ctrl'e sorar; ürünün kendi sözünü ölçen `proof/` kodu
+      ürünün parçası, impl yazar ve koşar. Anayasadan analyze'ın göremeyeceği
+      ya da I'i tekrarlayan maddeler çıktı: ilkeye izlenebilirlik (plan'ın
+      Constitution Check'i yapıyor), "girdiyi aşmalı", "ölçülmemiş adımların
+      listesi", "yazıldı ama ölçülmedi". III'te girdi bir kez karşılaştırılır,
+      sonra kaynak değildir.
 - [ ] Gerçek `./install.sh` koşulmadı: kurulu `~/.config/claude/roles` ve
       `~/.config/claude/CLAUDE.md` hâlâ eski metin.
 
