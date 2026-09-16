@@ -9,7 +9,9 @@ yüklenir; rolün kendi metni oturumun dizininden gelir.
   planı ve kodu yazar.
 - **ctrl** (`<ad>-ctrl/`, git değil): sıradaki adımı başlatır, biten her işi
   kontrol eder, itirazını söyler, impl'in sorularını cevaplar.
-- **İnsan** amacı ve kısıtları verir, ctrl'le çalışır.
+- **İnsan** amacı ve kısıtları verir, ctrl'le çalışır. İlk BL'den önce impl'in
+  reposunda remote'u ekler, iskeleti commit'ler ve main'i bir kez
+  `git push -u origin main` ile gönderir; impl main'e push etmez.
 
 ## Akış
 
@@ -27,7 +29,8 @@ itirazı kapanmadan adım bitmiş sayılmaz.
 
 - impl'in sorusu, komutun sorduğu dahil, her adımda gelebilir. impl onu
   bağlamıyla ctrl'e iletir, ctrl cevaplar.
-- ctrl'in itirazı o adımda kapanır: impl belgeyi düzeltir, ctrl yeniden bakar.
+- ctrl'in itirazı o adımda kapanır: impl belgeyi ya da kodu düzeltir, ctrl
+  yeniden bakar.
   impl katılmıyorsa gerekçesini söyler; karar ctrl'indir.
 
 ## Mesaj ve yazma alanı

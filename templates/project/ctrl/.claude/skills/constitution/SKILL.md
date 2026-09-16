@@ -89,7 +89,8 @@ Değişiklik gerekmiyorsa yazacak bir şey yoktur; gerekiyorsa karar zaten
 anayasanın kendisine giriyor.
 
 Değişiklik gerekiyorsa prompt delta olur: "şu ilkeyi şu gerekçeyle ekle,
-gerisine dokunma." Sonra yukarıdaki 7. ve 8. adımlar yine koşar.
+gerisine dokunma." Delta da kullanıcının onayından geçer: yukarıdaki 4.–8.
+adımlar yine koşar.
 
 Değişiklik ileriye dönüktür. Bitmiş BL'ler yeniden denetlenmez. Yeni ilke
 onlarda bir ihlal yaratıyorsa düzeltmeyi `roadmap.md`'ye ayrı bir BL olarak

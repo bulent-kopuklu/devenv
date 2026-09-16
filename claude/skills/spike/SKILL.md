@@ -65,8 +65,9 @@ taraf kararını ona göre açık bırakır.
 
 ## Önce var olana bak
 
-Spike açmadan önce iki indeksi oku: `<wiki>/spike/INDEX.md` ve wiki'nin
-`README.md`'sindeki alan tablosundan soruya uyan alanın `<wiki>/<alan>/INDEX.md`'si.
+Spike açmadan önce iki indeksi oku: `<wiki>/spike/INDEX.md` ve soruya uyan
+alanın `<wiki>/<alan>/INDEX.md`'si. `<wiki>` wiki'nin `docs/` dizinidir; alanları
+wiki kökündeki `README.md`'nin tablosu listeler.
 Aynı soru bir alan belgesinde ölçülmüş ya da kaynağından okunmuş olabilir;
 `sonuç` sütunu yetiyorsa belgeyi açma. Üç sonuçtan biri çıkar:
 

@@ -68,6 +68,10 @@ ornek/                 not a git repo; nobody runs Claude here
 └── ornek-ctrl/        the reviewer: CLAUDE.md, settings, roadmap.md, skills
 ```
 
+Nothing is committed and no remote is added. Before the first BL, add the
+remote in `ornek-impl`, commit the skeleton and publish main once with
+`git push -u origin main`; after that impl never pushes main.
+
 One session writes (`claude -n ornek-impl`), one reviews (`claude -n ornek-ctrl`);
 they talk over `SendMessage`. impl runs the stock `/speckit-*` commands one
 step at a time and `/speckit-companion-implement`; the reviewer starts each

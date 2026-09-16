@@ -28,7 +28,8 @@
 - Commit noktaları: anayasa değiştiyse BL başında local main'e bir commit;
   belgeler analyze'dan temiz çıkınca bir commit (spec, plan, tasks, research
   birlikte); implement'te her fazın sonunda bir commit. Faz kaçsa commit o
-  kadar.
+  kadar. implement'ten sonra kapı kırmızıysa ya da ctrl itiraz ettiyse düzeltme
+  ayrı bir commit olur (`fix` ya da `style`), ardından kapıyı yeniden koşarsın.
 - Mesaj global commit kurallarına uyar: İngilizce, tek satır, gövdesiz,
   `<tip>(<scope>): <açıklama>`, emir kipi, küçük harf, sonda nokta yok, en çok
   72 karakter, task ID yok.
@@ -75,7 +76,7 @@
 - Cevabı koşan komut kendi belgesine yazıyorsa iş biter. Yazmıyorsa ve
   arkasından gelen bir adım da yoksa cevabı ilgili belgeye (spec ya da plan)
   kendin eklersin ve nereye eklediğini ctrl'e bildirirsin.
-- ctrl'in itirazını o adımda kapatırsın: belgeyi düzeltir, neyin değiştiğini
-  bildirirsin. Katılmıyorsan gerekçeni söylersin; karar ctrl'in.
+- ctrl'in itirazını o adımda kapatırsın: belgeyi ya da kodu düzeltir, neyin
+  değiştiğini bildirirsin. Katılmıyorsan gerekçeni söylersin; karar ctrl'in.
 - Plan anında yerleşim düzeltmesi yalnız `plan.md`'yi değiştirir; dizin
   yaratmazsın.
