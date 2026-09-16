@@ -12,6 +12,7 @@ bu dosya repoyu geliştirene.
 | `bin/newrepo`, `pi/` | git sunucusunda repo açma | laptop, sunucu |
 | `claude/CLAUDE.md` | kullanıcının global CLAUDE.md'si | `$CLAUDE_CONFIG_DIR/CLAUDE.md` |
 | `claude/roles/` | rol metinleri: `protocol`, `ctrl`, `impl` | `$CLAUDE_CONFIG_DIR/roles/` |
+| `claude/constitution-base.md` | anayasanın çekirdeği; denetçi okur, projeye kopyalanmaz | `$CLAUDE_CONFIG_DIR/` |
 | `claude/skills/` | global skill'ler (`spike`, `context: fork`) | `$CLAUDE_CONFIG_DIR/skills/` |
 | `templates/` | projeye kopyalanan şablonlar; `project/` rol dizinlerinin yer tutuculu dosyaları | `~/.local/share/dev-templates/templates` |
 | `lib/` | `lib.mkEnv`: projelerin `flake.nix`'inin kullandığı devshell kütüphanesi | flake input'u |

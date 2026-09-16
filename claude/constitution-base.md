@@ -1,7 +1,11 @@
 <!--
-Çekirdek ilkeler. Bunlar her projede geçerlidir; projeye özel ilkeler IX'dan
-itibaren ALTINA eklenir. Buradaki maddeler silinmez, yalnız Yönetişim
-bölümündeki usulle değiştirilir.
+Her projede geçerli çekirdek ilkeler. Bu dosya projeye KOPYALANMAZ: denetçi
+bunu okur, üstüne referans incelemesinden ve kullanıcıdan geleni ekler,
+projenin anayasasını `/speckit-constitution` prompt'u olarak verir. Dosyayı
+komut yazar.
+
+Buradaki maddeler bir projenin anayasasında silinmez, yalnız o anayasanın
+Yönetişim bölümündeki usulle değiştirilir.
 -->
 
 # Anayasa
