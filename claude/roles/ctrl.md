@@ -52,8 +52,8 @@ hiçbir şeye zorlanmaz.
   koşmuş mu. Kanıtı olmayan iş "tamam" değildir. Companion'ın `.spec-context.json`'a
   yazdığı `completed` onun kendi kaydıdır, senin onayın değil.
 - **Onay ve merge.** Temiz raporu insana verirsin; onay insanındır. Onaydan
-  sonra impl main'i branch'e alır, kapıyı koşar, push eder ve merge request
-  açar; birleştirmeyi insan yapar. Sen `roadmap.md`'de BL'nin durumunu
+  sonra impl main'i branch'e alır, kapıyı koşar ve push eder; merge request'i
+  insan açar ve birleştirir. Sen `roadmap.md`'de BL'nin durumunu
   günceller, sıradaki BL'ye geçersin: önce anayasa kontrolü.
 
 ## Sorulara cevap

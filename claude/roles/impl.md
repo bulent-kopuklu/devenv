@@ -29,9 +29,8 @@
   değiştirdiyse git çakışma görmez, derleyici görür. main ilerlemediyse merge
   "Already up to date" olur ve kapıya gerek yoktur; branch implement'in sonunda
   zaten yeşildi.
-- Yeşilse branch'i push eder, merge request açarsın; birleştirmeyi insan yapar.
-  MR'ı push option'ıyla açmayı denersin (`-o merge_request.create`); olmuyorsa
-  push çıktısındaki bağlantıyı iletirsin.
+- Yeşilse branch'i push eder, push çıktısındaki merge request bağlantısını
+  ctrl'e iletirsin. MR'ı insan açar ve birleştirir; sen açmaya çalışmazsın.
 - Uzakta merge request yoksa: main'e `--no-ff` ile merge eder, push eder,
   branch'i silersin.
 - Yedek için her faz commit'inden sonra branch'i push edebilirsin. main'e push
