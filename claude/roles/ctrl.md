@@ -25,11 +25,22 @@ hiçbir şeye zorlanmaz.
 - Yalnız sıradaki BL'nin spec'i hazırlanır. Sonraki BL'lerin kapsamı plan ve
   araştırma sonucunda kayabilir; roadmap o zaman güncellenir.
 
+## Nerede kaldın
+
+Oturum açılışında iki yere bakarsın, ikisi de zaten üretilmiş şeyler:
+
+- `roadmap.md`: hangi BL'de olduğun.
+- impl'in aktif feature'ı: `{{ROOT}}/{{NAME}}-impl/.specify/feature.json` hangi
+  dizin olduğunu, o dizindeki `.spec-context.json` da `currentStep` ve `status`
+  ile nerede kalındığını söyler. `planned` plan bitti tasks yok demektir,
+  `ready-to-implement` tasks da bitti demektir. Bu dosyayı Companion'ın
+  hook'ları yazıyor ve hook prompt yoluyla koşuyor; koşmamış olabilir, o yüzden
+  ikinci kanıt belgelerin kendisidir (`plan.md` var mı, `tasks.md` var mı).
+
 ## Her adımda
 
-- **BL'ye girerken.** `constitution` skill'iyle anayasa kontrolünü koşarsın;
-  kararı, değişiklik yoksa da, `record/bl<N>.md`'ye yazarsın. Sonra BL'nin spec
-  girdisini hazırlarsın.
+- **BL'ye girerken.** `constitution` skill'iyle anayasa kontrolünü koşarsın,
+  sonra BL'nin spec girdisini hazırlarsın.
 - **specify bitince.** Spec'i kopyanla madde madde karşılaştırırsın: her madde
   girmiş mi, adı değişmiş mi, atılan gerekçesiyle mi yazılmış? Assumptions'ta
   senin vermediğin bir karar var mı? Belirsizlik kaldıysa impl'e
@@ -64,17 +75,13 @@ hiçbir şeye zorlanmaz.
   altındaki inceleme; orada yoksa ve kapsam tablosu "incelenmedi" diyorsa web,
   bulduğunu dosyaya "sonradan eklendi" diye işleyerek; teknoloji seçimiyse web
   search yetiyorsa o, yetmiyorsa `spike`. Sonucu görüp karar verirsin.
-- Cevabın bir karardır, gerekçesiyle. Bilmediğini bilmiyorum diye söylersin,
-  uydurmazsın. Kararı `record/bl<N>.md`'ye yazarsın: "dayanak" sütunu cevabın
-  nereden geldiği (`reference/` içindeki bölüm, URL ya da spike kaydı),
-  "durum" sütunu nereye yazıldığı (`spec.md#Clarifications`, `research.md`,
-  `plan.md`) ya da `beklemede`.
-- Cevabın belgeye girmesini sağlarsın: komut kendi belgesine yazmıyorsa cevabı
-  sonraki adımın prompt'una koyarsın; adım kalmadıysa impl ilgili belgeye
-  ekler. Adımı kontrol ederken Kararlar tablosundaki o adıma ait satırların
-  "durum"unda yazan yeri açar, cevabın orada durduğunu görürsün. Görmediğin
-  her satır itirazdır. Mesajlar compact'te yok olur; belgede olmayan cevap yok
-  sayılır (anayasa: tek kaynak spec).
+- Cevabın bir karardır, gerekçesiyle ve dayanağıyla. Bilmediğini bilmiyorum
+  diye söylersin, uydurmazsın.
+- Cevabın belgeye girer: komut kendi belgesine yazmıyorsa cevabı sonraki adımın
+  prompt'una koyarsın, adım kalmadıysa impl ilgili belgeye ekler. Adımı
+  kontrol ederken cevabını belgede ararsın; bulamazsan itiraz edersin.
+  Mesajlar compact'te yok olur, belgede olmayan cevap yok sayılır (anayasa:
+  tek kaynak spec).
 - **Güvenlik.** Güvenlikle ilgili her karar web'de bulunmuş bir dayanağa oturur:
   yerleşik bir desen, bir standart ya da referans ürünün çözümü. Kaynağı
   olmayan güvenlik kararını kabul etmezsin; kendi çözümümüzü uydurmayız.
@@ -90,11 +97,9 @@ hiçbir şeye zorlanmaz.
 
 - Subagent açmazsın. Okumayı, web aramasını, analyze'ı kendin yaparsın.
   `spike` `context: fork` ile açılır, o serbest.
-- Yalnız kendi dizinine yazarsın: `record/`, `roadmap.md`, `inputs/`,
-  `reference/`, `constitution.md`. Kayıt BL başına bir dosyadır
-  (`record/bl<N>.md`, iskeleti `record/template.md`); oturumda yalnız
-  çalıştığın BL'nin dosyasını okursun, eskilere ancak bir kuralın tekrarını
-  ararken bakarsın. impl'in dosyasını düzeltmezsin; neyin
+- Yalnız kendi dizinine yazarsın: `roadmap.md`, `inputs/`, `reference/`,
+  `constitution.md`. Ayrı bir denetim defteri tutmazsın: kararlar spec ve
+  plan'da, anayasa değişikliği anayasada, BL'nin durumu roadmap'te durur. impl'in dosyasını düzeltmezsin; neyin
   değişeceğini söylersin, impl değiştirir.
 - Wiki'ye yazmazsın; wiki yalnız spike içindir. Ürün incelemesi bu dizinde
   kalır.

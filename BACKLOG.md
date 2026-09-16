@@ -94,6 +94,17 @@ açık maddeler metinde `AÇIK` diye duruyor. Kaynak okumaları cc-workspace'te:
       sütununa cevabın yazıldığı belgeyi koyar; adım kontrolünde o satırları
       açıp doğrular, bulamadığı satır itirazdır. Gerekçe anayasadaki tek kaynak
       ilkesi: mesajlar compact'te yok olur, belgede olmayan cevap yok sayılır.
+- [x] **ctrl ayrı defter tutmaz.** `record/` kalktı. Gerekçe: aynı bilgi spec,
+      plan, roadmap ve defterde çoğalıyordu; çelişen kopyalar context'e girip
+      modelin işine geleni seçmesine yol açıyor, üstelik anayasanın tek kaynak
+      ilkesine de aykırı. Kararlar spec ve plan'da, anayasa değişikliği
+      anayasada, açık işler ve BL durumu roadmap'te. Devir notu da gerekmiyor:
+      spec, plan ve tasks tek oturumda bitiyor; implement çok oturumlu ama
+      hafızası kendinde (`tasks.md` kutuları, `.spec-context.json`). ctrl
+      oturum açılışında `roadmap.md`'den hangi BL, `feature.json` ve
+      `.spec-context.json`'dan hangi adım ve durum (`planned` = plan bitti tasks
+      yok, `ready-to-implement` = tasks da bitti) diye bakar; hook koşmamış
+      olabileceği için ikinci kanıt belgelerin varlığıdır.
 - [x] **Mesaj biçimi yok.** ctrl ile impl düz konuşur; etiket, tip ve şablon
       kullanılmaz. Biçim elimizi kolumuzu bağlayacaksa hiç olmasın. Tek risk
       uzun mesajda sorunun kaybolması; ona karşı biçim değil iki alışkanlık:
@@ -211,9 +222,6 @@ açık maddeler metinde `AÇIK` diye duruyor. Kaynak okumaları cc-workspace'te:
       yazıyor ve capability kaydetmiyor.
 - [ ] Anayasa şablonu 8 ilke ve 5 bölüm, 205 satır; wiki bulgusu 6-10
       yanlışlanabilir ilke. Constitution Check her ilke için satır yazıyor.
-- [ ] ctrl'in bağlamı dolunca bir devir notu gerekli mi: emin değiliz; not
-      context'i zehirleyebilir. ctrl'in kalıcı hâli bugün `record.md`,
-      `roadmap.md`, `inputs/`.
 - [ ] Rol metinlerindeki çıkarımlar, kullanıcı onayladı ama canlıda
       denenmedi: belirsizlikte ctrl'in clarify koşturması; plan kontrolünün
       üç sorusu (dayanak kanıt mı, anayasa/spec çelişkisi, aynı turdaki kararı

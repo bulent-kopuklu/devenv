@@ -27,7 +27,7 @@ pahalı. Sonraki her plan Constitution Check'te ona bakar, analyze MUST ihlalini
 CRITICAL sayar, kaldırmak MAJOR sürümdür.
 
 Bir kural ilk göründüğü BL'de girmez. En az iki BL'de gerektiği görülünce ilke
-adayı olur.
+adayı olur; tekrarı, önceki BL'lerin spec ve plan dosyalarından görürsün.
 
 İlke sayısı yediyi geçmez. Tavana gelindiyse yeni ilke ancak birini çıkararak
 girer.
@@ -84,9 +84,8 @@ yok"tur.
 - Referans üründe görülen ve bütün projeye yayılması gereken bir kural.
 - Önceki BL'de verilmiş bir karar bu BL'de de mecbur hâle geldi.
 
-Kararı `record/bl<N>.md`'ye tek satır yazarsın: "BL2 anayasa kontrolü: değişiklik yok"
-ya da "BL2: şu ilke eklenecek, gerekçe şu". Kontrolü yapıp yapmadığın kayıttan
-görülür.
+Değişiklik gerekmiyorsa yazacak bir şey yoktur; gerekiyorsa karar zaten
+anayasanın kendisine giriyor.
 
 Değişiklik gerekiyorsa prompt delta olur: "şu ilkeyi şu gerekçeyle ekle,
 gerisine dokunma." Sonra yukarıdaki 7. ve 8. adımlar yine koşar.
