@@ -205,14 +205,6 @@ açık maddeler metinde `AÇIK` diye duruyor. Kaynak okumaları cc-workspace'te:
 
 ### Açık
 
-- [x] `constitution-base.md` 5 ilkeye indi (161 satır): I ile II, "Spike" ve
-      "Doğrulama Rejimi" bölümleriyle birlikte tek ilkede; V ile VI birleşti,
-      güvenlik onun sert kolu; doküman dili ilkelikten çıkıp "Ek Kısıtlar"a
-      indi. Bağlayıcı cümleler MUST/SHOULD etiketli, çünkü analyze ilkelerden
-      bu kelimeleri ayıklıyor. Anayasa artık araç ve rol adı taşımıyor:
-      "spike koş" diyordu ama impl'de spike yasak, model kendi yorumunu
-      uydururdu; ölçüm gerektiren iddiada impl ctrl'e soruyor (`impl.md`).
-
 - [ ] Companion implement stock `tasks.md` ile: task ID'leri tanınıyor
       (0.21.0 `task_sync.py:38`, `**` isteğe bağlı); dalga (`⟶ Wait`) ve
       `Files:` satırları yok, paralelleştirme haritası eksik. İlk koşuda
@@ -220,14 +212,10 @@ açık maddeler metinde `AÇIK` diye duruyor. Kaynak okumaları cc-workspace'te:
       `devenv` 0.21.0'ı kuruyor; wiki notları main'e (9fd7ebae, 136 commit
       ileride) göre: 0.21.0 implement task'ları varsayılan olarak kendisi
       yazıyor ve capability kaydetmiyor.
-- [ ] Anayasa şablonu 8 ilke ve 5 bölüm, 205 satır; wiki bulgusu 6-10
-      yanlışlanabilir ilke. Constitution Check her ilke için satır yazıyor.
 - [ ] Rol metinlerindeki çıkarımlar, kullanıcı onayladı ama canlıda
       denenmedi: belirsizlikte ctrl'in clarify koşturması; plan kontrolünün
       üç sorusu (dayanak kanıt mı, anayasa/spec çelişkisi, aynı turdaki kararı
       boşa çıkarma); tasks kontrolü; ctrl.md'deki sürüm kartı.
-- [x] VS Code eklentisi `companion-standard` preset'ini sormadan kuruyor mu:
-      kuruyor, ama zip kurulumda komut düşüyor (devenv bölümündeki madde).
 
 ### Uygulama (2026-09-15)
 
@@ -255,6 +243,15 @@ açık maddeler metinde `AÇIK` diye duruyor. Kaynak okumaları cc-workspace'te:
       taşındı ve `install.sh` onu config'e kuruyor; ctrl'e `reference` ve
       `constitution` skill'leri; `roadmap.md` BL'lere göre; ctrl.md'de anayasa
       adımı, güvenlik kuralı ve wiki'siz cevap yolu.
+- [x] `constitution-base.md` 5 ilkeye indi (161 satır): I ile II, "Spike" ve
+      "Doğrulama Rejimi" bölümleriyle birlikte tek ilkede; V ile VI birleşti,
+      güvenlik onun sert kolu; doküman dili ilkelikten çıkıp "Ek Kısıtlar"a
+      indi. Bağlayıcı cümleler MUST/SHOULD etiketli, çünkü analyze ilkelerden
+      bu kelimeleri ayıklıyor. Anayasa artık araç ve rol adı taşımıyor:
+      "spike koş" diyordu ama impl'de spike yasak, model kendi yorumunu
+      uydururdu; ölçüm gerektiren iddiada impl ctrl'e soruyor (`impl.md`).
+- [x] VS Code eklentisi `companion-standard` preset'ini sormadan kuruyor mu:
+      kuruyor, ama zip kurulumda komut düşüyor (devenv bölümündeki madde).
 - [ ] Gerçek `./install.sh` koşulmadı: kurulu `~/.config/claude/roles` ve
       `~/.config/claude/CLAUDE.md` hâlâ eski metin.
 
