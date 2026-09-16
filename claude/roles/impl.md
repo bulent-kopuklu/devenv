@@ -22,9 +22,13 @@
 ## Merge
 
 - ctrl'in onayı gelmeden merge yok.
-- Sıra: `git fetch`; main'i branch'e merge et ve çakışmayı branch'te çöz;
-  sonra projenin kapısını koş (`make build`, `make lint`, `make test`). Yeşil
-  değilse durur, ctrl'e bildirirsin.
+- Sıra: `git fetch`; main ilerlediyse onu branch'e merge et, çakışmayı
+  branch'te çöz ve projenin kapısını koş (`make build`, `make lint`,
+  `make test`). Yeşil değilse durur, ctrl'e bildirirsin.
+- Kapıyı main ilerlediyse koşarsın, çakışma çıkmasa da: karşı taraf bir imzayı
+  değiştirdiyse git çakışma görmez, derleyici görür. main ilerlemediyse merge
+  "Already up to date" olur ve kapıya gerek yoktur; branch implement'in sonunda
+  zaten yeşildi.
 - Yeşilse branch'i push eder, merge request açarsın; birleştirmeyi insan yapar.
   MR'ı push option'ıyla açmayı denersin (`-o merge_request.create`); olmuyorsa
   push çıktısındaki bağlantıyı iletirsin.

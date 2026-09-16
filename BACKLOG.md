@@ -81,8 +81,11 @@ açık maddeler metinde `AÇIK` diye duruyor. Kaynak okumaları cc-workspace'te:
       Companion'ın yazdığı `completed` onun kendi kaydı, onay değil. Temiz
       rapor insana gider, onay insanın. Onaydan sonra impl main'i branch'e
       alır, `make build/lint/test` koşar, yeşilse push eder ve GitLab merge
-      request açar; birleştirmeyi insan yapar. Uzakta MR yoksa `--no-ff` merge
-      ve push. ctrl roadmap'te durumu günceller. Doğrulanmadı: MR'ı push
+      request açar; birleştirmeyi insan yapar. Kapı yalnız main ilerlediyse
+      koşar, çakışma olsun olmasın; ilerlemediyse gerek yok. Uzakta MR yoksa
+      `--no-ff` merge ve push. MR için `glab` 1.99.0 kuruldu
+      (`home/default.nix`); self-hosted host `glab config set host <host>` ile
+      ya da remote'tan bulunuyor. ctrl roadmap'te durumu günceller. Doğrulanmadı: MR'ı push
       option'ıyla (`-o merge_request.create`) açmak; ilk koşuda görülecek.
 - [x] **Mesaj biçimi yok.** ctrl ile impl düz konuşur; etiket, tip ve şablon
       kullanılmaz. Biçim elimizi kolumuzu bağlayacaksa hiç olmasın. Tek risk
