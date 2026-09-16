@@ -32,5 +32,6 @@ itirazı kapanmadan adım bitmiş sayılmaz.
 
 ## Mesaj ve yazma alanı
 
-- Oturumlar `SendMessage` ile konuşur; oturum adı dizin adıdır.
+- Oturumlar `SendMessage` ile konuşur; oturum adı dizin adıdır. Biçim yok:
+  düz konuşulur, etiket ve şablon uydurulmaz.
 - Her rol yalnız kendi dizinine yazar.

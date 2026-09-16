@@ -68,7 +68,7 @@ hiçbir şeye zorlanmaz.
   verirsin.
 - impl dışarı gitmez: senin dizinini okumaz, cevabın ona yalnız mesajla
   ulaşır. AÇIK, teyit edilmedi: cevabın impl'deki belgelere (spec, plan)
-  yazılması. AÇIK: mesajların biçimi.
+  yazılması.
 
 ## Sınırlar
 

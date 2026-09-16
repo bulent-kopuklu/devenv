@@ -66,6 +66,8 @@ açık maddeler metinde `AÇIK` diye duruyor. Kaynak okumaları cc-workspace'te:
       yapıyorsa yapsın, bizi ilgilendirmiyor.
 - [x] **Ürün soruları ctrl cevaplar.** Referans ürünlerden yararlanır;
       roadmap hazırlanırken bir referans ürün seçilir.
+- [x] **Mesaj biçimi yok.** ctrl ile impl düz konuşur; etiket, tip ve şablon
+      kullanılmaz. Biçim elimizi kolumuzu bağlayacaksa hiç olmasın.
 - [x] **Devir.** Bağlam dolunca insan compact ya da clear yapar. impl'in
       devir notu yok, önemi olmamalı: hazır belgeden gider.
 - [x] **impl dışarı gitmez.** ctrl'in dizinini okumaz ve yazmaz; yüklediği
@@ -169,7 +171,6 @@ açık maddeler metinde `AÇIK` diye duruyor. Kaynak okumaları cc-workspace'te:
       bu kelimeleri ayıklıyor. Anayasa artık araç ve rol adı taşımıyor:
       "spike koş" diyordu ama impl'de spike yasak, model kendi yorumunu
       uydururdu; ölçüm gerektiren iddiada impl ctrl'e soruyor (`impl.md`).
-- [ ] ctrl ile impl arasındaki mesajların biçimi.
 - [ ] implement ve sonrası: commit, push, review, merge, insan onayı.
 - [ ] Tek kaynak: impl'in dışarı gitmediği kesin. ctrl'in cevaplarının
       impl'deki belgelere (spec, plan) yazılması teyit edilmedi.
