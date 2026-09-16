@@ -353,6 +353,18 @@ açık maddeler metinde `AÇIK` diye duruyor. Kaynak okumaları cc-workspace'te:
       stock varsayıyor. Muhtemel düzeltme, denenmedi: Companion'ı zip'ten
       `--force` ile yeniden kur, sonra `specify preset remove companion-standard`;
       sıra ters olursa VS Code preset'i geri kurar.
+- [ ] **git init değişecek** (dbaas denemesi, 2026-09-16):
+      - Exclude'a ürün dosyaları da giriyor (`CLAUDE.md`, `.gitignore`,
+        `.envrc`, `.golangci.yml`, `rustfmt.toml`, `.claude/rules/`);
+        `git status`'ta görünmedikleri için commit'lenmeleri unutuluyor.
+        Makineye özel olanlar yalnız `CLAUDE.local.md`,
+        `.claude/settings.local.json`, `.direnv/`.
+      - Remote ve var olan geçmiş hesaba katılmıyor: şirket reposu
+        (GitLab şablonu) pi'ye aynalanıp impl onun main'ine oturtuluyor, elle.
+      - impl'in rolünün `CLAUDE.local.md`'den geldiği kurulum çıktısında
+        söylenmiyor.
+      - `dbaas-ctrl/` hiçbir repoda değil; başka makinede `devenv create .`
+        boş ctrl üretir.
 - [ ] Repo adı `devenv`, iç adlar hâlâ `dev-templates`: yerel dizin,
       `DEV_TEMPLATES_REF`, flake input adı.
 - [ ] README'deki "Claude Code skill" bölümü `skills/devenv`'i anlatıyor; repoda
