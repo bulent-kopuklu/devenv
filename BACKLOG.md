@@ -76,6 +76,14 @@ açık maddeler metinde `AÇIK` diye duruyor. Kaynak okumaları cc-workspace'te:
       Companion'ın dalgaları stock tasks'ta yok, model tahmin ediyor, o yüzden
       sınır faz. Mesaj faz başlığından tek satır, gövdesiz; diff okunmaz,
       sonradan toparlama ve geçmiş düzeltme yok.
+- [x] **implement sonrası.** implement bitince ctrl diff'i kontrol eder:
+      task'lar, gereksinimler, anayasa, testlerin koştuğunun kanıtı.
+      Companion'ın yazdığı `completed` onun kendi kaydı, onay değil. Temiz
+      rapor insana gider, onay insanın. Onaydan sonra impl main'i branch'e
+      alır, `make build/lint/test` koşar, yeşilse push eder ve GitLab merge
+      request açar; birleştirmeyi insan yapar. Uzakta MR yoksa `--no-ff` merge
+      ve push. ctrl roadmap'te durumu günceller. Doğrulanmadı: MR'ı push
+      option'ıyla (`-o merge_request.create`) açmak; ilk koşuda görülecek.
 - [x] **Mesaj biçimi yok.** ctrl ile impl düz konuşur; etiket, tip ve şablon
       kullanılmaz. Biçim elimizi kolumuzu bağlayacaksa hiç olmasın. Tek risk
       uzun mesajda sorunun kaybolması; ona karşı biçim değil iki alışkanlık:
@@ -183,8 +191,6 @@ açık maddeler metinde `AÇIK` diye duruyor. Kaynak okumaları cc-workspace'te:
       bu kelimeleri ayıklıyor. Anayasa artık araç ve rol adı taşımıyor:
       "spike koş" diyordu ama impl'de spike yasak, model kendi yorumunu
       uydururdu; ölçüm gerektiren iddiada impl ctrl'e soruyor (`impl.md`).
-- [ ] implement sonrası: push, review, merge, insan onayı. Commit karara
-      bağlandı, gerisi açık.
 - [ ] Tek kaynak: impl'in dışarı gitmediği kesin. ctrl'in cevaplarının
       impl'deki belgelere (spec, plan) yazılması teyit edilmedi.
 - [ ] Companion implement stock `tasks.md` ile: task ID'leri tanınıyor

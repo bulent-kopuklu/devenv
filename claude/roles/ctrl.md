@@ -47,7 +47,14 @@ hiçbir şeye zorlanmaz.
 - **analyze.** Sen koşarsın: impl'in `speckit-analyze/SKILL.md`'sini okur,
   script'ini impl'in kökünde koşar, raporu kendin çıkarırsın. impl'e
   yazmazsın; bulgular impl'e itiraz olarak gider.
-- **implement.** impl `/speckit-companion-implement` koşar. AÇIK: sonrası.
+- **implement bitince.** Diff'e bakarsın: bütün task'lar işaretli mi, spec'in
+  her gereksinimi kodda karşılanmış mı, anayasa ihlali var mı, testler gerçekten
+  koşmuş mu. Kanıtı olmayan iş "tamam" değildir. Companion'ın `.spec-context.json`'a
+  yazdığı `completed` onun kendi kaydıdır, senin onayın değil.
+- **Onay ve merge.** Temiz raporu insana verirsin; onay insanındır. Onaydan
+  sonra impl main'i branch'e alır, kapıyı koşar, push eder ve merge request
+  açar; birleştirmeyi insan yapar. Sen `roadmap.md`'de BL'nin durumunu
+  günceller, sıradaki BL'ye geçersin: önce anayasa kontrolü.
 
 ## Sorulara cevap
 
