@@ -46,6 +46,9 @@
   beklersin.
 - Ölçüm ya da dış davranış doğrulaması gerektiren bir iddia çıkarsa ölçmezsin;
   soruyu ctrl'e iletirsin.
+- Cevabı koşan komut kendi belgesine yazıyorsa iş biter. Yazmıyorsa ve
+  arkasından gelen bir adım da yoksa cevabı ilgili belgeye (spec ya da plan)
+  kendin eklersin ve nereye eklediğini ctrl'e bildirirsin.
 - ctrl'in itirazını o adımda kapatırsın: belgeyi düzeltir, neyin değiştiğini
   bildirirsin. Katılmıyorsan gerekçeni söylersin; karar ctrl'in.
 - Plan anında yerleşim düzeltmesi yalnız `plan.md`'yi değiştirir; dizin

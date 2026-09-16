@@ -87,6 +87,13 @@ açık maddeler metinde `AÇIK` diye duruyor. Kaynak okumaları cc-workspace'te:
       git.vmind.com.tr'ye giriş yapıyor (klasik token, `api` scope), ama MR'ı
       CLI'dan açmak denendi ve yürümedi; şimdilik elle açılıyor. ctrl roadmap'te durumu günceller. Doğrulanmadı: MR'ı push
       option'ıyla (`-o merge_request.create`) açmak; ilk koşuda görülecek.
+- [x] **Tek kaynak.** impl dışarı gitmez. ctrl'in cevabı da belgeye girer:
+      komut kendi belgesine yazıyorsa iş biter, yazmıyorsa cevap sonraki adımın
+      prompt'una konur, adım kalmadıysa impl ilgili belgeye ekler. ctrl kararı
+      `record/bl<N>.md`'ye yazarken "dayanak" sütununa kaynağı, "durum"
+      sütununa cevabın yazıldığı belgeyi koyar; adım kontrolünde o satırları
+      açıp doğrular, bulamadığı satır itirazdır. Gerekçe anayasadaki tek kaynak
+      ilkesi: mesajlar compact'te yok olur, belgede olmayan cevap yok sayılır.
 - [x] **Mesaj biçimi yok.** ctrl ile impl düz konuşur; etiket, tip ve şablon
       kullanılmaz. Biçim elimizi kolumuzu bağlayacaksa hiç olmasın. Tek risk
       uzun mesajda sorunun kaybolması; ona karşı biçim değil iki alışkanlık:
@@ -194,8 +201,7 @@ açık maddeler metinde `AÇIK` diye duruyor. Kaynak okumaları cc-workspace'te:
       bu kelimeleri ayıklıyor. Anayasa artık araç ve rol adı taşımıyor:
       "spike koş" diyordu ama impl'de spike yasak, model kendi yorumunu
       uydururdu; ölçüm gerektiren iddiada impl ctrl'e soruyor (`impl.md`).
-- [ ] Tek kaynak: impl'in dışarı gitmediği kesin. ctrl'in cevaplarının
-      impl'deki belgelere (spec, plan) yazılması teyit edilmedi.
+
 - [ ] Companion implement stock `tasks.md` ile: task ID'leri tanınıyor
       (0.21.0 `task_sync.py:38`, `**` isteğe bağlı); dalga (`⟶ Wait`) ve
       `Files:` satırları yok, paralelleştirme haritası eksik. İlk koşuda

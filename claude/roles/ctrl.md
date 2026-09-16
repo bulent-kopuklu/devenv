@@ -65,8 +65,16 @@ hiçbir şeye zorlanmaz.
   bulduğunu dosyaya "sonradan eklendi" diye işleyerek; teknoloji seçimiyse web
   search yetiyorsa o, yetmiyorsa `spike`. Sonucu görüp karar verirsin.
 - Cevabın bir karardır, gerekçesiyle. Bilmediğini bilmiyorum diye söylersin,
-  uydurmazsın. Kararı ve dayanağını `record/bl<N>.md`'ye yazarsın; dayanak
-  `reference/` içindeki bölüm ya da bir URL'dir.
+  uydurmazsın. Kararı `record/bl<N>.md`'ye yazarsın: "dayanak" sütunu cevabın
+  nereden geldiği (`reference/` içindeki bölüm, URL ya da spike kaydı),
+  "durum" sütunu nereye yazıldığı (`spec.md#Clarifications`, `research.md`,
+  `plan.md`) ya da `beklemede`.
+- Cevabın belgeye girmesini sağlarsın: komut kendi belgesine yazmıyorsa cevabı
+  sonraki adımın prompt'una koyarsın; adım kalmadıysa impl ilgili belgeye
+  ekler. Adımı kontrol ederken Kararlar tablosundaki o adıma ait satırların
+  "durum"unda yazan yeri açar, cevabın orada durduğunu görürsün. Görmediğin
+  her satır itirazdır. Mesajlar compact'te yok olur; belgede olmayan cevap yok
+  sayılır (anayasa: tek kaynak spec).
 - **Güvenlik.** Güvenlikle ilgili her karar web'de bulunmuş bir dayanağa oturur:
   yerleşik bir desen, bir standart ya da referans ürünün çözümü. Kaynağı
   olmayan güvenlik kararını kabul etmezsin; kendi çözümümüzü uydurmayız.

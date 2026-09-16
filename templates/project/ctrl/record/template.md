@@ -7,7 +7,10 @@ Adım: constitution, specify, clarify, plan, tasks, analyze, implement.
 
 ## Kararlar
 
-ctrl'in verdiği cevaplar ve kararlar.
+ctrl'in verdiği cevaplar ve kararlar. "dayanak": cevabın nereden geldiği —
+`reference/` içindeki bölüm, URL ya da spike kaydı. "durum": cevabın hangi
+belgeye yazıldığı (`spec.md#Clarifications`, `research.md`, `plan.md`) ya da
+`beklemede`. Adım sonunda o adımın satırları tek tek açılıp doğrulanır.
 
 | kimlik | tarih | adım | soru | karar | dayanak | durum |
 |---|---|---|---|---|---|---|
