@@ -66,6 +66,16 @@ açık maddeler metinde `AÇIK` diye duruyor. Kaynak okumaları cc-workspace'te:
       yapıyorsa yapsın, bizi ilgilendirmiyor.
 - [x] **Ürün soruları ctrl cevaplar.** Referans ürünlerden yararlanır;
       roadmap hazırlanırken bir referans ürün seçilir.
+- [x] **Commit.** Otomatik commit atan yok: git extension'ın 16 commit hook'u
+      `optional: true` ve `git-config.yml`'de `auto_commit.default: false`,
+      üstüne devenv onları `enabled: false` yapıyor; zorunlu iki hook branch
+      açıyor ve var olan repoda initialize atlıyor; Companion'ın dört hook'u
+      yalnız `write-context.py` çağırıyor; `events:` düzlemi hiç kullanılmıyor.
+      Commit'i impl atar: belgeler analyze'dan temiz çıkınca bir commit, sonra
+      her fazın sonunda bir commit. Faz sınırı `tasks.md`'de yazılı;
+      Companion'ın dalgaları stock tasks'ta yok, model tahmin ediyor, o yüzden
+      sınır faz. Mesaj faz başlığından tek satır, gövdesiz; diff okunmaz,
+      sonradan toparlama ve geçmiş düzeltme yok.
 - [x] **Mesaj biçimi yok.** ctrl ile impl düz konuşur; etiket, tip ve şablon
       kullanılmaz. Biçim elimizi kolumuzu bağlayacaksa hiç olmasın. Tek risk
       uzun mesajda sorunun kaybolması; ona karşı biçim değil iki alışkanlık:
@@ -173,7 +183,8 @@ açık maddeler metinde `AÇIK` diye duruyor. Kaynak okumaları cc-workspace'te:
       bu kelimeleri ayıklıyor. Anayasa artık araç ve rol adı taşımıyor:
       "spike koş" diyordu ama impl'de spike yasak, model kendi yorumunu
       uydururdu; ölçüm gerektiren iddiada impl ctrl'e soruyor (`impl.md`).
-- [ ] implement ve sonrası: commit, push, review, merge, insan onayı.
+- [ ] implement sonrası: push, review, merge, insan onayı. Commit karara
+      bağlandı, gerisi açık.
 - [ ] Tek kaynak: impl'in dışarı gitmediği kesin. ctrl'in cevaplarının
       impl'deki belgelere (spec, plan) yazılması teyit edilmedi.
 - [ ] Companion implement stock `tasks.md` ile: task ID'leri tanınıyor
