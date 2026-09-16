@@ -51,12 +51,11 @@ açık maddeler metinde `AÇIK` diye duruyor. Kaynak okumaları cc-workspace'te:
       yazmıyor; impl koşsa yazan kendi işini denetlemiş olur. ctrl impl'deki
       `.claude/skills/speckit-analyze/SKILL.md`'yi okuyup impl'in feature
       dizinine uygular; bulgular impl'e itiraz olarak gider.
-- [ ] **ctrl'in cevap yolu, maliyete göre.** Bilmediği soruda önce kendi
+- [x] **ctrl'in cevap yolu, maliyete göre.** Bilmediği soruda önce kendi
       dizinindeki inceleme; ürün sorusuysa referans ürünün ve rakiplerin ne
       yaptığı; teknoloji seçimiyse web search yetiyorsa o, yetmiyorsa spike.
       Sonucu görüp karar verir. ctrl wiki'yi okumaz; spike kendi eski
-      kayıtlarına wiki'de kendisi bakar. 2026-09-15'te değişti ("önce wiki"
-      kalktı); ctrl.md güncellenecek.
+      kayıtlarına wiki'de kendisi bakar.
 - [x] **Subagent.** ctrl subagent açmaz. Spike `context: fork` ile açılır,
       bu kabul; fork kendi içinde ajan açmaz. Kural impl için geçerli değil:
       spec-kit ve Companion kendi ajanlarını kullanır, limiti tükettikleri
@@ -105,7 +104,7 @@ açık maddeler metinde `AÇIK` diye duruyor. Kaynak okumaları cc-workspace'te:
       şu an kurulu sürüme göre hazırlanır. `/ctrl-upgrade` (proje skill'i,
       global değil) ve davranış kartının yeri sonraki faz; projelerin
       spec-kit sürümleri farklı olabilir.
-- [ ] **Roadmap nasıl hazırlanır.** Rol metnine henüz girmedi.
+- [x] **Roadmap nasıl hazırlanır.** `reference` skill'i bunu taşıyor.
   1. ctrl seninle konuşur: ne yapıyoruz, kimin için, mecbur kullanacağımız
      teknoloji ve kısıt var mı. "Bu iş yapılır mı, kime hitap ediyor"
      sorulmaz.
@@ -129,11 +128,11 @@ açık maddeler metinde `AÇIK` diye duruyor. Kaynak okumaları cc-workspace'te:
   - Biçim belki global bir skill. Örnek: claude-forge'un `/product`'ı
     ("önce liste, onay, sonra analiz"; bulgu URL'li, yorum ayrı); müşteri
     ve pazar kısmı alınmaz.
-- [ ] **Güvenlik kararları, ctrl'in kuralı.** Güvenlikle ilgili her karar web
+- [x] **Güvenlik kararları, ctrl'in kuralı.** Güvenlikle ilgili her karar web
       search'e dayanır. 2026'da çözülmemiş bir şey yapmıyoruz; kendi
       kendimize çözüm uydurmayız, neredeyse her şeyin deseni var. Referans
       araştırmasında ve plan kontrolünde güvenlik çözümlerine özellikle
-      odaklanılır. Rol metnine henüz girmedi.
+      odaklanılır.
 - [x] **Wiki yalnız spike içindir.** Spike sonucu ve spike sırasında
       kullanılan ya da öğrenilen kurulumlar oraya yazılır: nasıl kurulduğu,
       VM yaratıldıysa nasıl ve hangi image'larla. Bir daha bakan her şeyi
@@ -142,14 +141,29 @@ açık maddeler metinde `AÇIK` diye duruyor. Kaynak okumaları cc-workspace'te:
       `CLAUDE.md`'nin wiki bölümü buna göre daraldı; wiki'nin kendisine
       (README, mevcut belgeler) dokunulmadı.
 
+- [x] **ctrl'in skill'leri.** `reference` ve `constitution`, ctrl'in dizininde
+      proje skill'i olarak (`.claude/skills/`). Global değil: skill'in
+      description'ı her oturumda context'te durur, global olsa impl de görürdü.
+      Bedeli, metnin proje proje eskimesi; güncelleme `devenv update`'e kalıyor.
+      Skill gövdesi yalnız çağrılınca yükleniyor; ikisi de fork değil, çünkü
+      kullanıcıyla konuşuyorlar.
+- [x] **Anayasa akışı.** Hazır anayasa projeye kopyalanmaz; `/speckit-constitution`
+      var olanı yükleyip şablonla harmanlıyor ve üzerine yazıyor, neyin kalacağına
+      model karar veriyor. Çekirdek `$CLAUDE_CONFIG_DIR/constitution-base.md`'de;
+      ctrl onu okur, referans incelemesinden ve insandan geleni ekler, taslağı
+      onaya sunar, impl komutu koşar, ctrl sonucu kendi kopyasıyla karşılaştırır.
+      Kural: bir kural anayasaya ancak bütün BL'leri bağlıyorsa, ihlali
+      gösterilebiliyorsa ve var olan ilkeyle çelişmiyorsa girer; ilk göründüğü
+      BL'de girmez, iki BL'de gerekince girer; tavan 5-7 ilke; teknoloji ve
+      platform kısıtları ilkelere değil "Ek Kısıtlar"a; MUST ihlali CRITICAL,
+      sert bağlamayacaksan SHOULD; her ilkenin yanında etki cümlesi. Her BL
+      girişinde tetikleyici listesi koşulur, karar `record.md`'ye yazılır.
+      Değişiklik ileriye dönüktür. Sync Impact Report commit'ten önce silinir.
+
 ### Açık
 
-- [ ] Referans araştırmasının biçimi: global skill mi, adı, çıkarım
-      dosyasının bölümleri, ctrl'in dizinindeki yeri. Öneri, cevaplanmadı:
-      dosya neyin incelendiğini (kaynak, sürüm, başlık) yazar ve her
-      başlığı "incelendi, yok" ya da "incelenmedi" diye işaretler, çünkü
-      okuyan ajan ikisini ayıramıyor; ctrl her cevabın dayanağını
-      `record.md`'ye yazar, yazdığını kullanıp kullanmadığı görülsün.
+- [ ] `constitution-base.md` 8 ilke ve 205 satır; tavan 5-7. Taşındı ama
+      kısaltılmadı.
 - [ ] ctrl ile impl arasındaki mesajların biçimi.
 - [ ] implement ve sonrası: commit, push, review, merge, insan onayı.
 - [ ] Tek kaynak: impl'in dışarı gitmediği kesin. ctrl'in cevaplarının
@@ -195,6 +209,10 @@ açık maddeler metinde `AÇIK` diye duruyor. Kaynak okumaları cc-workspace'te:
       yasak, `record.md` gösterilmiyor. `da39d57`, `0a1b7fd`
 - [x] Global `CLAUDE.md`'nin wiki kuralından proje adı çıktı: "dağıtılan araç
       (kendi reposunun işi)". `16b319b`
+- [x] Anayasa `bin/devenv`'den kalktı, çekirdek `claude/constitution-base.md`'ye
+      taşındı ve `install.sh` onu config'e kuruyor; ctrl'e `reference` ve
+      `constitution` skill'leri; `roadmap.md` BL'lere göre; ctrl.md'de anayasa
+      adımı, güvenlik kuralı ve wiki'siz cevap yolu.
 - [ ] Gerçek `./install.sh` koşulmadı: kurulu `~/.config/claude/roles` ve
       `~/.config/claude/CLAUDE.md` hâlâ eski metin.
 
