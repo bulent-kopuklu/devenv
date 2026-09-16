@@ -86,7 +86,7 @@ check("yeni: impl ctrl'e yazamaz, ctrl'i okuyamaz",
       and str(ctrl) not in ls.get("additionalDirectories", []))
 check("yeni: impl spike cagiramaz", "Skill(spike)" in ls["deny"] and "Skill(spike *)" in ls["deny"])
 check("yeni: impl'in yuklediklerinde ctrl'in yolu yok",
-      str(ctrl) not in (impl / "CLAUDE.local.md").read_text() and "record.md" not in (root / "CLAUDE.md").read_text())
+      str(ctrl) not in (impl / "CLAUDE.local.md").read_text())
 excl = (impl / ".git/info/exclude").read_text()
 check("yeni: yerel dosyalar exclude'da",
       all(f in excl for f in ("CLAUDE.local.md", ".claude/settings.local.json")))

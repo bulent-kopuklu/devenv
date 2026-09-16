@@ -53,8 +53,9 @@ açık maddeler metinde `AÇIK` diye duruyor. Kaynak okumaları cc-workspace'te:
       dizinine uygular; bulgular impl'e itiraz olarak gider.
 - [x] **ctrl'in cevap yolu, maliyete göre.** Bilmediği soruda önce kendi
       dizinindeki inceleme; ürün sorusuysa referans ürünün ve rakiplerin ne
-      yaptığı; teknoloji seçimiyse web search yetiyorsa o, yetmiyorsa spike.
-      Sonucu görüp karar verir. ctrl wiki'yi okumaz; spike kendi eski
+      yaptığı. Teknoloji seçimi kaynaklı incelemedir, web yeter; davranış
+      iddiası (performans, sınır, garanti) ölçüm ister, spike. Sonucu görüp
+      karar verir. ctrl wiki'yi okumaz; spike kendi eski
       kayıtlarına wiki'de kendisi bakar.
 - [x] **Subagent.** ctrl subagent açmaz. Spike `context: fork` ile açılır,
       bu kabul; fork kendi içinde ajan açmaz. Kural impl için geçerli değil:
@@ -76,23 +77,22 @@ açık maddeler metinde `AÇIK` diye duruyor. Kaynak okumaları cc-workspace'te:
       Companion'ın dalgaları stock tasks'ta yok, model tahmin ediyor, o yüzden
       sınır faz. Mesaj faz başlığından tek satır, gövdesiz; diff okunmaz,
       sonradan toparlama ve geçmiş düzeltme yok.
-- [x] **implement sonrası.** implement bitince ctrl diff'i kontrol eder:
-      task'lar, gereksinimler, anayasa, testlerin koştuğunun kanıtı.
-      Companion'ın yazdığı `completed` onun kendi kaydı, onay değil. Temiz
-      rapor insana gider, onay insanın. Onaydan sonra impl main'i branch'e
-      alır, `make build/lint/test` koşar, yeşilse push eder ve GitLab merge
-      push eder; merge request'i insan açar ve birleştirir. Kapı yalnız main
-      ilerlediyse koşar, çakışma olsun olmasın; ilerlemediyse gerek yok.
-      Uzakta MR yoksa `--no-ff` merge ve push. `glab` 1.99.0 kuruldu ve
-      git.vmind.com.tr'ye giriş yapıyor (klasik token, `api` scope), ama MR'ı
-      CLI'dan açmak denendi ve yürümedi; şimdilik elle açılıyor. ctrl roadmap'te durumu günceller. Doğrulanmadı: MR'ı push
-      option'ıyla (`-o merge_request.create`) açmak; ilk koşuda görülecek.
+- [x] **implement sonrası.** implement bitince impl `make build`, `make lint`,
+      `make test` koşar ve sonuçlarını ctrl'e iletir; ctrl onlara ve
+      `git diff`'e bakar: task'lar, gereksinimler, anayasa. Companion'ın
+      yazdığı `completed` onun kendi kaydı, onay değil. Temiz rapor insana
+      gider, onay insanın ve impl'e onu ctrl iletir. Onaydan sonra impl
+      `git fetch` yapar; `origin/main` ilerlediyse branch'e alır ve kapıyı
+      yeniden koşar, push eder, MR bağlantısını iletir. MR'ı insan açar ve
+      birleştirir; impl main'e hiç push etmez. Birleşince impl main'i günceller,
+      ctrl roadmap'i işler. `glab` 1.99.0 kurulu ve git.vmind.com.tr'ye giriş
+      yapıyor (klasik token, `api` scope), ama MR'ı CLI'dan açmak yürümedi;
+      MR elle açılıyor.
 - [x] **Tek kaynak.** impl dışarı gitmez. ctrl'in cevabı da belgeye girer:
       komut kendi belgesine yazıyorsa iş biter, yazmıyorsa cevap sonraki adımın
-      prompt'una konur, adım kalmadıysa impl ilgili belgeye ekler. ctrl kararı
-      `record/bl<N>.md`'ye yazarken "dayanak" sütununa kaynağı, "durum"
-      sütununa cevabın yazıldığı belgeyi koyar; adım kontrolünde o satırları
-      açıp doğrular, bulamadığı satır itirazdır. Gerekçe anayasadaki tek kaynak
+      prompt'una konur, adım kalmadıysa impl ilgili belgeye ekler. ctrl adımı
+      kontrol ederken cevabını belgede arar, bulamazsa itiraz eder. Gerekçe
+      anayasadaki tek kaynak
       ilkesi: mesajlar compact'te yok olur, belgede olmayan cevap yok sayılır.
 - [x] **ctrl ayrı defter tutmaz.** `record/` kalktı. Gerekçe: aynı bilgi spec,
       plan, roadmap ve defterde çoğalıyordu; çelişen kopyalar context'e girip
@@ -113,7 +113,7 @@ açık maddeler metinde `AÇIK` diye duruyor. Kaynak okumaları cc-workspace'te:
       devir notu yok, önemi olmamalı: hazır belgeden gider.
 - [x] **impl dışarı gitmez.** ctrl'in dizinini okumaz ve yazmaz; yüklediği
       dosyalarda (`CLAUDE.local.md`, üst dizinin `CLAUDE.md`'si) ctrl'in yolu
-      ve `record.md`'si yok, yalnız ctrl'in oturum adı. Wiki global kuraldır,
+      yok, yalnız ctrl'in oturum adı. Wiki global kuraldır,
       bu kararın dışında.
 - [x] **impl'in gördüğü metin yalnız yönlendirme.** protocol.md ve impl.md'de
       yalnız komutlar, adımı kimin başlattığı, sorunun ve itirazın yolu,
@@ -200,7 +200,8 @@ açık maddeler metinde `AÇIK` diye duruyor. Kaynak okumaları cc-workspace'te:
       BL'de girmez, iki BL'de gerekince girer; tavan 5-7 ilke; teknoloji ve
       platform kısıtları ilkelere değil "Ek Kısıtlar"a; MUST ihlali CRITICAL,
       sert bağlamayacaksan SHOULD; her ilkenin yanında etki cümlesi. Her BL
-      girişinde tetikleyici listesi koşulur, karar `record.md`'ye yazılır.
+      girişinde tetikleyici listesi koşulur; değişiklik yoksa yazılacak bir
+      şey yok, varsa anayasaya girer.
       Değişiklik ileriye dönüktür. Sync Impact Report commit'ten önce silinir.
 
 ### Açık
@@ -228,15 +229,14 @@ açık maddeler metinde `AÇIK` diye duruyor. Kaynak okumaları cc-workspace'te:
 - [x] Çelişen eski maddeler ve "Rol metinleri" bölümü düştü. `f721362`
 - [x] `claude/roles/{protocol,ctrl,impl}.md` baştan yazıldı; açıklar metinde
       `AÇIK`. README ve devenv `CLAUDE.md` akışa göre. `a7d12a1`
-- [x] `templates/project/`: ctrl'e `roadmap.md`; `record.md` Kararlar,
-      İtirazlar, Açık; impl'e ctrl'in roadmap'ini ve `inputs/`'unu okuma
+- [x] `templates/project/`: ctrl'e `roadmap.md` ve (sonra kalkan) `record.md`; impl'e ctrl'in roadmap'ini ve `inputs/`'unu okuma
       yasağı; testler 35/35. `b6c3cba`
 - [x] Ürün soruları ctrl'de, roadmap'te referans ürün; research denemesi ve
       impl.md'deki ajan satırı çıktı; impl'in `handoff.md`'si şablondan,
       exclude'dan ve rol metninden kalktı. protocol.md ve impl.md yalnız
       yönlendirmeye indi, gerisi ctrl.md'ye taşındı. impl'in ctrl'e erişimi
       kalktı: `additionalDirectories` yok, `Read` ctrl'in bütün dizinine
-      yasak, `record.md` gösterilmiyor. `da39d57`, `0a1b7fd`
+      yasak. `da39d57`, `0a1b7fd`
 - [x] Global `CLAUDE.md`'nin wiki kuralından proje adı çıktı: "dağıtılan araç
       (kendi reposunun işi)". `16b319b`
 - [x] Anayasa `bin/devenv`'den kalktı, çekirdek `claude/constitution-base.md`'ye

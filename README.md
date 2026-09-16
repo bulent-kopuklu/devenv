@@ -65,7 +65,7 @@ devenv create ornek go rust --speckit
 ornek/                 not a git repo; nobody runs Claude here
 ├── CLAUDE.md          imports the shared protocol
 ├── ornek-impl/        the product repo (remote: ornek.git); everything above happens here
-└── ornek-ctrl/        the reviewer: CLAUDE.md, settings, record.md, roadmap.md, skills
+└── ornek-ctrl/        the reviewer: CLAUDE.md, settings, roadmap.md, skills
 ```
 
 One session writes (`claude -n ornek-impl`), one reviews (`claude -n ornek-ctrl`);

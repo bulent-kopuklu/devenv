@@ -26,8 +26,8 @@ Kurulumu `install.sh` yapar ve kopyalar, symlink kurmaz. Bu makinede
 ```
 <ad>/            git değil; Claude burada çalışmaz; CLAUDE.md protokolü import eder
 ├── <ad>-impl/   ürün, tek git reposu (remote <ad>.git); yazan oturum
-└── <ad>-ctrl/   denetçi; git değil; yalnız kendi dizinine yazar (record.md,
-                 roadmap.md, inputs/), karar verir
+└── <ad>-ctrl/   denetçi; git değil; yalnız kendi dizinine yazar (roadmap.md,
+                 inputs/, reference/), karar verir
 ```
 
 ## İlkeler
@@ -50,7 +50,7 @@ Kurulumu `install.sh` yapar ve kopyalar, symlink kurmaz. Bu makinede
 - **Ürünsüz.** Şablonlara ve rol metinlerine hiçbir projenin adı, kararı ya da
   örneği girmez.
 - **Adlar İngilizce, içerik Türkçe.** Dosya ve dizin adları İngilizcedir
-  (`record.md`, `roadmap.md`), metnin kendisi Türkçedir.
+  (`roadmap.md`, `reference/`), metnin kendisi Türkçedir.
 
 ## Değişiklikten sonra
 
