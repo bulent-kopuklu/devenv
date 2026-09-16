@@ -67,7 +67,9 @@ açık maddeler metinde `AÇIK` diye duruyor. Kaynak okumaları cc-workspace'te:
 - [x] **Ürün soruları ctrl cevaplar.** Referans ürünlerden yararlanır;
       roadmap hazırlanırken bir referans ürün seçilir.
 - [x] **Mesaj biçimi yok.** ctrl ile impl düz konuşur; etiket, tip ve şablon
-      kullanılmaz. Biçim elimizi kolumuzu bağlayacaksa hiç olmasın.
+      kullanılmaz. Biçim elimizi kolumuzu bağlayacaksa hiç olmasın. Tek risk
+      uzun mesajda sorunun kaybolması; ona karşı biçim değil iki alışkanlık:
+      bir mesaj bir konu, soru ya da itiraz başta.
 - [x] **Devir.** Bağlam dolunca insan compact ya da clear yapar. impl'in
       devir notu yok, önemi olmamalı: hazır belgeden gider.
 - [x] **impl dışarı gitmez.** ctrl'in dizinini okumaz ve yazmaz; yüklediği

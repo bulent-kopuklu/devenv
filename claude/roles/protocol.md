@@ -34,4 +34,6 @@ itirazı kapanmadan adım bitmiş sayılmaz.
 
 - Oturumlar `SendMessage` ile konuşur; oturum adı dizin adıdır. Biçim yok:
   düz konuşulur, etiket ve şablon uydurulmaz.
+- Bir mesaj bir konu taşır. Soru ya da itiraz varsa mesajın başında durur,
+  uzun metnin içine gömülmez.
 - Her rol yalnız kendi dizinine yazar.
