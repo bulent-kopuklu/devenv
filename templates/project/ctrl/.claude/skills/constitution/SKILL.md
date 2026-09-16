@@ -29,11 +29,18 @@ CRITICAL sayar, kaldırmak MAJOR sürümdür.
 Bir kural ilk göründüğü BL'de girmez. En az iki BL'de gerektiği görülünce ilke
 adayı olur.
 
-İlke sayısı 5-7'yi geçmez. Tavana gelindiyse yeni ilke ancak birini çıkararak
+İlke sayısı yediyi geçmez. Tavana gelindiyse yeni ilke ancak birini çıkararak
 girer.
 
 Mecbur olunan platform ve teknoloji kısıtları ilkelere değil, "Ek Kısıtlar"
 bölümüne girer. İlkeler teknoloji adı taşımaz.
+
+Anayasa araç adı ve rol adı da taşımaz. "Şu skill'i koş", "denetçiye sor" gibi
+bir cümle oraya girmez: anayasayı impl okuyor ve o araçlar onda yok, olmayan
+bir aracın adını görünce kendi yorumunu uydurur. Kimin neyle çalıştığı rol
+metinlerinde yazar.
+
+Çekirdek beş ilkedir, projeye özel en çok iki ilke eklenir.
 
 ## İlke nasıl yazılır
 

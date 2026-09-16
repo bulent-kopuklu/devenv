@@ -2,10 +2,12 @@
 Her projede geçerli çekirdek ilkeler. Bu dosya projeye KOPYALANMAZ: denetçi
 bunu okur, üstüne referans incelemesinden ve kullanıcıdan geleni ekler,
 projenin anayasasını `/speckit-constitution` prompt'u olarak verir. Dosyayı
-komut yazar.
+komut yazar; sürüm ve tarih alanlarını da o doldurur.
 
-Buradaki maddeler bir projenin anayasasında silinmez, yalnız o anayasanın
-Yönetişim bölümündeki usulle değiştirilir.
+Çekirdek beş ilkedir. Projeye özel ilke en çok iki tane eklenir; toplam yediyi
+geçmez. Anayasa araç ve rol adı taşımaz: ürünün kuralını söyler, kimin hangi
+araçla çalıştığını değil. Mecburi teknoloji ve platform kısıtları ilkelere
+değil "Ek Kısıtlar"a girer.
 -->
 
 # Anayasa
@@ -14,196 +16,146 @@ Yönetişim bölümündeki usulle değiştirilir.
 
 ### I. Kanıtsız Teknik İddia Yasak
 
-Bir teknolojinin uygunluğu ancak çalıştırılıp ölçülerek; bir garanti ancak ihlal
-denemesi yapılıp başarısız olduğu görülerek kabul EDİLİR. Dokümandan okunarak
-edinilen rakam bir karar gerekçesi OLAMAZ; modelin eğitim bilgisinden gelen bir
-davranış iddiası hiç olamaz — hangi sürümün davranışı olduğu bilinmez.
+Bir teknolojinin uygunluğu ancak çalıştırılıp ölçülerek, bir garanti ancak ihlal
+denemesi yapılıp başarısız olduğu görülerek kabul edilir (MUST). Dokümandan
+okunan rakam karar gerekçesi olamaz; modelin eğitim bilgisinden gelen davranış
+iddiası hiç olamaz, hangi sürümün davranışı olduğu bilinmez.
 
-Kanıt üreten deneyin nasıl tekrarlanacağı **ve nerede durduğu** yazılı olmak
-ZORUNDADIR. Yeri olmayan kural yazılmaz: dış dünyanın davranışına dayanan bir
-iddia kurulduğu anda üç yoldan biri zorunludur —
+Dış dünyanın davranışına dayanan bir iddia kurulduğu anda üç yoldan biri
+zorunludur (MUST):
 
-- **(a)** kayıt zaten var → ona bağlanır,
-- **(b)** burada doğrulanabilir → ölçülür, sürüm ve tarihle yazılır, bağlanır,
-- **(c)** doğrulanamaz → **iddia kurulamaz**; ölçüm borcu yazılır ve iddiaya
-  dayanan iş "tamam" sayılmaz.
+- kayıt zaten var → ona bağlanır,
+- ölçüm burada üretilebiliyor → ölçülür, sürümü ve tarihiyle yazılır, bağlanır,
+- üretilemiyor → iddia kurulmaz; ölçüm borcu yazılır, iddiaya dayanan iş "tamam"
+  sayılmaz ve karar soru olarak yukarı gider.
 
-Gerekçe: Belgelenen davranış ile gözlenen davranış ayrışır; kararı yalnızca
-gözlenen taşır. Ve yazılmayan ölçüm bir sonraki soruda yeniden sorulur.
+Ölçüm önce kendini kanıtlar: her ölçümün bir kontrolü olmalıdır (MUST). Pozitif
+kontrol ölçüm noktasının canlı olduğunu, negatif kontrol iddianın
+yanlışlanabildiğini gösterir. Kontrolü olmayan ölçüm başarısız sayılır; hiçbir
+şey ölçmeyen bir sayaç da sıfır gösterir. Bozuk bir düzenekte başlayan koşu
+ölçtüğünü değil düzeneğini raporlar; çıktı üretilmediyse sonuç sıfır değil
+hatadır.
 
-### II. Ölçüm Önce Kendini Kanıtlar
+Sonuç kümesi ikili değil üçlüdür: geçti, kaldı, ölçülemedi. Ölçülemeyeni geçti
+ya da kaldı diye kaydetmek yasaktır (MUST NOT); ikisi de yalandır.
 
-Her ölçümün bir **kontrolü** OLMAK ZORUNDADIR: pozitif kontrol ölçüm noktasının
-canlı olduğunu, negatif kontrol iddianın yanlışlanabildiğini gösterir.
-**Kontrolü olmayan ölçüm başarısız sayılır** — hiçbir şey ölçmeyen bir sayaç da
-sıfır gösterir.
+Kararı taşıyan artefakt dayandığı kaydın yolunu yazar (MUST); yol yoksa gerekçe
+de yoktur. Ölçümün geçerlilik sınırı da yazılır: hangi ortamda yapıldıysa o.
+Ortam ya da sürüm değişince ölçüm bayattır, yeniden koşulmadan kullanılamaz.
 
-Bir koşu, **ölçebildiğini göstermeden ölçtüğünü iddia EDEMEZ**; buna başlangıç
-durumu da dahildir. Bozuk bir düzenekte başlayan koşu, ölçtüğünü değil
-düzeneğini raporlar. Ölçüm çıktısı üretilmediyse sonuç sıfır değil **hata**dır.
+Gerekçe: Belgelenen davranış ile gözlenen davranış ayrışır, kararı yalnız
+gözlenen taşır. Ölçüm arızalarının neredeyse tamamı ölçülen şeyin sonucu gibi
+görünür ve sessizce kabul edilir; en tehlikelisi doğru sayının yanlış sorunun
+cevabı olmasıdır. Yazılmayan ölçüm bir sonraki soruda yeniden sorulur.
 
-Sonuç kümesi ikili değil üçlüdür: **geçti · kaldı · ölçülemedi**. Ölçülemeyen
-bir durumu geçti ya da kaldı diye kaydetmek, ikisi de yalan olduğu için
-yasaktır.
+### II. Kanıt Ölçtüğü Şeyin İçinden Çıkmaz
 
-Gerekçe: Ölçüm arızalarının neredeyse tamamı **ölçülen şeyin sonucu gibi
-görünür** ve sessizce kabul edilir. En tehlikelisi doğru sayının yanlış sorunun
-cevabı olmasıdır: kayıtta hakiki bir ölçüm gibi durur.
-
-### III. Kanıt Ölçtüğü Şeyin İçinden Çıkmaz
-
-Ölçen kod ürün kodunu **import ETMEZ** ve durumu DEĞİŞTİRMEZ. Doğrulayan taraf
-doğrulanan taraf olamaz.
+Ölçen kod ürün kodunu import etmez ve ürünün durumunu değiştirmez (MUST NOT).
+Doğrulayan taraf doğrulanan taraf olamaz.
 
 Bundan üç ayrım doğar ve bir dosyanın hangisi olduğu bulunduğu dizinden
-anlaşılır: üretimde koşan kod, kurulumu bir kez yapan kod, ve ölçen kod.
-**Test kanıt değildir**: birim test kodun kendi doğruluğunu sınar, kanıt kapısı
-ürünün dış dünyaya verdiği sözü sınar ve negatif kontrolü olmak ZORUNDADIR.
+anlaşılır: üretimde koşan kod, kurulumu bir kez yapan kod, ölçen kod.
 
-Gerekçe: Ürün kodu değiştiğinde kanıtın da değişmesi, kanıtı ürünün bir
-görüşüne çevirir.
+Test kanıt değildir: birim test kodun kendi doğruluğunu sınar; kanıt kapısı
+ürünün dış dünyaya verdiği sözü sınar ve negatif kontrolü olmalıdır (MUST).
 
-### IV. Tek Kaynak Spec
+Gerekçe: Ürün kodu değiştiğinde kanıtın da değişmesi, kanıtı ürünün bir görüşüne
+çevirir.
 
-Üretilen artefaktların tek kaynağı **spec**tir. Ön çalışma belgeleri, tasarım
-notları ve feature listeleri spec'in **girdisi**dir; spec yazıldıktan sonra
-kaynak değil, arşiv bile değildir — hiçbir kontrol onlara sormaz, hiçbir
-artefakt onlara atıf yapmaz.
+### III. Tek Kaynak Spec
 
-Bir kararın gerekçesi spec'te yoksa **yoktur**; başka bir belgede olabileceği
-varsayılamaz. Spec ve plan, girdilerinin taşıdığı bilgiyi **aşmak** zorundadır:
-aşmıyorsa ya girdinin yarısı çöptü ya spec eksik yazıldı, ve ikisi de kayıttır.
+Üretilen artefaktların tek kaynağı spec'tir. Ön çalışma belgeleri, tasarım
+notları ve özellik listeleri spec'in girdisidir; spec yazıldıktan sonra kaynak
+değildir. Hiçbir kontrol onlara sormaz, hiçbir artefakt onlara atıf yapmaz
+(MUST NOT).
 
-Gerekçe: İki kaynak arasında senkron tutmak, tek kaynak ile kod arasında
-senkron tutmaktan pahalıdır; üçüncü kaynak onu imkânsız yapar.
+Bir kararın gerekçesi spec'te yoksa yoktur; başka bir belgede olabileceği
+varsayılamaz. Spec ve plan, girdilerinin taşıdığı bilgiyi aşmalıdır (MUST):
+aşmıyorsa ya girdinin yarısı çöptü ya spec eksik yazıldı, ikisi de kayıttır.
 
-### V. Önce Sadelik
+Gerekçe: İki kaynak arasında senkron tutmak, tek kaynak ile kod arasında senkron
+tutmaktan pahalıdır; üçüncü kaynak onu imkânsız yapar.
 
-Problemi çözen en az bileşen seçilir. Halihazırda olgun bir çözümün yaptığı iş
-yeniden yazılmaz. Spekülatif esneklik, yapılandırılabilirlik veya "ileride
-lazım olur" bileşeni EKLENMEZ. Eklenen her bileşen, hangi somut gereksinimi
-karşıladığıyla gerekçelendirilmek ZORUNDADIR.
+### IV. Önce Sadelik
 
-Koşmayan bir dosya ağaçta DURMAZ. "Sonra düzeltiriz" diye tutulan bir kontrol,
+Problemi çözen en az bileşen seçilir. Olgun bir çözümün yaptığı iş yeniden
+yazılmaz. Spekülatif esneklik, yapılandırılabilirlik ya da "ileride lazım olur"
+bileşeni eklenmez (MUST NOT). Eklenen her bileşen, hangi somut gereksinimi
+karşıladığıyla gerekçelendirilmelidir (MUST).
+
+Koşmayan bir dosya ağaçta durmaz. "Sonra düzeltiriz" diye tutulan bir kontrol
 hiçbir şey ölçmeden kırmızı yanar ve ölçen bir kontrolün kırmızısını
 değersizleştirir. Yazılmamış olanın gerekçesi metinde durur, kodda değil.
 
-Gerekçe: Her ek bileşen; işletme, güvenlik ve arıza yüzeyi maliyeti demektir.
+Gerekçe: Her ek bileşen işletme, güvenlik ve arıza yüzeyi maliyetidir.
 
-### VI. Doküman Dili
+### V. Kanıtlanmış Yaklaşım Yeniden Keşfedilmez
 
-Üretilen tüm doküman ve çıktı dosyaları (spec, plan, araştırma notu, task
-listesi, checklist) TÜRKÇE yazılır. Şablon İngilizce olsa bile içerik Türkçe
-doldurulur. Teknik terimler çevrilmez. İstisna: kod ve commit mesajları
-İngilizcedir.
+Bir tasarım kararından önce — mimari, protokol, veri modeli, algoritma, operasyon
+akışı — aynı problemi çözmüş ve üretimde kendini kanıtlamış çözümler incelenir
+(MUST): yaygın açık kaynak projeler, standartlar, olgun ürünler. Girdi bir
+referans verdiyse inceleme ondan başlar.
 
-Gerekçe: Dokümanın okuyucusu ekiptir; okunmayan doküman yazılmamış sayılır.
+Örnek, problemin bağlamını paylaşan çözümler arasından seçilir; bağlamı farklı
+bir örnek, farkı yazılmadan dayanak sayılmaz. Örnekte ne yapıldığı modelin
+hafızasından değil kaynağından okunur ve her karar kaynağıyla (repo, dosya,
+doküman, sürüm) yazılır. Gerekçesiz sapma kanıtsız teknik iddia sayılır
+(İlke I).
 
-### VII. Kanıtlanmış Yaklaşım Yeniden Keşfedilmez
+Örnek, yaklaşımın kaynağıdır, davranışının kanıtı değildir: hız, dayanıklılık ve
+ölçek iddiaları İlke I'e tabidir.
 
-Bir tasarım kararından önce — mimari, protokol, veri modeli, algoritma,
-operasyon akışı — aynı problemi çözmüş ve üretimde kendini kanıtlamış çözümler
-İNCELENİR: yaygın açık kaynak projeler, standartlar, olgun ürünler. Spec girdisi
-bir referans verdiyse inceleme ondan başlar.
-
-Örnek, problemin bağlamını (çalışma ortamı, ölçek, kısıtlar) paylaşan çözümler
-arasından seçilir; bağlamı farklı bir örnek, farkı yazılmadan dayanak SAYILMAZ.
-Örnekte ne yapıldığı modelin hafızasından değil kaynağından okunur ve araştırma
-notu her karar için onu kaynağıyla (repo, dosya, doküman, sürüm) yazar. Örneğin
-yaklaşımı benimsenmezse neden benimsenmediği ve farkın hangi gereksinimden
-geldiği yazılır; gerekçesiz sapma kanıtsız teknik iddia sayılır (İlke I).
-
-Örnek bir yaklaşımın kaynağıdır, davranışının kanıtı değildir: örneğin
-başardığı söylenen her şey — hız, dayanıklılık, ölçek — İlke I'e tabidir.
+Güvenlikte istisna yoktur ve ölçü daha serttir. Standart desen aranır: RFC ya da
+yayımlanmış bir standart, yaygın ve bakımlı bir kütüphane, bilinen bir protokol.
+Kripto primitifi ve protokol kendimiz yazılmaz (MUST NOT). Özel çözüm ancak
+adaylar incelenip neden yetmediği kaynakla yazıldıktan sonra tasarlanır.
+Kaynağı olmayan güvenlik kararı kabul edilmez (MUST NOT).
 
 Gerekçe: Üretimde yıllarca sınanmış bir çözüm, sıfırdan bulunan yaklaşımın henüz
-karşılaşmadığı arızaları çoktan görmüştür. Onu yeniden keşfetmek, aynı arızaları
-sırayla yeniden yaşamaktır.
+karşılaşmadığı arızaları çoktan görmüştür; onu yeniden keşfetmek aynı arızaları
+sırayla yeniden yaşamaktır. Güvenlikte bu daha ağır basar, çünkü güvenlik
+mekanizmasının hatası işlevsel testte görünmez, ancak biri onu kırmaya
+çalıştığında ortaya çıkar.
 
-### VIII. Güvenlikte Önce Standart Desen
+## Ek Kısıtlar
 
-Güvenlik tasarımında önce standart desen aranır. Kendini ispatlamış bir çözüm
-varsa o kullanılır: RFC ya da yayımlanmış bir standart, yaygın ve bakımlı bir
-kütüphane, bilinen bir protokol. Özel çözüm ancak adayların incelenip neden
-yetmediğinin kaynakla yazılmasından sonra tasarlanır. Kripto primitifi ve
-protokol kendimiz yazılmaz.
+- Üretilen doküman ve çıktı dosyaları (spec, plan, araştırma notu, task listesi,
+  checklist) Türkçe yazılır (MUST). Şablon İngilizce olsa bile içerik Türkçe
+  doldurulur, teknik terimler çevrilmez. Kod ve commit mesajları İngilizcedir.
 
-Kanıt biçimi: güvenlik kararı, incelenen adaylar ve kaynaklarıyla research.md'de
-durur.
-
-Gerekçe: Güvenlik mekanizmasının hatası işlevsel testte görünmez; ancak biri onu
-kırmaya çalıştığında ortaya çıkar. Kendini ispatlamış bir standart bu denemeleri
-bizden önce görmüştür (İlke VII).
-
-## Spike
-
-İlke I'in (b) yolu **spike**'tır: dış dünyanın davranışı hakkında bir iddiaya
-ihtiyaç var, cevap hiçbir belgede yok, ve öğrenmek için ölçmek gerekiyor.
-Böyle bir durumda spike **tetiklenir**. Spike'ın kendi süreci — nerede aradığı,
-neyi kaydettiği, bayat bir kaydı nasıl tazelediği — spike aracının tarifindedir
-ve burada tekrar edilmez. Buradan bakıldığında spike tek şey yapar: bir kanıt
-kaydının **yolunu** döndürür.
-
-Anayasanın bağladığı üç şey:
-
-- Dış dünyanın davranışına dayanan bir iddia, arkasında bir spike kaydı olmadan
-  kurulamaz. Modelin bildiğini sanması, resmî dokümanın öyle yazması ya da
-  kararın daha önce böyle verilmiş olması spike'ın yerini tutmaz.
-- Kararı taşıyan artefakt, dayandığı kaydın **yolunu yazar**. Yol yoksa gerekçe
-  de yoktur; araştırma notundaki her dış davranış iddiası bir kayda bağlanmak
-  ZORUNDADIR.
-- Spike ölçemediyse karar **kapanmaz**; ölçüm borcu olarak kalır. "Spike
-  açılacak" demek karar vermek değildir.
-
-## Doğrulama Rejimi
-
-Aşağıdakiler yalnızca çalıştırılmış bir kanıtla kapatılır; kanıt üretilmeden
-ilgili iş "tamam" sayılmaz:
-
-- **Teknoloji ve davranış iddiaları (İlke I)**: seçim gerekçesi koşulmuş bir
-  ölçüme dayandırılır; ölçümün tekrar koşulma yolu, sürümü ve tarihi yazılır.
-- **Her kanıt kapısı (İlke II)**: en az bir kontrolü vardır ve o kontrol kayıtta
-  görünür.
-- **Ölçümün geçerlilik sınırı (İlke II)**: ölçüm hangi ortamda yapıldıysa o
-  yazılır. Ortam değiştiğinde ölçüm **bayattır** ve yeniden koşulmadan
-  kullanılamaz — bayat bir kanıt, yanlış sebeple yeşil yanar.
-
-## Ölçülmemiş Olanın Kaydı
-
-Ölçülmemiş adımların listesi, ölçülmüş sonuçlar kadar bir artefakttır ve
-**bu listede olmayan hiçbir şey varsayım değildir**. Her madde ne bilinmediğini
-ve neden önemli olduğunu yazar.
-
-"Yazıldı ama ölçülmedi" ayrı bir hâldir: kod derleniyor, birim testi var, ama
-gerçek ortamda hiç koşmadıysa o iş **tamamlanmamıştır**. Bir işaret kutusu bunu
-gösteremez.
+<!-- Projeye özel kısıtlar buraya: mecburi platform, mecburi teknoloji,
+     uyumluluk ve operasyon kısıtları. İlkelere teknoloji adı girmez. -->
 
 ## Geliştirme Akışı ve Kalite Kapıları
 
-- Her spec, plan ve task, ilgili olduğu ilkelere geri izlenebilir OLMAK
-  ZORUNDADIR; hiçbir ilkeye bağlanamayan iş kapsam dışıdır.
-- İlke V gereği eklenen her yeni bileşen için "bunu yapan olgun bir çözüm var
-  mı?" sorusu yazılı olarak cevaplanır.
-- Kanıt gerektiren bir iddia (İlke I) kanıtsız kaldıysa, ilgili iş "tamamlandı"
-  olarak işaretlenemez; eksik kanıt açıkça yazılır.
-- Bir kontrolün "ölçemedim" hâli, "iddia doğrulandı" hâlinden ayrı raporlanır.
-- Doküman dili İlke VI'ya uygun değilse çıktı kabul edilmez.
+- Her spec, plan ve task ilgili olduğu ilkelere geri izlenebilir olmalıdır
+  (MUST); hiçbir ilkeye bağlanamayan iş kapsam dışıdır.
+- Kanıt gerektiren bir iddia kanıtsız kaldıysa ilgili iş "tamamlandı" olarak
+  işaretlenemez (MUST NOT); eksik kanıt açıkça yazılır.
+- "Ölçemedim" hâli "iddia doğrulandı" hâlinden ayrı raporlanır (MUST).
+- Ölçülmemiş adımların listesi, ölçülmüş sonuçlar kadar bir artefakttır ve bu
+  listede olmayan hiçbir şey varsayım değildir. Her madde ne bilinmediğini ve
+  neden önemli olduğunu yazar.
+- "Yazıldı ama ölçülmedi" ayrı bir hâldir: kod derleniyor, birim testi var, ama
+  gerçek ortamda hiç koşmadıysa o iş tamamlanmamıştır. Bir işaret kutusu bunu
+  gösteremez.
 
 ## Governance
 
-- Bu anayasa, projedeki diğer tüm pratik ve alışkanlıkların üzerindedir.
-  Çelişki hâlinde anayasa kazanır.
-- **Değişiklik usulü**: Değişiklik önerisi, hangi ilkeyi neden değiştirdiğini ve
-  etkilediği mevcut kararları yazılı olarak belirtir. Proje sahibi onaylamadan
-  hiçbir ilke eklenemez, değiştirilemez veya kaldırılamaz.
-- **Çekirdek ilkeler**: I–VIII ortaktır ve projeye özel ilkeler IX'dan itibaren
-  eklenir. Çekirdekte yapılan bir değişiklik yalnız bu projede kalır; başka
-  projelerde de geçerli olması isteniyorsa çekirdeğin kendisine taşınmalıdır,
-  yoksa bir sonraki projede o madde yoktur.
-- **Sürümleme**: Semantic versioning. MAJOR = geri uyumsuz ilke kaldırma/yeniden
-  tanımlama; MINOR = yeni ilke veya bölüm; PATCH = açıklama ve ifade düzeltmesi.
-- **Uyum denetimi**: Her spec/plan/task incelemesinde anayasa uyumu kontrol
-  edilir. İlkeden sapma; ya reddedilir ya da gerekçesi ve süresi yazılı bir
-  istisna olarak kaydedilir. Sessiz sapma kabul edilmez.
+- Bu anayasa projedeki diğer tüm pratik ve alışkanlıkların üzerindedir; çelişki
+  hâlinde anayasa kazanır.
+- **Değişiklik usulü**: Öneri, hangi ilkeyi neden değiştirdiğini ve etkilediği
+  mevcut kararları yazılı olarak belirtir. Proje sahibi onaylamadan hiçbir ilke
+  eklenemez, değiştirilemez, kaldırılamaz.
+- **Çekirdek**: I–V ortaktır; projeye özel ilkeler VI'dan itibaren ve en çok iki
+  tane eklenir. Çekirdekte yapılan değişiklik yalnız bu projede kalır; başka
+  projelerde de geçerli olması isteniyorsa çekirdeğin kendisine taşınmalıdır.
+- **Sürümleme**: Semantic versioning. MAJOR = geri uyumsuz ilke kaldırma ya da
+  yeniden tanımlama; MINOR = yeni ilke ya da bölüm; PATCH = ifade düzeltmesi.
+- **Uyum denetimi**: Her spec, plan ve task incelemesinde anayasa uyumu kontrol
+  edilir. Sapma ya reddedilir ya da gerekçesi ve süresi yazılı bir istisna
+  olarak kaydedilir; plan'da gerekçeli sapma Complexity Tracking tablosuna
+  yazılır. Sessiz sapma kabul edilmez.
 
-**Version**: 1.2.0
+<!-- Çekirdek sürümü: 2.0.0 (2026-09-16). Projenin anayasasındaki sürüm ve
+     tarih satırını komut kendi şablonuna göre yazar. -->

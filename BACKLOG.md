@@ -162,8 +162,13 @@ açık maddeler metinde `AÇIK` diye duruyor. Kaynak okumaları cc-workspace'te:
 
 ### Açık
 
-- [ ] `constitution-base.md` 8 ilke ve 205 satır; tavan 5-7. Taşındı ama
-      kısaltılmadı.
+- [x] `constitution-base.md` 5 ilkeye indi (161 satır): I ile II, "Spike" ve
+      "Doğrulama Rejimi" bölümleriyle birlikte tek ilkede; V ile VI birleşti,
+      güvenlik onun sert kolu; doküman dili ilkelikten çıkıp "Ek Kısıtlar"a
+      indi. Bağlayıcı cümleler MUST/SHOULD etiketli, çünkü analyze ilkelerden
+      bu kelimeleri ayıklıyor. Anayasa artık araç ve rol adı taşımıyor:
+      "spike koş" diyordu ama impl'de spike yasak, model kendi yorumunu
+      uydururdu; ölçüm gerektiren iddiada impl ctrl'e soruyor (`impl.md`).
 - [ ] ctrl ile impl arasındaki mesajların biçimi.
 - [ ] implement ve sonrası: commit, push, review, merge, insan onayı.
 - [ ] Tek kaynak: impl'in dışarı gitmediği kesin. ctrl'in cevaplarının

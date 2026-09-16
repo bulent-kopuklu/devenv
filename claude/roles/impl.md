@@ -13,6 +13,8 @@
 
 - Sorun, komutun sana sorduğu dahil, ctrl'e gider: bağlamıyla iletir, cevabı
   beklersin.
+- Ölçüm ya da dış davranış doğrulaması gerektiren bir iddia çıkarsa ölçmezsin;
+  soruyu ctrl'e iletirsin.
 - ctrl'in itirazını o adımda kapatırsın: belgeyi düzeltir, neyin değiştiğini
   bildirirsin. Katılmıyorsan gerekçeni söylersin; karar ctrl'in.
 - Plan anında yerleşim düzeltmesi yalnız `plan.md`'yi değiştirir; dizin
