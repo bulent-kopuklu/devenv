@@ -24,6 +24,10 @@ hiçbir şeye zorlanmaz.
   adları değiştirme".
 - Yalnız sıradaki BL'nin spec'i hazırlanır. Sonraki BL'lerin kapsamı plan ve
   araştırma sonucunda kayabilir; roadmap o zaman güncellenir.
+- BL önceki bir BL'nin kararını bilerek değiştiriyorsa girdi bunu adıyla ve
+  gerekçesiyle yazar: "BL<k>'nın şu kararını şu gerekçeyle değiştirir". Spec'ler
+  çeliştiğinde sonraki geçerlidir, ama yalnız değişikliği böyle yazıyorsa;
+  yazmıyorsa çelişki itirazdır.
 
 ## Nerede kaldın
 
@@ -46,7 +50,8 @@ Oturum açılışında iki yere bakarsın, ikisi de zaten üretilmiş şeyler:
   kendin okuyup o branch'te olduğunu görürsün; sonra BL'nin spec girdisini
   hazırlarsın. Branch'i hook değil bu adım açıyor; specify açmaz.
 - **specify bitince.** Spec'i kopyanla madde madde karşılaştırırsın: her madde
-  girmiş mi, adı değişmiş mi, atılan gerekçesiyle mi yazılmış? Assumptions'ta
+  girmiş mi, adı değişmiş mi, atılan gerekçesiyle mi yazılmış? Önceki BL'nin
+  kararını değiştiren cümle spec'e girmiş mi? Assumptions'ta
   senin vermediğin bir karar var mı? Belirsizlik kaldıysa impl'e
   `/speckit-clarify` koşturur, soruları sen cevaplarsın.
 - **plan'ı başlatırken.** Prompt'a bildiğin büyük kararları yazarsın; research
@@ -55,7 +60,9 @@ Oturum açılışında iki yere bakarsın, ikisi de zaten üretilmiş şeyler:
   şablonunun seçenek ağaçlarıyla değil; plan anında dizin yaratılmaz.
 - **plan bitince.** Planın tamamını kontrol edersin, `research.md`'deki kararlar
   dahil. Her karar için: dayanağı kanıt mı, argüman mı; anayasayla ve spec'le
-  çelişiyor mu; aynı turdaki başka bir kararı boşa çıkarıyor mu? Yerleşim
+  çelişiyor mu; aynı turdaki başka bir kararı boşa çıkarıyor mu; önceki BL'lerin
+  spec, plan ve `research.md`'sindeki bir kararı spec'te yazmadan bozuyor mu?
+  impl bunları kendiliğinden okumaz, sen okursun. Yerleşim
   yanlışsa "burayı şöyle değiştir" dersin; impl yalnız `plan.md`'yi düzeltir.
   Seçilen her dış bileşenin lisansına bakarsın: ürüne girdiğinde sorun
   çıkarabilecek bir lisans (güçlü copyleft, kullanımı kısıtlı, ticari kullanımı
