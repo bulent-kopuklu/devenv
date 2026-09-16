@@ -3,42 +3,56 @@
 ## Komutlar
 
 - constitution, specify, clarify, plan, tasks: stock `/speckit-*`. implement:
-  `/speckit-companion-implement`. Başka `/speckit-companion-*` komutu ve
-  `specify workflow run` koşmazsın.
+  `/speckit-companion-implement`.
+- Başka bir `/speckit-companion-*` komutunu kendin başlatmazsın, `specify
+  workflow run` koşmazsın. Stock komutların zorunlu hook olarak çağırdığı
+  `speckit.companion.after-specify`, `after-plan`, `after-tasks` ve
+  `after-implement` bunun dışındadır: komut ne diyorsa onları koşarsın.
 - Adımı ctrl başlatır, prompt'u ctrl'den gelir.
 - Adım bitince sonrakini başlatmazsın; ctrl'e bittiğini bildirir, beklersin.
 - analyze'ı ctrl koşar.
+- implement bitince `make build`, `make lint` ve `make test` koşarsın; her
+  birinin sonucunu, son satırlarıyla, ctrl'e iletirsin. Kırmızıysa kırmızı
+  diye iletirsin, özetleyip geçmezsin.
 
 ## Commit
 
 - İki commit noktası var: belgeler analyze'dan temiz çıkınca bir commit (spec,
   plan, tasks, research birlikte), sonra implement'te her fazın sonunda bir
   commit. Faz kaçsa commit o kadar.
-- Mesaj fazın `tasks.md`'deki başlığından gelir, tek satır:
-  `feat(<bileşen>): <faz başlığı>`. Gövde yok, task ID yok.
-- Commit için diff okumaz, özet çıkarmaz, "ne yazsam" turu yapmazsın.
+- Mesaj global commit kurallarına uyar: İngilizce, tek satır, gövdesiz,
+  `<tip>(<scope>): <açıklama>`, emir kipi, küçük harf, sonda nokta yok, en çok
+  72 karakter, task ID yok.
+- Tip işin cinsinden gelir: yeni davranış `feat`, düzeltme `fix`, yalnız test
+  `test`, kurulum ve iskelet `build` ya da `chore`, yeniden düzenleme
+  `refactor`.
+- Scope dosya yollarından gelir: hepsi tek bileşendeyse o bileşenin adı, birden
+  çok bileşene dokunuyorsa `repo`. Yolları `git diff --cached --name-only`
+  verir; içeriği okumazsın.
+- Açıklama fazın amacının İngilizce özetidir. Faz başlığındaki "Phase N",
+  öncelik ve işaretler alınmaz.
+- Belge commit'i: `docs(specs): add spec, plan and tasks for <BL'nin İngilizce
+  kısa adı>`.
 - Sonradan toparlama yok: `rebase`, `squash`, geçmişi düzeltme yapmazsın.
 
 ## Merge
 
-- ctrl'in onayı gelmeden merge yok.
+- İnsanın onayı gelmeden merge yok; onayı sana ctrl iletir.
 - Sıra: `git fetch`; `origin/main` branch'ten ileriye gittiyse onu branch'e
-  merge et, çakışmayı branch'te çöz ve projenin kapısını koş (`make build`,
-  `make lint`, `make test`). Yeşil değilse durur, ctrl'e bildirirsin.
+  merge et, çakışmayı branch'te çöz ve kapıyı yeniden koş (`make build`,
+  `make lint`, `make test`). Kırmızıysa durur, ctrl'e bildirirsin.
 - Ölçüt yerel main değil `origin/main`; yerel main bayat olabilir.
-- Kapıyı `origin/main` ilerlediyse koşarsın, çakışma çıkmasa da: karşı taraf bir
-  imzayı değiştirdiyse git çakışma görmez, derleyici görür. İlerlememişse merge
-  "Already up to date" olur ve kapıya gerek yoktur; branch implement'in sonunda
-  zaten yeşildi.
-- Yeşilse branch'i push eder, push çıktısındaki merge request bağlantısını
-  ctrl'e iletirsin. MR'ı insan açar ve birleştirir; sen açmaya çalışmazsın.
-- Uzakta merge request yoksa: main'e `--no-ff` ile merge eder, push eder,
-  branch'i silersin.
+- Kapıyı `origin/main` ilerlediyse yeniden koşarsın, çakışma çıkmasa da: karşı
+  taraf bir imzayı değiştirdiyse git çakışma görmez, derleyici görür.
+  İlerlememişse merge "Already up to date" olur ve implement sonunda koştuğun
+  kapı geçerlidir.
+- Sonra branch'i push eder, push çıktısındaki merge request bağlantısını
+  ctrl'e iletirsin. MR'ı insan açar ve birleştirir; sen açmaya çalışmazsın,
+  main'e hiç push etmezsin.
 - MR birleşince main'i güncellersin: `git switch main`, `git pull --ff-only`,
   birleşen branch'i sil. Yeni BL'nin branch'i güncel main'den açılmalı; bayat
   main'de açılan branch eski ağaçtan başlar.
-- Yedek için her faz commit'inden sonra branch'i push edebilirsin. main'e push
-  yalnız onaydan sonra.
+- Yedek için her faz commit'inden sonra branch'i push edebilirsin.
 
 ## Sorular ve itirazlar
 

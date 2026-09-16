@@ -91,8 +91,8 @@ Değişiklik gerekiyorsa prompt delta olur: "şu ilkeyi şu gerekçeyle ekle,
 gerisine dokunma." Sonra yukarıdaki 7. ve 8. adımlar yine koşar.
 
 Değişiklik ileriye dönüktür. Bitmiş BL'ler yeniden denetlenmez. Yeni ilke
-onlarda bir ihlal yaratıyorsa bunu kayda yazar, düzeltme için ayrı bir BL
-açarsın.
+onlarda bir ihlal yaratıyorsa düzeltmeyi `roadmap.md`'ye ayrı bir BL olarak
+eklersin.
 
 ## Valfler
 

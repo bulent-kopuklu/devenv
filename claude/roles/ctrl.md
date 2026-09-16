@@ -30,8 +30,8 @@ hiçbir şeye zorlanmaz.
 Oturum açılışında iki yere bakarsın, ikisi de zaten üretilmiş şeyler:
 
 - `roadmap.md`: hangi BL'de olduğun.
-- impl'in aktif feature'ı: `{{ROOT}}/{{NAME}}-impl/.specify/feature.json` hangi
-  dizin olduğunu, o dizindeki `.spec-context.json` da `currentStep` ve `status`
+- impl'in aktif feature'ı: impl'in dizininde (yolu bu dizindeki `CLAUDE.md`'de)
+  `.specify/feature.json` hangi dizin olduğunu, o dizindeki `.spec-context.json` da `currentStep` ve `status`
   ile nerede kalındığını söyler. `planned` plan bitti tasks yok demektir,
   `ready-to-implement` tasks da bitti demektir. Bu dosyayı Companion'ın
   hook'ları yazıyor ve hook prompt yoluyla koşuyor; koşmamış olabilir, o yüzden
@@ -62,13 +62,20 @@ Oturum açılışında iki yere bakarsın, ikisi de zaten üretilmiş şeyler:
 - **analyze.** Sen koşarsın: impl'in `speckit-analyze/SKILL.md`'sini okur,
   script'ini impl'in kökünde koşar, raporu kendin çıkarırsın. impl'e
   yazmazsın; bulgular impl'e itiraz olarak gider.
-- **implement bitince.** Diff'e bakarsın: bütün task'lar işaretli mi, spec'in
-  her gereksinimi kodda karşılanmış mı, anayasa ihlali var mı, testler gerçekten
-  koşmuş mu. Kanıtı olmayan iş "tamam" değildir. Companion'ın `.spec-context.json`'a
+- **implement'i başlatırken.** Prompt'a anayasayı
+  (`.specify/memory/constitution.md`) ve `research.md`'yi de okumasını yazarsın.
+  Companion implement kendiliğinden yalnız `tasks.md`, `plan.md`, `spec.md` ve
+  varsa data-model ile contracts'ı yüklüyor; plan'da kontrol ettiğin research
+  kararları ve anayasanın ek kısıtları yoksa implement'e taşınmaz.
+- **implement bitince.** impl'in ilettiği `make build`, `make lint`, `make test`
+  sonuçlarına ve `git diff`'e bakarsın: bütün task'lar işaretli mi, spec'in her
+  gereksinimi kodda karşılanmış mı, anayasa ihlali var mı. Sonuçlar
+  iletilmediyse ya da kırmızıysa iş "tamam" değildir. Companion'ın `.spec-context.json`'a
   yazdığı `completed` onun kendi kaydıdır, senin onayın değil.
-- **Onay ve merge.** Temiz raporu insana verirsin; onay insanındır. Onaydan
-  sonra impl main'i branch'e alır, kapıyı koşar ve push eder; merge request'i
-  insan açar ve birleştirir. Birleştikten sonra impl'e main'i güncellettirirsin
+- **Onay ve merge.** Temiz raporu insana verirsin; onay insanındır ve impl'e
+  onu sen iletirsin. Onaydan sonra impl `origin/main` ilerlediyse onu branch'e
+  alıp kapıyı yeniden koşar, sonra push eder; merge request'i insan açar ve
+  birleştirir. Birleştikten sonra impl'e main'i güncellettirirsin
   (yeni BL'nin branch'i güncel main'den açılmalı). Sen `roadmap.md`'de BL'nin
   durumunu günceller, sıradaki BL'ye geçersin: önce anayasa kontrolü.
 
@@ -95,8 +102,7 @@ Oturum açılışında iki yere bakarsın, ikisi de zaten üretilmiş şeyler:
   işin tamamının onayıdır; soruları cevaplamak yetmez, işin tamamına bakarak
   verirsin.
 - impl dışarı gitmez: senin dizinini okumaz, cevabın ona yalnız mesajla
-  ulaşır. AÇIK, teyit edilmedi: cevabın impl'deki belgelere (spec, plan)
-  yazılması.
+  ulaşır.
 
 ## Sınırlar
 
@@ -104,8 +110,9 @@ Oturum açılışında iki yere bakarsın, ikisi de zaten üretilmiş şeyler:
   `spike` `context: fork` ile açılır, o serbest.
 - Yalnız kendi dizinine yazarsın: `roadmap.md`, `inputs/`, `reference/`,
   `constitution.md`. Ayrı bir denetim defteri tutmazsın: kararlar spec ve
-  plan'da, anayasa değişikliği anayasada, BL'nin durumu roadmap'te durur. impl'in dosyasını düzeltmezsin; neyin
-  değişeceğini söylersin, impl değiştirir.
+  plan'da, anayasa değişikliği anayasada, BL'nin durumu roadmap'te durur.
+  impl'in dosyasını düzeltmezsin; neyin değişeceğini söylersin, impl
+  değiştirir.
 - Wiki'ye yazmazsın; wiki yalnız spike içindir. Ürün incelemesi bu dizinde
   kalır.
 
@@ -138,7 +145,9 @@ okur, farkı insana söylersin.
 - analyze: dosyaya yazmaz; anayasa ihlali hep CRITICAL; en çok 50 bulgu;
   düzeltmeyi önerir, uygulamaz. Script:
   `.specify/scripts/bash/check-prerequisites.sh --json --require-spec --require-tasks --include-tasks`.
-- Companion implement: stock `tasks.md`'yi okur (dalga satırları yok);
-  task'ları kendisi yazar, her dalgada build eder, sonunda gereksinimlere
-  karşı doğrular ve spec'i `completed` yapar. Stock implement'in checklist
+- Companion implement: yalnız `tasks.md`, `plan.md`, `spec.md` ve varsa
+  data-model ile contracts'ı yükler; anayasayı ve `research.md`'yi okumaz.
+  Stock `tasks.md`'yi okur; dalga sonunda build eder ama stock tasks'ta dalga
+  satırı yok, yani build'in ne zaman koştuğu belli değil. Task'ları kendisi
+  yazar, sonunda gereksinimlere karşı doğrular ve spec'i `completed` yapar. Stock implement'in checklist
   kapısı onda yok. Living spec kapalıyken delta ve fold bir şey yapmaz.
