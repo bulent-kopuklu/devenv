@@ -57,22 +57,22 @@ metinlerinde yazar.
 3. Önerdiğin her ilkenin yanına etki cümlesi yaz: "bu ilke plan'ı şöyle
    kısıtlayacak."
 4. Taslağı kullanıcıya sun. Onay almadan impl'e gitmez.
-5. Onaylanınca impl'e `/speckit-constitution` prompt'u olarak ver: ilkeler, ek
+5. Onaylanan metni bu dizinde `inputs/constitution.md` olarak yaz: ilkeler, ek
    kısıtlar, geliştirme akışı, yönetişim.
-6. Kopyasını bu dizinde `inputs/constitution.md` olarak tut.
-7. Komut bitince impl'deki `{{ROOT}}/{{NAME}}-impl/.specify/memory/constitution.md`'yi kendi kopyanla
-   karşılaştır. İstenmeyen her fark itirazdır. Komutun bastığı "Sync Impact
-   Report" modelin kendi beyanıdır, kanıt değil; esas olan karşılaştırma.
-8. Sync Impact Report geçicidir, komutun kendi metni commit'ten önce silinmesini
-   bekler. impl'e sildirir, sonra anayasayı commit'letirsin.
 
 ## Sonradan değişiklik
 
-Anayasa ilk spec'ten önce kurulur. Bir adımın kontrolünde bütün projeyi
-bağlayan yeni bir kural ya da kısıt çıkarsa (yeni platform kısıtı, veri sınıfı,
-güvenlik sınırı, dil ya da araç zinciri) değişiklik önerirsin. Prompt delta
-olur: "şu ilkeyi şu gerekçeyle ekle, gerisine dokunma." Delta da kullanıcının
-onayından geçer: yukarıdaki 4.–8. adımlar yine koşar.
+Anayasa kuruluysa yeni bir özelliğin girdisinde şunlardan biri varsa ve
+anayasada yoksa değişiklik önerirsin:
+
+- yeni bir platform, dil, kütüphane ya da araç zinciri kararı;
+- yeni bir veri sınıfı (ör. kişisel veri, kimlik bilgisi);
+- yeni bir güvenlik sınırı (ör. yeni ağ yüzeyi, yeni kimlik doğrulama yolu);
+- yeni bir çalışma biçimi (ör. sürekli çalışan servis, kuyruk).
+
+Değişiklik metni yalnız eklenecek ya da değişecek kısmı taşır: "şu kuralı şu
+gerekçeyle ekle, gerisine dokunma." Kullanıcıya onaylatır, onaylanan metni
+`inputs/constitution.md` olarak yazarsın.
 
 ## Valfler
 

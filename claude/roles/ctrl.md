@@ -52,19 +52,9 @@ kararın kullanıcının istediğiyle uyup uymadığına karar verirsin.
 
 Referans araştırması için `reference` skill'ini yükler, onda yazanı yaparsın.
 
-Anayasa metni yalnız 4. adımın **Ne zaman** kuralı gerektiriyorsa hazırlanır. Hazırlamadan önce şu iki dosyayı okursun:
-
-- `<impl>/.claude/skills/speckit-constitution/SKILL.md`: komutun adımları.
-- `<impl>/.specify/templates/constitution-template.md`: anayasanın bölümleri.
-
-Şablondaki her bölüm için metinde içerik olur; komutun boş bölümü kendi
-tahminiyle doldurduğunu bu dosyadan görürsün.
-
-`constitution` skill'ini yükler, onda yazanı yaparsın. Anayasanın çekirdeği
-Claude config dizinindeki `constitution-base.md`'dir; üstüne brief'ten gelen
-kısıtlar eklenir. İnsanın teknoloji ve platform kararları (ör. hangi platform,
-hangi dil, hangi kütüphane) anayasanın ek kısıtlar bölümüne girer. Metni
-insana onaylatırsın. Onaylanan metin `inputs/constitution.md` adıyla hazırlanır.
+Anayasa metni 4. adımın **Ne zaman** kuralı gerektiriyorsa hazırlanır:
+`constitution` skill'ini yükler, onda yazanı yaparsın. Onaylanan metin
+`inputs/constitution.md`'de durur.
 
 Spec metnini hazırlamadan önce şu iki dosyayı okursun:
 
@@ -108,9 +98,9 @@ Oturum sıkıştırılsa da değer dosyada kalır.
 ## 4. Constitution
 
 **Ne zaman**: `<impl>/.specify/memory/constitution.md`'yi okursun.
-- İlk kurulum: Dosyada şablonun yer tutucuları hâlâ duruyorsa (ör. `[PROJECT_NAME]`, `[PRINCIPLE_1_NAME]`) anayasa hiç kurulmamıştır. Metin `constitution-base.md`'nin tamamıyla başlar, üstüne brief'ten gelen kısıtlar ve insanın teknoloji kararları eklenir. Adım koşulur.
-- Sonraki özellik: Anayasa kuruluysa bu özelliğin brief'teki girdisini anayasayla karşılaştırırsın. Girdide bütün projeyi bağlayan ve anayasada olmayan bir şey varsa (yeni bir platform, dil ya da kütüphane kararı; yeni bir veri sınıfı, ör. kişisel veri ya da kimlik bilgisi; yeni bir güvenlik sınırı; yeni bir çalışma biçimi, ör. sürekli çalışan servis ya da kuyruk) anayasa değişikliği önerirsin. Değişiklik prompt'u yalnız eklenecek ya da değişecek kısmı taşır: "şu kuralı şu gerekçeyle ekle, gerisine dokunma." İnsan onaylarsa adım koşulur.
-- Böyle bir şey yoksa adım atlanır, commit de yapılmaz; doğrudan 5. adıma geçilir.
+- İlk kurulum: Dosyada şablonun yer tutucuları hâlâ duruyorsa (ör. `[PROJECT_NAME]`, `[PRINCIPLE_1_NAME]`) anayasa hiç kurulmamıştır. `constitution` skill'inin "İlk kurulum" bölümüne göre metni hazırlarsın. Adım koşulur.
+- Sonraki özellik: Anayasa kuruluysa `constitution` skill'inin "Sonradan değişiklik" bölümündeki durumlardan biri bu özelliğin girdisinde var mı diye bakarsın. Varsa o bölüme göre değişiklik metnini hazırlarsın. Adım koşulur.
+- İkisi de değilse adım atlanır, commit de yapılmaz; doğrudan 5. adıma geçilir.
 
 **Komut**: `/speckit-constitution`
 **Prompt**: `inputs/constitution.md`'nin içeriği; dosyanın path'i değil.
@@ -118,7 +108,7 @@ Oturum sıkıştırılsa da değer dosyada kalır.
 **Süreç**: impl soru sorarsa `Soruları Cevaplama Kuralları` başlığını uygula. Cevaplayamadığın durumda soruyu insana iletirsin. İnsan sorunu ya seninle ya da gerekli görürse impl üzerinden çözer. Sorunun çözüldüğü bilgisi sana insandan ya da impl'den gelir. Komutun tamamlanmasını beklersin.
 **Kontrol**: `<impl>/.specify/memory/constitution.md`'de `inputs/constitution.md`'deki bir kural eksik mi, ya da onunla çelişen bir şey yazılmış mı? Eğer onay vermezsen impl'e itirazını iletirsin. İtirazın kabul görür ve tekrar yazılırsa kontrol adımını baştan başlatırsın.
 Kabul görmezse süreci durdurur, insana rapor verirsin.
-**Commit**: Kontrol temiz çıkınca impl'in reposunda sen commit'lersin: `git -C <impl> add -A && git -C <impl> commit -m "docs(constitution): <değişikliğin özeti>"`. Mesaj global commit kurallarına uyar.
+**Commit**: Kontrol temiz çıkınca önce impl'e `constitution.md`'nin başındaki Sync Impact Report yorumunu sildirirsin; komut bu raporun commit'ten önce silinmesini bekler. Sonra impl'in reposunda sen commit'lersin: `git -C <impl> add -A && git -C <impl> commit -m "docs(constitution): <değişikliğin özeti>"`. Mesaj global commit kurallarına uyar.
 
 ## 5. Specify
 
