@@ -26,9 +26,11 @@ def load():
     return m
 
 
-def devenv(cwd, *argv):
+def devenv(cwd, *argv, answer=""):
+    """`answer`, dolu dizinde sorulan ezme sorusunun cevabi; soru ciktiya duser."""
     os.chdir(cwd)
     m = load()
+    m.input = lambda prompt: print(prompt) or answer
     sys.argv = ["devenv", *argv]
     out, code = io.StringIO(), 0
     with redirect_stdout(out):
@@ -65,6 +67,7 @@ t = WORK / "yeni"; t.mkdir()
 out, code = devenv(t, "create", "ornek", "--lang", "go", "--speckit")
 root, impl, ctrl = t / "ornek", t / "ornek/ornek-impl", t / "ornek/ornek-ctrl"
 check("yeni: cikis 0", ok(code))
+check("yeni: bos dizinde soru yok", "ezeyim mi" not in out)
 check("yeni: ust dizin repo degil", not (root / ".git").exists())
 check("yeni: impl repo, ctrl degil", (impl / ".git").is_dir() and not (ctrl / ".git").exists())
 check("yeni: ust CLAUDE.md protokolu import eder", f"@{CFG}/roles/protocol.md" in (root / "CLAUDE.md").read_text())
@@ -103,34 +106,37 @@ check("yeni: ctrl branch script'i ve impl commit'ine izinli",
 status = subprocess.run(["git", "-C", str(impl), "status", "--porcelain"], capture_output=True, text=True).stdout
 check("yeni: yerel dosyalar git status'ta yok", "CLAUDE.local.md" not in status and "settings.local" not in status)
 
-# ikinci kosu
-out, code = devenv(t, "create", "ornek", "-l", "go")
-check("ikinci: cikis 0", ok(code))
-check("ikinci: yeni dosya yok", "created:" not in out)
-check("ikinci: exclude tekrarlanmadi", (impl / ".git/info/exclude").read_text().count("CLAUDE.local.md") == 1)
+# dolu dizin: once sorar; N ise dokunmaz, y ise ustune yazar ve silmez
+(impl / "CLAUDE.md").write_text("# degisti\n")
+(impl / "kendi.txt").write_text("kullanicinin\n")
+(impl / ".claude/settings.local.json").write_text(json.dumps({"permissions": {"allow": ["Bash(ls)"]}}))
+out, code = devenv(t, "create", "ornek", "-l", "go", "--speckit", answer="n")
+check("dolu N: soruldu", "ezeyim mi" in out)
+check("dolu N: cikis 0 degil", not ok(code))
+check("dolu N: dokunulmadi", (impl / "CLAUDE.md").read_text() == "# degisti\n" and "[speckit]" not in out)
+out, code = devenv(t, "create", "ornek", "-l", "go", "--speckit", answer="y")
+check("dolu y: soruldu", "ezeyim mi" in out)
+check("dolu y: cikis 0", ok(code))
+check("dolu y: CLAUDE.md sablonla ezildi", (impl / "CLAUDE.md").read_text().startswith("# ornek\n"))
+check("dolu y: izinler birlesmedi, sablonla ezildi",
+      "Bash(ls)" not in settings(impl / ".claude/settings.local.json")["allow"])
+check("dolu y: baska dosya silinmedi", (impl / "kendi.txt").read_text() == "kullanicinin\n")
+check("dolu y: Spec Kit yeniden kuruldu", "[speckit]" in out)
+check("dolu y: exclude tekrarlanmadi", (impl / ".git/info/exclude").read_text().count("CLAUDE.local.md") == 1)
 
-# var olan repoyu alma
-t = WORK / "alma"; impl2 = t / "eski/eski-impl"; impl2.mkdir(parents=True)
-git_init(impl2)
-(impl2 / "CLAUDE.md").write_text("# eski\n\nmevcut\n")
-(impl2 / ".specify").mkdir()
-(impl2 / ".claude").mkdir()
-(impl2 / ".claude/settings.local.json").write_text(
-    json.dumps({"permissions": {"allow": ["Bash(ls)"], "deny": ["Read(./.env)"]}}))
-out, code = devenv(t / "eski", "create", ".", "--lang", "go", "--speckit")
-s = settings(impl2 / ".claude/settings.local.json")
-check("alma: cikis 0", ok(code))
-check("alma: CLAUDE.md korundu", (impl2 / "CLAUDE.md").read_text() == "# eski\n\nmevcut\n")
-check("alma: izinler birlesti", "Bash(ls)" in s["allow"] and "Read(./.env)" in s["deny"] and "Skill(spike)" in s["deny"])
-check("alma: kurulu Spec Kit ezilmedi", "atlandi: speckit" in out and "[speckit]" not in out)
-
-# create . : bulunulan dizin proje dizini
+# create . : bulunulan dizin proje dizini; ayni kural
 t = WORK / "nokta" / "nokta"; t.mkdir(parents=True)
 out, code = devenv(t, "create", ".", "--lang", "go")
 check("nokta: cikis 0", ok(code))
+check("nokta: bos dizinde soru yok", "ezeyim mi" not in out)
 check("nokta: impl ve ctrl bulunulan dizinde", (t / "nokta-impl/.git").is_dir() and (t / "nokta-ctrl/CLAUDE.md").is_file())
 check("nokta: ic ice dizin yok", not (t / "nokta").exists())
 check("nokta: baslik dizinin adi", (t / "nokta-impl/CLAUDE.md").read_text().startswith("# nokta\n"))
+t = WORK / "nokta-dolu" / "dolu"; t.mkdir(parents=True); (t / "notlar.md").write_text("x\n")
+out, code = devenv(t, "create", ".", "--lang", "go", answer="n")
+check("nokta dolu N: soruldu, dokunulmadi", "ezeyim mi" in out and not ok(code) and not (t / "dolu-impl").exists())
+out, code = devenv(t, "create", ".", "--lang", "go", answer="y")
+check("nokta dolu y: kuruldu, dosya silinmedi", ok(code) and (t / "dolu-impl/.git").is_dir() and (t / "notlar.md").is_file())
 
 # reddedilenler
 t = WORK / "red"; (t / "repo").mkdir(parents=True); git_init(t / "repo")

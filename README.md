@@ -18,7 +18,7 @@ the `Makefile` and copies `rules.md` to `.claude/rules/<lang>.md`; a missing
 part is skipped. A language that needs something else has a `create.py`, and
 then `devenv` runs that instead (`ctx.defaults()` does the above).
 
-Existing files are never overwritten. In the generated `flake.nix` edit two lines:
+`nix flake init` never overwrites existing files. In the generated `flake.nix` edit two lines:
 
 ```nix
 langs = [ "rust" "cpp" ];   # rust cpp go node java android
@@ -107,9 +107,10 @@ permissions. Updating a role is one `./install.sh`, not a walk through projects.
 - Names inside the product come from the argument, never from the directory:
   the `CLAUDE.md` title is `ornek`, not `ornek-impl`.
 - `devenv create . -l <lang>` takes the current directory as `ornek/` and its
-  name as the project name. An existing repo is adopted that way: move it to
-  `ornek/ornek-impl`, then run `devenv create . -l <lang>` inside `ornek/`,
-  without `--speckit`; existing files are kept and permission lists are merged.
+  name as the project name; everything after that is the same as
+  `devenv create ornek`.
+- If the project directory is not empty, `devenv create` asks first (y/N). On
+  y it writes the template files over the existing ones; it deletes nothing.
 - `devenv` does not install the orchestration extension: its judge and
   `after_*` hooks decide inside the writing session, and in this layout the
   reviewer decides.

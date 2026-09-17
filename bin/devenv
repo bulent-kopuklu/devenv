@@ -17,7 +17,7 @@ shared protocol. Role texts are not copied: the project files import them from
 the Claude config directory, so one install updates them all. `devenv create .`
 takes the current directory as <name>/ and its name as the project name.
 """
-import argparse, importlib.util, json, os, shutil, subprocess, sys
+import argparse, importlib.util, os, shutil, subprocess, sys
 
 sys.dont_write_bytecode = True  # dillerin create.py'si sablon dizininde __pycache__ birakmasin
 from pathlib import Path
@@ -51,7 +51,7 @@ COMPANION = os.environ.get(
 CONFIG = Path(os.environ.get("CLAUDE_CONFIG_DIR", Path.home() / ".claude"))
 WIKI = Path(os.environ.get("CC_WORKSPACE", Path.home() / "workspace/cc-workspace"))
 
-VERSION = "3.0.0"
+VERSION = "4.0.0"
 #: install.sh kopyalarken bunu deponun commit'iyle degistirir; depodan
 #: calistirilinca yerinde kalir ve git'ten okunur.
 BUILD = "@BUILD@"
@@ -80,13 +80,10 @@ class Lang:
         self._makefile, self._rules = makefile, rules
 
     def copy_files(self, sub, dest=".", replace=None):
-        """`<dil>/<sub>/` altini dest'e kopyalar; var olan dosyaya dokunmaz."""
+        """`<dil>/<sub>/` altini dest'e kopyalar."""
         src = self.dir / sub
         for f in sorted(q for q in src.rglob("*") if q.is_file()):
             rel = Path(dest) / f.relative_to(src)
-            if rel.exists():
-                print(f"kept:    {rel}")
-                continue
             text = f.read_text()
             for k, v in (replace or {}).items():
                 text = text.replace(k, v)
@@ -146,12 +143,9 @@ def copy(template):
                  f"install.sh'i calistir; sablonlar {SHARE / 'templates'} altina kopyalanir.")
     for f in sorted(p for p in kaynak.rglob("*") if p.is_file()):
         rel = f.relative_to(TEMPLATES / template)
-        if rel.exists():
-            print(f"kept:    {rel}")
-        else:
-            rel.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(f, rel)
-            print(f"created: {rel}")
+        rel.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(f, rel)
+        print(f"created: {rel}")
 
 
 def edit(path, subs):
@@ -168,41 +162,17 @@ def tilde(p):
 
 def render(template, dest, subs):
     """`templates/project/<template>` altindakileri dest'e yazar, `{{AD}}` yer
-    tutucularini doldurarak. Var olan dosyaya dokunmaz; izin JSON'u haric: onun
-    listelerine eksik girdiler eklenir, cunku mevcut bir repoyu iceri alirken
-    oradaki izinler de korunmali."""
+    tutucularini doldurarak."""
     src = TEMPLATES / "project" / template
     for f in sorted(p for p in src.rglob("*") if p.is_file()):
         dst = Path(dest) / f.relative_to(src)
         text = f.read_text()
         for k, v in subs.items():
             text = text.replace("{{" + k + "}}", v)
-        if dst.exists() and dst.suffix == ".json":
-            merge_permissions(dst, json.loads(text))
-        elif dst.exists():
-            print(f"kept:    {dst}")
-        else:
-            dst.parent.mkdir(parents=True, exist_ok=True)
-            dst.write_text(text)
-            shutil.copymode(f, dst)
-            print(f"created: {dst}")
-
-
-def merge_permissions(path, new):
-    cfg = json.loads(path.read_text())
-    perms = cfg.setdefault("permissions", {})
-    added = 0
-    for key, values in new.get("permissions", {}).items():
-        have = perms.setdefault(key, [])
-        for v in values:
-            if v not in have:
-                have.append(v)
-                added += 1
-    if added:
-        path.write_text(json.dumps(cfg, indent=2) + "\n")
-        print(f"edited:  {path} ({added} izin eklendi)")
-    else:
-        print(f"kept:    {path}")
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        dst.write_text(text)
+        shutil.copymode(f, dst)
+        print(f"created: {dst}")
 
 
 def nix_list(name, values):
@@ -242,12 +212,9 @@ def speckit():
     # komut (register-capability) eksik dosyayi `enabled: true` ile yaratir;
     # var olan dosyanin bayragini korur.
     ls = Path("living-specs.yml")
-    if ls.exists():
-        print(f"kept:    {ls}")
-    else:
-        ls.write_text("enabled: false\ncapabilities: []\n")
-        subprocess.run(["git", "add", "-N", str(ls)], check=True)
-        print(f"created: {ls} (living specs kapali; git add it to keep it)")
+    ls.write_text("enabled: false\ncapabilities: []\n")
+    subprocess.run(["git", "add", "-N", str(ls)], check=True)
+    print(f"created: {ls} (living specs kapali; git add it to keep it)")
 
 
 def optional_hooks():
@@ -305,11 +272,10 @@ CREATE = """Iki rollu bir proje kurar:
     <ad>-ctrl/     denetci: CLAUDE.md, .claude/settings.json, skill'ler
 
 Rol metinleri kopyalanmaz, Claude config dizininden import edilir; once
-dev-templates'te install.sh calismis olmali. Var olan dosyalara dokunulmaz,
-izin listeleri birlestirilir.
+dev-templates'te install.sh calismis olmali.
 
-Mevcut bir repoyu almak icin: repoyu <ad>/<ad>-impl'e tasi, <ad>/ icinde
-`devenv create . -l <dil>` calistir (--speckit'siz; kurulu Spec Kit ezilmez)."""
+Proje dizini doluysa once sorar (y/N). y ise sablon dosyalarini var olanlarin
+ustune yazar; baska dosyaya dokunmaz, hicbir sey silmez."""
 
 
 def parser():
@@ -319,7 +285,7 @@ def parser():
         epilog=ORNEKLER)
     ap.add_argument("--version", action="version", version=f"devenv {VERSION} ({build_info()})")
     sub = ap.add_subparsers(dest="command", required=True, metavar="komut")
-    c = sub.add_parser("create", help="yeni proje kur ya da tasinmis bir repoyu duzene al",
+    c = sub.add_parser("create", help="yeni proje kur",
                        formatter_class=argparse.RawDescriptionHelpFormatter,
                        description=CREATE, epilog=ORNEKLER)
     c.add_argument("name", metavar="ad",
@@ -350,8 +316,14 @@ def create_project(name):
     else:
         root = Path.cwd() / name
     if (root / ".git").exists():
-        sys.exit(f"{root} bir git reposu; ust dizin repo olamaz. "
-                 f"Repoyu {root}/{name}-impl altina tasi, sonra yeniden calistir (--speckit'siz).")
+        sys.exit(f"{root} bir git reposu; ust dizin repo olamaz.")
+    if root.is_dir() and any(root.iterdir()):
+        try:
+            answer = input(f"{root}: burada bir seyler var, ezeyim mi? [y/N] ")
+        except EOFError:
+            answer = ""
+        if answer.strip().lower() != "y":
+            sys.exit("vazgecildi; hicbir seye dokunulmadi")
     impl, ctrl = root / f"{name}-impl", root / f"{name}-ctrl"
     impl.mkdir(parents=True, exist_ok=True)
     ctrl.mkdir(exist_ok=True)
@@ -387,61 +359,50 @@ def setup(a, langs, targets, subs):
         subprocess.run(["git", "init", "-q"], check=True)
         print("created: .git")
 
-    if Path("flake.nix").exists() or Path("shell.nix").exists():
-        print("kept:    flake.nix/shell.nix (theirs)")
-    else:
-        copy("base")
-        edit("flake.nix", lambda t: t
-             .replace('dev-templates.url = "github:bulent-kopuklu/devenv";',
-                      f'dev-templates.url = "{REF}";')
-             .replace('  langs = [ ];', nix_list("langs", langs))
-             .replace('  targets = [ ];', nix_list("targets", targets) if targets else '  targets = [ ];'))
-        subprocess.run(["git", "add", "-N", "flake.nix"], check=True)
-        print("git:     flake.nix intent-to-added so nix can read it; git add it to keep it")
+    copy("base")
+    edit("flake.nix", lambda t: t
+         .replace('dev-templates.url = "github:bulent-kopuklu/devenv";',
+                  f'dev-templates.url = "{REF}";')
+         .replace('  langs = [ ];', nix_list("langs", langs))
+         .replace('  targets = [ ];', nix_list("targets", targets) if targets else '  targets = [ ];'))
+    subprocess.run(["git", "add", "-N", "flake.nix"], check=True)
+    print("git:     flake.nix intent-to-added so nix can read it; git add it to keep it")
 
     makefile, rules = create_langs(langs, subs["NAME"])
 
-    if not Path("Makefile").exists():
-        write_makefile(makefile)
-        subprocess.run(["git", "add", "-N", "Makefile"], check=True)
-        print("git:     Makefile intent-to-added; it belongs to the project, git add it to keep it")
+    write_makefile(makefile)
+    subprocess.run(["git", "add", "-N", "Makefile"], check=True)
+    print("git:     Makefile intent-to-added; it belongs to the project, git add it to keep it")
 
-    if not Path(".envrc").exists():
-        Path(".envrc").write_text("use flake\n")
-        print("created: .envrc")
+    Path(".envrc").write_text("use flake\n")
+    print("created: .envrc")
 
-    if a.node and not any(Path(f).exists() for f in (".nvmrc", ".node-version")):
+    if a.node:
         Path(".nvmrc").write_text(f"{a.node}\n")
         subprocess.run(["git", "add", "-N", ".nvmrc"], check=True)
         print(f"git:     .nvmrc ({a.node}) intent-to-added; the flake reads only what git knows")
 
     copy("claude")
-    if Path("CLAUDE.md").exists():
-        edit("CLAUDE.md", lambda t: t.replace("# PROJECT_NAME", f"# {subs['NAME']}"))
-        body = Path("CLAUDE.md").read_text()
-        imports = []
-        for l, src in rules.items():
-            dst = Path(".claude/rules") / f"{l}.md"
-            if dst.exists():
-                print(f"kept:    {dst}")
-            else:
-                dst.parent.mkdir(parents=True, exist_ok=True)
-                shutil.copy2(src, dst)
-                print(f"created: {dst}")
-            if f"@{dst}" not in body:
-                imports.append(f"- @{dst}\n")
-        if imports:
-            # Capa: sablonun Kurallar bolumundeki global-kurallar maddesi.
-            # Import'lar onun ALTINA girer. Capa sablondan kalkarsa import'lar
-            # sessizce yazilmaz; o yuzden ikisi birlikte degisir.
-            capa = "- Global `CLAUDE.md`'deki kurallar"
-            def ekle(metin):
-                for satir in metin.splitlines(keepends=True):
-                    if satir.startswith(capa):
-                        return metin.replace(satir, satir + "".join(imports), 1)
-                sys.exit(f"CLAUDE.md'de capa bulunamadi: {capa!r}")
-            edit("CLAUDE.md", ekle)
-            print(f"claude:  {len(imports)} kural dosyasi import edildi")
+    edit("CLAUDE.md", lambda t: t.replace("# PROJECT_NAME", f"# {subs['NAME']}"))
+    imports = []
+    for l, src in rules.items():
+        dst = Path(".claude/rules") / f"{l}.md"
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(src, dst)
+        print(f"created: {dst}")
+        imports.append(f"- @{dst}\n")
+    if imports:
+        # Capa: sablonun Kurallar bolumundeki global-kurallar maddesi.
+        # Import'lar onun ALTINA girer. Capa sablondan kalkarsa import'lar
+        # sessizce yazilmaz; o yuzden ikisi birlikte degisir.
+        capa = "- Global `CLAUDE.md`'deki kurallar"
+        def ekle(metin):
+            for satir in metin.splitlines(keepends=True):
+                if satir.startswith(capa):
+                    return metin.replace(satir, satir + "".join(imports), 1)
+            sys.exit(f"CLAUDE.md'de capa bulunamadi: {capa!r}")
+        edit("CLAUDE.md", ekle)
+        print(f"claude:  {len(imports)} kural dosyasi import edildi")
 
     # Rol import'u ve izinler makineye ozgu (mutlak yollar), commit'lenmez:
     # repoyu baska makinede acan kirik bir import gormesin.
@@ -455,10 +416,7 @@ def setup(a, langs, targets, subs):
         for e in excluded:
             print(f"excluded: {e}")
 
-    if a.speckit and Path(".specify").is_dir():
-        # Iceri alinan repoda init --force kurulu Spec Kit'i ezer.
-        print("atlandi: speckit (.specify/ zaten var)")
-    elif a.speckit:
+    if a.speckit:
         speckit()
 
 

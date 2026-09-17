@@ -43,8 +43,10 @@ Kurulumu `install.sh` yapar ve kopyalar, symlink kurmaz. Bu makinede
   Makineye özgü olan (rol import'u, mutlak yollu izinler) `CLAUDE.local.md` ve
   `.claude/settings.local.json`'da, `.git/info/exclude`'da.
 - **Ad argümandan gelir**, dizin adından değil: `-impl` ürüne sızmaz.
-- **Var olana dokunulmaz.** Var olan dosya korunur; izin JSON'unun listeleri
-  birleştirilir. Kurulu `.specify/` varsa `--speckit` atlanır.
+- **create yalnız yaratır.** Ad `.` ise bulunulan dizinin adı, değilse
+  argümandır; sonrası tek yol. Proje dizini doluysa önce sorar (y/N); y ise
+  şablon dosyalarını var olanların üstüne yazar, hiçbir şey silmez. Var olanı
+  koruma, izin birleştirme, repo alma yoktur; o iş ayrı bir komutundur.
 - **Orchestration kurulmaz.** Hakem ve `after_*` hook'ları kararı yazan
   oturumun içinde veriyordu; bu düzende karar denetçinindir.
 - **Ürünsüz.** Şablonlara ve rol metinlerine hiçbir projenin adı, kararı ya da
@@ -54,8 +56,9 @@ Kurulumu `install.sh` yapar ve kopyalar, symlink kurmaz. Bu makinede
 
 ## Değişiklikten sonra
 
-- `python3 -B tests/devenv_create.py`: yeni proje, ikinci koşu, var olan repoyu
-  alma, `create .`, reddedilen çağrılar. Nix build'i atlar, geçici dizinde koşar.
+- `python3 -B tests/devenv_create.py`: yeni proje, dolu dizinde N ve y,
+  `create .` boş ve dolu, reddedilen çağrılar. Nix build'i atlar, geçici dizinde
+  koşar.
 - `templates/make/*.mk` ya da `templates/<dil>/make.mk` değişirse bir devshell'in içinde, cross hedefle
   birlikte dene. Devshell `CC`'yi export eder; dışında görünmeyen hatalar
   içinde çıkar. Değişiklikten önceki Makefile'ı aynı düzenekte koş: hatayı
