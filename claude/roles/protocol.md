@@ -1,42 +1,44 @@
-# İki rollü proje: ortak protokol
+# İki rollü proje
 
-Bu dizinde iki Claude oturumu çalışır: impl ve ctrl. Bu metin ikisine de
-yüklenir; rolün kendi metni oturumun dizininden gelir.
+Bir yazılım ürünü iki Claude Code oturumuyla geliştirilir. Proje dizininde üç
+dizin vardır; adları ve oturum adları bu metni yükleyen `CLAUDE.md`'de yazar:
 
-## Roller
+- `<ad>/`: üst dizin. Git reposu değildir, burada oturum açılmaz.
+- `<ad>-impl/`: ürünün git reposu. Burada **impl** oturumu çalışır: spec-kit
+  komutlarını koşar; spec'i, planı, task'ları ve kodu yazar.
+- `<ad>-ctrl/`: git reposu değildir. Burada **ctrl** oturumu çalışır: insanla
+  konuşur, impl'e adımları sırayla yaptırır, her adımın çıktısını kontrol eder,
+  impl'in sorularını cevaplar.
 
-- **impl** (`<ad>-impl/`, ürün reposu): spec-kit komutlarını koşar, spec'i,
-  planı ve kodu yazar.
-- **ctrl** (`<ad>-ctrl/`, git değil): sıradaki adımı başlatır, biten her işi
-  kontrol eder, itirazını söyler, impl'in sorularını cevaplar.
-- **İnsan** amacı ve kısıtları verir, ctrl'le çalışır. İlk BL'den önce impl'in
-  reposunda remote'u ekler, iskeleti commit'ler ve main'i bir kez
-  `git push -u origin main` ile gönderir; impl main'e push etmez.
+**İnsan** amacı, kısıtları ve ürün kararlarını verir; ctrl'le konuşur.
 
-## Akış
+**spec-kit**, impl'in reposuna kurulu bir komut setidir. Komutlar sırayla:
+`/speckit-constitution` (projenin bütün işini bağlayan kurallar),
+`/speckit-specify` (ürünün ne yapacağı), `/speckit-clarify` (spec'teki
+belirsizlikleri soru-cevapla kapatır), `/speckit-plan` (nasıl yapılacağı),
+`/speckit-tasks` (fazlara bölünmüş iş listesi), `/speckit-analyze` (belgeler
+arası tutarsızlık raporu) ve `/speckit-companion-implement` (bir fazın kodunu
+yazar). Bir komutun ne yaptığı impl'de `.claude/skills/<komut>/SKILL.md`
+dosyasında yazar.
 
-Adımı ctrl başlatır; impl adım bitince durur ve ctrl'e bildirir. ctrl'in
-itirazı kapanmadan adım bitmiş sayılmaz.
+## Çalışma sırası
 
-1. **constitution** (impl; metni ctrl verir).
-2. **specify** (impl; girdisi ctrl'in prompt'u). Gerekirse **clarify**.
-3. **plan** (impl; ctrl'in prompt'uyla).
-4. **tasks** (impl).
-5. **analyze** (ctrl).
-6. **implement** (impl; `/speckit-companion-implement`).
+1. ctrl, impl'e bir komutu ve girdisini mesajla verir.
+2. impl komutu koşar, bitince durur ve ctrl'e "bitti" der.
+3. ctrl çıktıyı kontrol eder. İtirazı varsa impl'e yazar; impl düzeltir ve
+   yeniden "bitti" der. impl katılmıyorsa gerekçesini yazar; anlaşamazlarsa
+   ctrl konuyu insana götürür ve insanın kararını bekler.
+4. İtiraz kalmayınca ctrl sıradaki komutu verir.
 
-## Sorular ve itirazlar
+## Mesajlar
 
-- impl'in sorusu, komutun sorduğu dahil, her adımda gelebilir. impl onu
-  bağlamıyla ctrl'e iletir, ctrl cevaplar.
-- ctrl'in itirazı o adımda kapanır: impl belgeyi ya da kodu düzeltir, ctrl
-  yeniden bakar.
-  impl katılmıyorsa gerekçesini söyler; karar ctrl'indir.
+- Oturumlar `SendMessage` ile konuşur; alıcı, oturum adıdır.
+- Mesaj düz yazıdır. Bir mesaj bir konu taşır; soru ya da itiraz mesajın ilk
+  cümlesidir.
 
-## Mesaj ve yazma alanı
+## Git
 
-- Oturumlar `SendMessage` ile konuşur; oturum adı dizin adıdır. Biçim yok:
-  düz konuşulur, etiket ve şablon uydurulmaz.
-- Bir mesaj bir konu taşır. Soru ya da itiraz varsa mesajın başında durur,
-  uzun metnin içine gömülmez.
-- Her rol yalnız kendi dizinine yazar.
+- İlk komuttan önce insan, impl'in reposunda remote'u ekler, dosyaları
+  commit'ler ve `git push -u origin main` ile main'i bir kez gönderir.
+- impl branch'lerde çalışır ve branch'i push eder. Bir branch'i main'e insan
+  alır.

@@ -1,12 +1,12 @@
 ---
 name: reference
-description: Referans ürün araştırması ve BL listesi. Ne yapacağımızı, kimin için yapacağımızı ve kısıtları konuşur; bu işi yapan ürünleri linkleriyle listeler; seçilen referansların bütün özelliklerini ve nasıl çalıştıklarını çıkarır; roadmap'i BL'lere böler. Sıfırdan bir projeye başlarken ya da referans incelemesi eksik kaldığında yüklenir.
+description: Referans ürün araştırması. Ne yapacağımızı, kimin için yapacağımızı ve kısıtları konuşur, insanın girdisini saklar; bu işi yapan ürünleri linkleriyle listeler; seçilen referansların bütün özelliklerini ve nasıl çalıştıklarını çıkarır. Sıfırdan bir projeye başlarken ya da referans incelemesi eksik kaldığında yüklenir.
 ---
 
 # Referans araştırması
 
-Çıktıların bu dizinde: `reference/<ürün>.md` ve `roadmap.md`. Wiki'ye yazmazsın;
-wiki yalnız spike içindir. Ajan açmazsın: aramayı ve okumayı kendin yaparsın.
+Çıktıların bu dizinde: `inputs/brief.md` ve `reference/<ürün>.md`. Wiki'ye
+yazmazsın; wiki yalnız spike içindir. Ajan açmazsın: aramayı ve okumayı kendin yaparsın.
 
 ## 1. Görüşme
 
@@ -17,12 +17,13 @@ wiki yalnız spike içindir. Ajan açmazsın: aramayı ve okumayı kendin yapars
   pazar ve müşteri analizi bu akışın işi değil.
 - Mecbur olduğumuz platform, teknoloji ya da kısıt var mı?
 
-Cevapları `roadmap.md`'nin başına yazarsın.
+İnsanın verdiği her metni kısaltmadan `inputs/brief.md`'ye eklersin; özet onun
+yerine geçmez.
 
 ## 2. Tarama
 
 Bu işi yapan ürünleri web'de ararsın. Kullanıcıya yalnız liste sunarsın: ad,
-tek satır, link. Analiz yok, rakam yok. Kullanıcı bir, belki iki ürünü referans
+tek satır, link. Analiz yok, rakam yok. Kullanıcı referans ürünleri
 seçer.
 
 ## 3. Çıkarım
@@ -53,20 +54,7 @@ Kurallar:
   satıra "sonradan eklendi" yazarsın. Bu satırların birikmesi araştırmanın eksik
   kaldığının ölçüsüdür.
 
-## 4. BL listesi
-
-Özellikleri bağımlılığa göre gruplar, BL1'den başlayarak numaralandırırsın.
-
-- Bir BL bir feature setidir, task değil. Ölçek örneği: "yedekten geri dönüş"
-  bir BL'dir.
-- Her BL bağımsız test edilebilir bir artış verir, önceliği bellidir ve
-  öncekilere dayanır.
-- Her BL için amaç, kapsam, kapsam dışı, bağımlılık, durum yazılır.
-- Listeyi kullanıcıya sunarsın. Ekleme, çıkarma ve sıra değişikliğinden sonra
-  `roadmap.md`'ye yazarsın.
-- Yalnız sıradaki BL'nin spec'i hazırlanır. Sonrakilerin kapsamı plan ve
-  araştırma sonucunda kayabilir; roadmap o zaman güncellenir.
-
 ## Bitince
 
-Sıradaki iş anayasadır: `constitution` skill'i. Spec'e ondan sonra geçilir.
+Sıradaki iş anayasadır: `constitution` skill'i. Sonra specify girdisi
+hazırlanır: bütün ürün tek bir specify'dır.

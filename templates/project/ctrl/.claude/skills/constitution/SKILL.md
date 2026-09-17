@@ -1,6 +1,6 @@
 ---
 name: constitution
-description: Anayasayı kurmak ve her BL girişinde değişip değişmeyeceğine kurala göre karar vermek. Neyin anayasaya neyin spec'e gireceğini, ilkenin nasıl yazılacağını, değişikliğin nasıl önerilip sonucun nasıl doğrulanacağını taşır. İlk spec'ten önce ve her BL'ye geçerken yüklenir.
+description: Anayasayı kurmak ve gerektiğinde değiştirmek. Neyin anayasaya neyin spec'e gireceğini, insanın teknoloji kararlarının nereye yazılacağını, ilkenin nasıl yazılacağını, değişikliğin nasıl önerilip sonucun nasıl doğrulanacağını taşır. İlk spec'ten önce yüklenir.
 ---
 
 # Anayasa
@@ -17,7 +17,7 @@ esastır.
 
 Bir kural ancak üçü birden doğruysa girer:
 
-1. Bütün BL'leri bağlıyor. Yalnız bu BL'yi bağlıyorsa spec'e gider.
+1. Bütün projeyi bağlıyor. Yalnız bir özelliği bağlıyorsa spec'e gider.
 2. İhlali gösterilebiliyor: bir test, bir kontrol, bir kanıt.
 3. Var olan bir ilkeyle çelişmiyor. Çelişiyorsa ya o ilke değişir ya bu kural
    reddedilir; ikisi birden durmaz.
@@ -26,14 +26,13 @@ Bir kural ancak üçü birden doğruysa girer:
 pahalı. Sonraki her plan Constitution Check'te ona bakar, analyze MUST ihlalini
 CRITICAL sayar, kaldırmak MAJOR sürümdür.
 
-Bir kural ilk göründüğü BL'de girmez. En az iki BL'de gerektiği görülünce ilke
-adayı olur; tekrarı, önceki BL'lerin spec ve plan dosyalarından görürsün.
-
 İlke sayısı yediyi geçmez. Tavana gelindiyse yeni ilke ancak birini çıkararak
 girer.
 
 Mecbur olunan platform ve teknoloji kısıtları ilkelere değil, "Ek Kısıtlar"
-bölümüne girer. İlkeler teknoloji adı taşımaz.
+bölümüne girer: insanın teknoloji kararları (platform, dil, kütüphane) burada
+durur ve her plan'ın Constitution Check'ine girer. İlkeler teknoloji adı
+taşımaz.
 
 Anayasa araç adı ve rol adı da taşımaz. "Şu skill'i koş", "denetçiye sor" gibi
 bir cümle oraya girmez: anayasayı impl okuyor ve o araçlar onda yok, olmayan
@@ -55,50 +54,29 @@ metinlerinde yazar.
 1. `{{CONFIG}}/constitution-base.md`'yi oku: her projede geçerli çekirdek.
 2. Üstüne referans incelemesinden ve kullanıcıyla konuşmadan geleni ekle:
    platform kısıtları, veri kuralları, güvenlik kuralları.
-3. Önerdiğin her ilkenin yanına etki cümlesi yaz: "bu ilke sıradaki BL'lerin
-   planını şöyle kısıtlayacak."
+3. Önerdiğin her ilkenin yanına etki cümlesi yaz: "bu ilke plan'ı şöyle
+   kısıtlayacak."
 4. Taslağı kullanıcıya sun. Onay almadan impl'e gitmez.
 5. Onaylanınca impl'e `/speckit-constitution` prompt'u olarak ver: ilkeler, ek
    kısıtlar, geliştirme akışı, yönetişim.
-6. Kopyasını bu dizinde `constitution.md` olarak tut.
+6. Kopyasını bu dizinde `inputs/constitution.md` olarak tut.
 7. Komut bitince impl'deki `{{ROOT}}/{{NAME}}-impl/.specify/memory/constitution.md`'yi kendi kopyanla
    karşılaştır. İstenmeyen her fark itirazdır. Komutun bastığı "Sync Impact
    Report" modelin kendi beyanıdır, kanıt değil; esas olan karşılaştırma.
 8. Sync Impact Report geçicidir, komutun kendi metni commit'ten önce silinmesini
-   bekler. impl'e sildirir, sonra anayasayı local main'e commit'letirsin; push
-   yok, değişiklik BL'nin branch'iyle merge request'e gider.
+   bekler. impl'e sildirir, sonra anayasayı commit'letirsin.
 
-## Her BL girişinde
+## Sonradan değişiklik
 
-Tetikleyici listesini işaretlersin. Hiçbiri işaretlenmezse karar "değişiklik
-yok"tur.
-
-- Bütün projeyi bağlayan yeni bir platform kısıtı ya da dış bağımlılık.
-- Yeni bir veri sınıfı: kişisel veri, kimlik bilgisi, müşteri verisi. Saklama,
-  şifreleme ve silme kuralı gerekir.
-- Yeni bir güvenlik sınırı: yeni ağ yüzeyi, yeni kimlik doğrulama yolu, yeni
-  yetki modeli.
-- Yeni bir çalışma biçimi: sürekli çalışan servis, zamanlanmış iş, kuyruk. Hata
-  ve çökme politikası gerekir.
-- Yeni bir dil ya da araç zinciri: build, lint, test sözleşmesi değişir.
-- Geri alınamaz bir işlem: silme, üzerine yazma, taşıma.
-- Referans üründe görülen ve bütün projeye yayılması gereken bir kural.
-- Önceki BL'de verilmiş bir karar bu BL'de de mecbur hâle geldi.
-
-Değişiklik gerekmiyorsa yazacak bir şey yoktur; gerekiyorsa karar zaten
-anayasanın kendisine giriyor.
-
-Değişiklik gerekiyorsa prompt delta olur: "şu ilkeyi şu gerekçeyle ekle,
-gerisine dokunma." Delta da kullanıcının onayından geçer: yukarıdaki 4.–8.
-adımlar yine koşar.
-
-Değişiklik ileriye dönüktür. Bitmiş BL'ler yeniden denetlenmez. Yeni ilke
-onlarda bir ihlal yaratıyorsa düzeltmeyi `roadmap.md`'ye ayrı bir BL olarak
-eklersin.
+Anayasa ilk spec'ten önce kurulur. Bir adımın kontrolünde bütün projeyi
+bağlayan yeni bir kural ya da kısıt çıkarsa (yeni platform kısıtı, veri sınıfı,
+güvenlik sınırı, dil ya da araç zinciri) değişiklik önerirsin. Prompt delta
+olur: "şu ilkeyi şu gerekçeyle ekle, gerisine dokunma." Delta da kullanıcının
+onayından geçer: yukarıdaki 4.–8. adımlar yine koşar.
 
 ## Valfler
 
-Yanlış yere konmuş bir kural sonraki BL'i kilitlemesin diye iki yol var, ikisini
+Yanlış yere konmuş bir kural sonraki adımları kilitlemesin diye iki yol var, ikisini
 de bilerek kullanırsın:
 
 - Bağlayıcılığı SHOULD'a düşürmek.

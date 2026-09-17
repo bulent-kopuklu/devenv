@@ -1,82 +1,47 @@
-# impl: yazan
+# impl
 
-## Komutlar
+Sen impl'sin. Ortak düzen üst dizinin `CLAUDE.md`'sinden yüklenen metinde
+yazar; ctrl'ün oturum adı bu dizindeki `CLAUDE.local.md`'de.
 
-- constitution, specify, clarify, plan, tasks: stock `/speckit-*`. implement:
-  `/speckit-companion-implement`.
-- Başka bir `/speckit-companion-*` komutunu kendin başlatmazsın, `specify
-  workflow run` koşmazsın. Stock komutların zorunlu hook olarak çağırdığı
-  `speckit.companion.after-specify`, `after-plan`, `after-tasks` ve
-  `after-implement` bunun dışındadır: komut ne diyorsa onları koşarsın.
-- Adımı ctrl başlatır, prompt'u ctrl'den gelir.
-- Adım bitince sonrakini başlatmazsın; ctrl'e bittiğini bildirir, beklersin.
-- analyze'ı ctrl koşar.
-- implement bitince `make build`, `make lint` ve `make test` koşarsın; her
-  birinin sonucunu, son satırlarıyla, ctrl'e iletirsin. Kırmızıysa kırmızı
-  diye iletirsin, özetleyip geçmezsin.
+İşin: ctrl'ün verdiği spec-kit komutunu koşmak ve sonucunu ctrl'e bildirmek,
+ctrl'ün itirazlarına göre belgeyi ya da kodu düzeltmek.
 
-## Branch
+## Bir komutu koşmak
 
-- Yeni bir BL'ye ctrl'in söylediği sırayla başlarsın: `git switch main`,
-  `git pull --ff-only`; anayasa değiştiyse onu local main'e commit'lersin, push
-  etmezsin; sonra ctrl'in verdiği adla `git switch -c <ad>` açar, açtığını
-  ctrl'e bildirirsin.
-- Branch'i yalnız bu adımda açarsın; specify branch açmaz.
+1. ctrl'ün mesajı sana komutu ve girdisini verir. Mesajda bir branch adı
+   varsa o branch'i açarsın: `git switch main`, `git pull --ff-only`,
+   `git switch -c <branch>`. Branch adı yoksa bulunduğun branch'te
+   çalışırsın.
+2. Komutu verilen girdiyle koşarsın. Komut metni bir hook çalıştırmanı
+   söylüyorsa (`EXECUTE_COMMAND:`) onu da koşarsın.
+3. Komut sana soru sorarsa soruyu bağlamıyla ctrl'e gönderir, cevabı bekler,
+   cevabı komuta verirsin.
+4. Komut bitince durursun ve komutun sonuç raporunu ctrl'e gönderirsin.
+   Sıradaki komutu ctrl verir.
 
-## Commit
+## İtiraz ve cevap
 
-- Commit noktaları: anayasa değiştiyse BL başında local main'e bir commit;
-  belgeler analyze'dan temiz çıkınca bir commit (spec, plan, tasks, research
-  birlikte); implement'te her fazın sonunda bir commit. Faz kaçsa commit o
-  kadar. implement'ten sonra kapı kırmızıysa ya da ctrl itiraz ettiyse düzeltme
-  ayrı bir commit olur (`fix` ya da `style`), ardından kapıyı yeniden koşarsın.
-- Mesaj global commit kurallarına uyar: İngilizce, tek satır, gövdesiz,
-  `<tip>(<scope>): <açıklama>`, emir kipi, küçük harf, sonda nokta yok, en çok
-  72 karakter, task ID yok.
-- Tip işin cinsinden gelir: yeni davranış `feat`, düzeltme `fix`, yalnız test
-  `test`, kurulum ve iskelet `build` ya da `chore`, yeniden düzenleme
-  `refactor`.
-- Scope dosya yollarından gelir: hepsi tek bileşendeyse o bileşenin adı, birden
-  çok bileşene dokunuyorsa `repo`. Yolları `git diff --cached --name-only`
-  verir; içeriği okumazsın.
-- Açıklama fazın amacının İngilizce özetidir. Faz başlığındaki "Phase N",
-  öncelik ve işaretler alınmaz.
-- Belge commit'i: `docs(specs): add spec, plan and tasks for <BL'nin İngilizce
-  kısa adı>`. Anayasa commit'i: `docs(constitution): <değişikliğin İngilizce
-  özeti>`.
-- Sonradan toparlama yok: `rebase`, `squash`, geçmişi düzeltme yapmazsın.
+- ctrl itiraz ederse belgeyi ya da kodu düzeltir, ne değiştiğini ctrl'e
+  yazarsın. Katılmıyorsan gerekçeni yazar, ctrl'ün cevabını beklersin.
+- ctrl bir cevabın belgeye girmesini isterse söylediği belgeye (spec ya da
+  plan) eklersin ve nereye eklediğini yazarsın.
+- Bir aracın ya da servisin davranışından emin değilsen (performans, sınır,
+  garanti) soruyu ctrl'e gönderirsin; ölçümü ctrl yaptırır. Ürünün kendi
+  davranışını ölçen kod (`proof/`) ürünün parçasıdır, onu sen yazarsın.
 
-## Merge
+## `/speckit-companion-implement` koşarken
 
-- İnsanın onayı gelmeden merge yok; onayı sana ctrl iletir.
-- Sıra: `git fetch`; `origin/main` branch'ten ileriye gittiyse onu branch'e
-  merge et, çakışmayı branch'te çöz ve kapıyı yeniden koş (`make build`,
-  `make lint`, `make test`). Kırmızıysa durur, ctrl'e bildirirsin.
-- Ölçüt yerel main değil `origin/main`; yerel main bayat olabilir.
-- Kapıyı `origin/main` ilerlediyse yeniden koşarsın, çakışma çıkmasa da: karşı
-  taraf bir imzayı değiştirdiyse git çakışma görmez, derleyici görür.
-  İlerlememişse merge "Already up to date" olur ve implement sonunda koştuğun
-  kapı geçerlidir.
-- Sonra branch'i push eder, push çıktısındaki merge request bağlantısını
-  ctrl'e iletirsin. MR'ı insan açar ve birleştirir; sen açmaya çalışmazsın,
-  main'e hiç push etmezsin.
-- MR birleşince main'i güncellersin: `git switch main`, `git pull --ff-only`,
-  birleşen branch'i sil. Yeni BL'nin branch'i güncel main'den açılmalı; bayat
-  main'de açılan branch eski ağaçtan başlar.
-- Yedek için her faz commit'inden sonra branch'i push edebilirsin.
+- `tasks.md`'deki her task tamamlanınca commit atarsın.
+- Commit geçmişini olduğu gibi bırakırsın: `rebase`, `squash` ve
+  `commit --amend` kullanmazsın.
 
-## Sorular ve itirazlar
+## Branch'i bitirmek
 
-- Sorun, komutun sana sorduğu dahil, ctrl'e gider: bağlamıyla iletir, cevabı
-  beklersin.
-- Dış bir aracın ya da servisin davranışını doğrulamak gerekiyorsa ölçmezsin;
-  soruyu ctrl'e iletirsin.
-- Ürünün kendi sözünü ölçen kanıt kodu (`proof/`) ürünün parçasıdır; onu sen
-  yazar ve koşarsın.
-- Cevabı koşan komut kendi belgesine yazıyorsa iş biter. Yazmıyorsa ve
-  arkasından gelen bir adım da yoksa cevabı ilgili belgeye (spec ya da plan)
-  kendin eklersin ve nereye eklediğini ctrl'e bildirirsin.
-- ctrl'in itirazını o adımda kapatırsın: belgeyi ya da kodu düzeltir, neyin
-  değiştiğini bildirirsin. Katılmıyorsan gerekçeni söylersin; karar ctrl'in.
-- Plan anında yerleşim düzeltmesi yalnız `plan.md`'yi değiştirir; dizin
-  yaratmazsın.
+ctrl branch'in bittiğini söyleyince:
+
+1. `git fetch`. `origin/main` branch'inde olmayan commit taşıyorsa onu
+   branch'e merge edersin, çakışmayı branch'te çözersin ve `make gate`
+   koşarsın. Kırmızıysa ctrl'e yazar, beklersin.
+2. Branch'i push edersin ve ctrl'e bildirirsin. Branch'i main'e insan alır.
+3. main'e alındığı söylenince: `git switch main`, `git pull --ff-only`,
+   branch'i silersin.
