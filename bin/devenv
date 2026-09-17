@@ -7,10 +7,10 @@
 
 <name>/<name>-impl is the product repo. The templates are copied there and the
 devshell is built so the runtimes are on disk. It creates no source files and
-reads no project tree: languages are what you name. Nothing is committed -
-created files land in .git/info/exclude, except flake.nix, which is
-intent-to-added because nix reads only files git knows about, and the root
-Makefile, which drives components/ and belongs to the project.
+reads no project tree: languages are what you name. Nothing is committed.
+Files that are machine-specific (the role import, absolute-path permissions,
+.direnv/) land in .git/info/exclude; everything else belongs to the project.
+flake.nix is intent-to-added because nix reads only files git knows about.
 
 <name>/<name>-ctrl is the reviewer's directory and <name>/CLAUDE.md carries the
 shared protocol. Role texts are not copied: the project files import them from
@@ -56,7 +56,8 @@ VERSION = "3.0.0"
 #: calistirilinca yerinde kalir ve git'ten okunur.
 BUILD = "@BUILD@"
 
-created = []
+#: Makineye ozgu, commit'lenmeyen dosyalar; yalniz bunlar exclude'a girer.
+LOCAL_ONLY = ["CLAUDE.local.md", ".claude/settings.local.json", ".direnv/"]
 
 
 def build_info():
@@ -92,7 +93,6 @@ class Lang:
             rel.parent.mkdir(parents=True, exist_ok=True)
             rel.write_text(text)
             shutil.copymode(f, rel)
-            created.append(str(rel))
             print(f"created: {rel}")
 
     def defaults(self):
@@ -136,7 +136,6 @@ def write_makefile(parts):
     body += [part.read_text() for part in parts]
     body.append((TEMPLATES / "make" / "targets.mk").read_text())
     Path("Makefile").write_text("".join(body))
-    created.append("Makefile")
     print(f"created: Makefile ({' '.join(part.parent.name for part in parts)})")
 
 
@@ -152,7 +151,6 @@ def copy(template):
         else:
             rel.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(f, rel)
-            created.append(str(rel))
             print(f"created: {rel}")
 
 
@@ -410,7 +408,6 @@ def setup(a, langs, targets, subs):
 
     if not Path(".envrc").exists():
         Path(".envrc").write_text("use flake\n")
-        created.append(".envrc")
         print("created: .envrc")
 
     if a.node and not any(Path(f).exists() for f in (".nvmrc", ".node-version")):
@@ -430,7 +427,6 @@ def setup(a, langs, targets, subs):
             else:
                 dst.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(src, dst)
-                created.append(str(dst))
                 print(f"created: {dst}")
             if f"@{dst}" not in body:
                 imports.append(f"- @{dst}\n")
@@ -450,10 +446,9 @@ def setup(a, langs, targets, subs):
     # Rol import'u ve izinler makineye ozgu (mutlak yollar), commit'lenmez:
     # repoyu baska makinede acan kirik bir import gormesin.
     render("impl", Path("."), subs)
-    created.extend(["CLAUDE.local.md", ".claude/settings.local.json"])
 
     already = Path(".git/info/exclude").read_text().splitlines()
-    excluded = [f for f in created + [".direnv/"] if f not in ("flake.nix", "Makefile") and f not in already]
+    excluded = [f for f in LOCAL_ONLY if f not in already]
     if excluded:
         with open(".git/info/exclude", "a") as f:
             f.write("# dev-templates (local only)\n" + "\n".join(excluded) + "\n")

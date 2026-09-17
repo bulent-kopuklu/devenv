@@ -6,6 +6,11 @@
     ],
     "deny": [
       "Edit(/{{ROOT}}/{{NAME}}-impl/**)"
+    ],
+    "allow": [
+      "Bash(scripts/feature-branch.sh *)",
+      "Bash(git -C {{ROOT}}/{{NAME}}-impl add *)",
+      "Bash(git -C {{ROOT}}/{{NAME}}-impl commit *)"
     ]
   }
 }

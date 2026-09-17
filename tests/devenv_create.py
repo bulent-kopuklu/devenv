@@ -94,6 +94,12 @@ check("yeni: impl'in yuklediklerinde ctrl'in yolu yok",
 excl = (impl / ".git/info/exclude").read_text()
 check("yeni: yerel dosyalar exclude'da",
       all(f in excl for f in ("CLAUDE.local.md", ".claude/settings.local.json")))
+check("yeni: urun dosyalari exclude'da degil",
+      not any(f in excl.splitlines() for f in ("CLAUDE.md", ".gitignore", ".envrc", ".golangci.yml", "Makefile")))
+check("yeni: impl commit, push ve gate'e izinli",
+      all(r in ls["allow"] for r in ("Bash(git add *)", "Bash(git commit *)", "Bash(git push *)", "Bash(make gate)")))
+check("yeni: ctrl branch script'i ve impl commit'ine izinli",
+      "Bash(scripts/feature-branch.sh *)" in cs["allow"] and f"Bash(git -C {impl} commit *)" in cs["allow"])
 status = subprocess.run(["git", "-C", str(impl), "status", "--porcelain"], capture_output=True, text=True).stdout
 check("yeni: yerel dosyalar git status'ta yok", "CLAUDE.local.md" not in status and "settings.local" not in status)
 
