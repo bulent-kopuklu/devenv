@@ -434,7 +434,7 @@ def setup(a, langs, targets, subs):
             # Capa: sablonun Kurallar bolumundeki global-kurallar maddesi.
             # Import'lar onun ALTINA girer. Capa sablondan kalkarsa import'lar
             # sessizce yazilmaz; o yuzden ikisi birlikte degisir.
-            capa = "- `~/.claude/CLAUDE.md` i"
+            capa = "- Global `CLAUDE.md`'deki kurallar"
             def ekle(metin):
                 for satir in metin.splitlines(keepends=True):
                     if satir.startswith(capa):

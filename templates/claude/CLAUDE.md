@@ -9,21 +9,19 @@
 - Build / test / lint kökteki `Makefile`'dan: `make`, `make test`, `make lint`,
   `make dist`, `make clean`, `make distclean`. Parametreler (`VARIANT`, `TARGET`,
   `COMPONENTS`) ve varsayılanları dosyanın başında.
+- `make gate` sırayla `distclean`, `build`, `lint`, `test` ve `test-integration`
+  koşar. `test-integration` hedefini proje tanımlar; tanımlanana kadar kapı
+  kırmızıdır.
 
 ## Yerleşim
 
 - Kod yalnız `components/<ad>/` altında durur. Her bileşen tek dildir; manifest'i
   (`go.mod`, `Cargo.toml`, `CMakeLists.txt`, `package.json`) kendi dizinindedir.
   İkinci bir dil gerekiyorsa ikinci bir bileşen açılır.
-- Kurulum ve ölçüm kodu `components/` dışında, kökte durur ve `make` ona
-  dokunmaz: `install/` bir kez kurar, `proof/` ölçer ve `components/`'ı import
-  etmez. Üretimde koşan, kuran ve ölçen kod ayrı dizinlerdedir (anayasa:
-  "Kanıt Ölçtüğü Şeyin İçinden Çıkmaz").
 - Yeni bileşen = `components/` altında yeni dizin. `Makefile`'a dokunulmaz;
   bileşenin dilini manifest'inden okur.
 - Kökte yalnız projenin geneline ait olan durur: `Makefile`, `flake.nix`,
-  formatter/linter config'leri, `CLAUDE.md`, `README.md`, `install/`, `proof/`,
-  `doc/`. Spec Kit kullanılıyorsa onun yerleri de: `specs/`, `.specify/`, living
+  formatter/linter config'leri, `CLAUDE.md`, `README.md`, `doc/`. Spec Kit kullanılıyorsa onun yerleri de: `specs/`, `.specify/`, living
   specs'in `living-specs.yml`'ı ve `capabilities/`'i. Kök dizine kaynak kodu ya
   da bunların dışında yeni dizin eklenmez.
 - `doc/` yalnız insan içindir. Ajan oraya istendiğinde yazar ve düzenlerken
@@ -39,7 +37,7 @@
 
 ## Kurallar
 
-- `~/.claude/CLAUDE.md` içindeki global kurallar burada da geçerli; bu dosya yalnızca projeye özel olanları taşır.
+- Global `CLAUDE.md`'deki kurallar burada da geçerli; bu dosya yalnızca projeye özel olanları taşır.
 
 <!-- SPECKIT START -->
 <!-- SPECKIT END -->
