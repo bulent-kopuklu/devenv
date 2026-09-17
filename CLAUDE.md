@@ -26,8 +26,8 @@ Kurulumu `install.sh` yapar ve kopyalar, symlink kurmaz. Bu makinede
 ```
 <ad>/            git değil; Claude burada çalışmaz; CLAUDE.md protokolü import eder
 ├── <ad>-impl/   ürün, tek git reposu (remote <ad>.git); yazan oturum
-└── <ad>-ctrl/   denetçi; git değil; yalnız kendi dizinine yazar (roadmap.md,
-                 inputs/, reference/), karar verir
+└── <ad>-ctrl/   denetçi; git değil; yalnız kendi dizinine yazar (inputs/,
+                 reference/), karar verir
 ```
 
 ## İlkeler
@@ -50,13 +50,13 @@ Kurulumu `install.sh` yapar ve kopyalar, symlink kurmaz. Bu makinede
 - **Ürünsüz.** Şablonlara ve rol metinlerine hiçbir projenin adı, kararı ya da
   örneği girmez.
 - **Adlar İngilizce, içerik Türkçe.** Dosya ve dizin adları İngilizcedir
-  (`roadmap.md`, `reference/`), metnin kendisi Türkçedir.
+  (`inputs/`, `reference/`), metnin kendisi Türkçedir.
 
 ## Değişiklikten sonra
 
 - `python3 -B tests/devenv_create.py`: yeni proje, ikinci koşu, var olan repoyu
   alma, `create .`, reddedilen çağrılar. Nix build'i atlar, geçici dizinde koşar.
-- `templates/make/Makefile` değişirse bir devshell'in içinde, cross hedefle
+- `templates/make/*.mk` ya da `templates/<dil>/make.mk` değişirse bir devshell'in içinde, cross hedefle
   birlikte dene. Devshell `CC`'yi export eder; dışında görünmeyen hatalar
   içinde çıkar. Değişiklikten önceki Makefile'ı aynı düzenekte koş: hatayı
   gösteremeyen deneme düzeltmeyi de kanıtlamaz.
@@ -66,7 +66,3 @@ Kurulumu `install.sh` yapar ve kopyalar, symlink kurmaz. Bu makinede
 - `python3 -m py_compile` kullanma: `bin/__pycache__` bırakır ve `install.sh`
   onu tool sanıp düşer.
 - `VERSION` elle artırılır; komut satırı geriye uyumsuz değişirse major.
-
-## Açık işler
-
-`BACKLOG.md`.

@@ -17,7 +17,9 @@ shared protocol. Role texts are not copied: the project files import them from
 the Claude config directory, so one install updates them all. `devenv create .`
 takes the current directory as <name>/ and its name as the project name.
 """
-import argparse, json, os, shutil, subprocess, sys
+import argparse, importlib.util, json, os, shutil, subprocess, sys
+
+sys.dont_write_bytecode = True  # dillerin create.py'si sablon dizininde __pycache__ birakmasin
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -30,13 +32,13 @@ TEMPLATES = next((c for c in (ROOT / "templates", SHARE / "templates") if c.is_d
                  ROOT / "templates")
 REF = os.environ.get("DEV_TEMPLATES_REF", "github:bulent-kopuklu/devenv")
 LANGS = ["rust", "cpp", "go", "node", "java", "android"]
+#: Bir dilin parcalari `templates/<dil>/` altinda: `files/` projeye kopyalanir,
+#: `make.mk` Makefile'a, `rules.md` `.claude/rules/<dil>.md` olur. Olmayan parca
+#: atlanir. Dilde `create.py` varsa bunlar yapilmaz, o script cagrilir:
+#: varsayilandan farkli olan dil ne yapacagina kendisi karar verir.
 ALIAS = {"c++": "cpp", "cxx": "cpp", "c": "cpp", "ts": "node", "js": "node",
          "typescript": "node", "golang": "go", "arm64": "aarch64", "arm": "armv7", "armv7l": "armv7"}
 
-#: Dile ozgu AI kurallari. Secilen her dil icin `templates/rules/<dil>.md`
-#: aranir; varsa `.claude/rules/` altina KOPYALANIR ve CLAUDE.md oradan import
-#: eder. Proje disina link verilmez: agac kendi kendine yeter.
-AI_RULES = TEMPLATES / "rules"
 #: Companion release zip'ten kurulur: yalniz komutlar ve script'ler. Klondan
 #: `--dev` kurulum extension'in butun agacini urun reposuna koyar ve skill'leri
 #: onun icindeki bir cache'e symlink yapar. Yerel bir extension koku de verilebilir
@@ -66,6 +68,76 @@ def build_info():
     if not commit:
         return "kaynak bilinmiyor"
     return commit + (" +degisiklik" if git("status", "--porcelain") else "")
+
+
+class Lang:
+    """Bir dilin parcalarini alan baglam; `create.py`'ye de bu verilir."""
+
+    def __init__(self, name, project, makefile, rules):
+        self.name, self.project = name, project
+        self.dir, self.templates = TEMPLATES / name, TEMPLATES
+        self._makefile, self._rules = makefile, rules
+
+    def copy_files(self, sub, dest=".", replace=None):
+        """`<dil>/<sub>/` altini dest'e kopyalar; var olan dosyaya dokunmaz."""
+        src = self.dir / sub
+        for f in sorted(q for q in src.rglob("*") if q.is_file()):
+            rel = Path(dest) / f.relative_to(src)
+            if rel.exists():
+                print(f"kept:    {rel}")
+                continue
+            text = f.read_text()
+            for k, v in (replace or {}).items():
+                text = text.replace(k, v)
+            rel.parent.mkdir(parents=True, exist_ok=True)
+            rel.write_text(text)
+            shutil.copymode(f, rel)
+            created.append(str(rel))
+            print(f"created: {rel}")
+
+    def defaults(self):
+        """Varsayilan: olan parcalari al."""
+        if (self.dir / "files").is_dir():
+            self.copy_files("files")
+        if (self.dir / "make.mk").is_file():
+            self.makefile(self.dir / "make.mk")
+        if (self.dir / "rules.md").is_file():
+            self.rules(self.dir / "rules.md")
+
+    def makefile(self, part):
+        """Makefile'a bir parca ekler; ayni parca bir kez girer."""
+        if part not in self._makefile:
+            self._makefile.append(part)
+
+    def rules(self, path):
+        """`.claude/rules/<dil>.md` olarak kopyalanacak AI kurallari."""
+        self._rules[self.name] = path
+
+
+def create_langs(langs, project):
+    """Her dilin parcalarini alir; Makefile parcalarini ve kurallari dondurur."""
+    makefile, rules = [], {}
+    for l in langs:
+        ctx = Lang(l, project, makefile, rules)
+        script = ctx.dir / "create.py"
+        if not script.is_file():
+            ctx.defaults()
+            continue
+        spec = importlib.util.spec_from_file_location(f"devenv_lang_{l}", script)
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        mod.run(ctx)
+    return makefile, rules
+
+
+def write_makefile(parts):
+    """Makefile: ortak degiskenler, dillerin parcalari, ortak hedefler."""
+    body = [(TEMPLATES / "make" / "base.mk").read_text()]
+    body += [part.read_text() for part in parts]
+    body.append((TEMPLATES / "make" / "targets.mk").read_text())
+    Path("Makefile").write_text("".join(body))
+    created.append("Makefile")
+    print(f"created: Makefile ({' '.join(part.parent.name for part in parts)})")
 
 
 def copy(template):
@@ -114,6 +186,7 @@ def render(template, dest, subs):
         else:
             dst.parent.mkdir(parents=True, exist_ok=True)
             dst.write_text(text)
+            shutil.copymode(f, dst)
             print(f"created: {dst}")
 
 
@@ -231,7 +304,7 @@ CREATE = """Iki rollu bir proje kurar:
     <ad>-impl/     urun reposu: flake.nix, Makefile, CLAUDE.md; --speckit ile Spec Kit.
                    devshell burada derlenir. Rol import'u ve izinler git disinda:
                    CLAUDE.local.md, .claude/settings.local.json
-    <ad>-ctrl/     denetci: CLAUDE.md, .claude/settings.json, roadmap.md, skill'ler
+    <ad>-ctrl/     denetci: CLAUDE.md, .claude/settings.json, skill'ler
 
 Rol metinleri kopyalanmaz, Claude config dizininden import edilir; once
 dev-templates'te install.sh calismis olmali. Var olan dosyalara dokunulmaz,
@@ -328,8 +401,10 @@ def setup(a, langs, targets, subs):
         subprocess.run(["git", "add", "-N", "flake.nix"], check=True)
         print("git:     flake.nix intent-to-added so nix can read it; git add it to keep it")
 
+    makefile, rules = create_langs(langs, subs["NAME"])
+
     if not Path("Makefile").exists():
-        copy("make")
+        write_makefile(makefile)
         subprocess.run(["git", "add", "-N", "Makefile"], check=True)
         print("git:     Makefile intent-to-added; it belongs to the project, git add it to keep it")
 
@@ -343,24 +418,12 @@ def setup(a, langs, targets, subs):
         subprocess.run(["git", "add", "-N", ".nvmrc"], check=True)
         print(f"git:     .nvmrc ({a.node}) intent-to-added; the flake reads only what git knows")
 
-    for l in langs:
-        if l == "cpp":
-            copy("cpp")
-        elif l == "rust" and not Path(".rustfmt.toml").exists():
-            copy("rust")
-        elif l == "go":
-            copy("go")
-        elif l == "node" and not any(Path(".").glob(g) for g in ("biome.json*", ".prettierrc*", "prettier.config.*")):
-            copy("node")
     copy("claude")
     if Path("CLAUDE.md").exists():
         edit("CLAUDE.md", lambda t: t.replace("# PROJECT_NAME", f"# {subs['NAME']}"))
         body = Path("CLAUDE.md").read_text()
         imports = []
-        for l in langs:
-            src = AI_RULES / f"{l}.md"
-            if not src.is_file():
-                continue
+        for l, src in rules.items():
             dst = Path(".claude/rules") / f"{l}.md"
             if dst.exists():
                 print(f"kept:    {dst}")

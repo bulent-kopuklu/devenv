@@ -9,14 +9,14 @@ nix flake init -t github:bulent-kopuklu/devenv#rust    # rustfmt.toml
 nix flake init -t github:bulent-kopuklu/devenv#go      # .golangci.yml
 nix flake init -t github:bulent-kopuklu/devenv#node    # biome.json
 nix flake init -t github:bulent-kopuklu/devenv#claude  # CLAUDE.md
-nix flake init -t github:bulent-kopuklu/devenv#make    # root Makefile driving components/<name>/
 nix flake init -t github:bulent-kopuklu/devenv#shell   # shell.nix + .envrc (use nix) when flake.nix cannot be committed
-nix flake init -t github:bulent-kopuklu/devenv#init-cpp  # CMakeLists.txt + src/main.cpp for an empty project
 ```
 
-Language rules for the agent live in `templates/rules/<lang>.md`. For every
-language it is given, `devenv` copies the matching file to the project's
-`.claude/rules/` and imports it from the project's `CLAUDE.md`.
+Everything for a language lives in `templates/<lang>/`. For every language it
+is given, `devenv create` copies `files/` into the project, adds `make.mk` to
+the `Makefile` and copies `rules.md` to `.claude/rules/<lang>.md`; a missing
+part is skipped. A language that needs something else has a `create.py`, and
+then `devenv` runs that instead (`ctx.defaults()` does the above).
 
 Existing files are never overwritten. In the generated `flake.nix` edit two lines:
 
@@ -36,7 +36,10 @@ linkers are exported as `CARGO_TARGET_<TRIPLE>_LINKER`, nothing is written to
 Code lives under `components/<name>/`, one language per component, its manifest
 (`go.mod`, `Cargo.toml`, `CMakeLists.txt`, `package.json`) inside it. The root
 `Makefile` reads each component's language from that manifest, so a new
-component is just a new directory. Gradle (java, android) is not driven.
+component is just a new directory. `devenv create` writes the `Makefile` from
+`templates/make/base.mk`, each chosen language's `templates/<lang>/make.mk`
+(`templates/proto/make.mk` with go or rust) and `templates/make/targets.mk`.
+Gradle (java, android) is not driven.
 A shared contract is a component too (`buf.yaml`): it is only linted
 (`buf lint`), never built — each consumer generates its own code during its
 build (`go generate` runs before `go build`; Rust uses `build.rs`).
@@ -47,6 +50,7 @@ make build VARIANT=release TARGET=aarch64
 make test COMPONENTS="api agent"       # test is host-only
 make build-agent                       # one component; also test-<name>, lint-<name>
 make dist TARGET=armv7                 # release build → dist/armv7/
+make gate                              # distclean, build, lint, test, test-integration
 make clean                             # build/
 make distclean                         # + dist/, components/*/{node_modules,target}
 ```
@@ -65,22 +69,22 @@ devenv create ornek -l go -l rust --speckit
 ornek/                 not a git repo; nobody runs Claude here
 ├── CLAUDE.md          imports the shared protocol
 ├── ornek-impl/        the product repo (remote: ornek.git); everything above happens here
-└── ornek-ctrl/        the reviewer: CLAUDE.md, settings, roadmap.md, skills
+└── ornek-ctrl/        the reviewer: CLAUDE.md, settings, skills
 ```
 
-Nothing is committed and no remote is added. Before the first BL, add the
+Nothing is committed and no remote is added. Before the first step, add the
 remote in `ornek-impl`, commit the skeleton and publish main once with
 `git push -u origin main`; after that impl never pushes main.
 
 One session writes (`claude -n ornek-impl`), one reviews (`claude -n ornek-ctrl`);
 they talk over `SendMessage`. impl runs the stock `/speckit-*` commands one
 step at a time and `/speckit-companion-implement`; the reviewer starts each
-step, checks what it produced, answers impl's questions and runs analyze
-itself. The other Companion commands and the workflow engine are not used:
+step, checks what it produced, answers impl's questions and has impl run analyze
+and resolve what it finds. The other Companion commands and the workflow engine are not used:
 they move to the next step on their own.
 
 The reviewer gets two skills of its own (`reference`, `constitution`): one
-researches the reference products and cuts the roadmap into BLs, the other
+keeps the person's input and researches the reference products, the other
 decides by rule what belongs in the constitution and what stays in a spec. The
 constitution itself is never copied into the product repo; its core lives in
 `claude/constitution-base.md`, the reviewer builds the project's text on top of

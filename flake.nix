@@ -14,14 +14,12 @@
       templates = {
         base = template "base" "flake.nix (edit langs/targets), .envrc, .gitignore";
         shell = template "shell" "shell.nix pinned to a dev-templates rev + .envrc (use nix); for repos where flake.nix cannot be committed";
-        cpp = template "cpp" ".clangd, .clang-format, .editorconfig";
-        rust = template "rust" "rustfmt.toml";
-        go = template "go" ".golangci.yml";
-        node = template "node" "biome.json";
+        cpp = template "cpp/files" ".clangd, .clang-format, .editorconfig";
+        rust = template "rust/files" "rustfmt.toml";
+        go = template "go/files" ".golangci.yml";
+        node = template "node/files" "biome.json";
         android-native = template "android-native" "cmake-android helper, VSCode cmake tasks";
-        init-cpp = template "init-cpp" "CMakeLists.txt + src/main.cpp for an empty project";
         claude = template "claude" "CLAUDE.md skeleton";
-        make = template "make" "root Makefile driving components/<name>/ (go, rust, cpp, node)";
         default = self.templates.base;
       };
 
