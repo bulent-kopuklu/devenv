@@ -100,6 +100,10 @@ check("yeni: impl ctrl'e yazamaz, ctrl'i okuyamaz",
 check("yeni: iki rolde autocompact esigi %60",
       all(json.loads(p.read_text()).get("env", {}).get("CLAUDE_AUTOCOMPACT_PCT_OVERRIDE") == "61"
           for p in (ctrl / ".claude/settings.json", impl / ".claude/settings.local.json")))
+check("yeni: iki rolde compact ozeti Turkce",
+      all("Türkçe" in h["command"]
+          for p in (ctrl / ".claude/settings.json", impl / ".claude/settings.local.json")
+          for m in json.loads(p.read_text())["hooks"]["PreCompact"] for h in m["hooks"]))
 check("yeni: impl spike cagiramaz", "Skill(spike)" in ls["deny"] and "Skill(spike *)" in ls["deny"])
 check("yeni: impl'in yuklediklerinde ctrl'in yolu yok",
       str(ctrl) not in (impl / "CLAUDE.local.md").read_text())

@@ -13,6 +13,15 @@
       "Bash(make gate)"
     ]
   },
+  "hooks": {
+    "PreCompact": [
+      {
+        "hooks": [
+          { "type": "command", "command": "echo 'Özeti Türkçe yaz; teknik terimler çevrilmez.'" }
+        ]
+      }
+    ]
+  },
   "env": {
     "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "61"
   }
