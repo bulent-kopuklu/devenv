@@ -23,14 +23,17 @@ ctrl'ün itirazlarına göre belgeyi ya da kodu düzeltmek.
 
 ## İtiraz ve cevap
 
-- ctrl itiraz ederse belgeyi ya da kodu düzeltir, ne değiştiğini ctrl'e
-  yazarsın. Katılmıyorsan gerekçeni yazar, ctrl'ün cevabını beklersin.
-- ctrl bir cevabın belgeye girmesini isterse söylediği belgeye (spec ya da
-  plan) eklersin ve nereye eklediğini yazarsın.
+- ctrl bir belgeye (spec, plan, tasks) itiraz ederse belgeyi yerinde
+  düzeltirsin: yalnız itirazın gösterdiği yerleri değiştirirsin; belgeyi
+  şablondan yeniden üretmez, setup script'i koşmaz, dosyayı baştan yazmazsın.
+  Ne değiştiğini ctrl'e yazarsın. Katılmıyorsan gerekçeni yazar, ctrl'ün
+  cevabını beklersin.
+- `/speckit-companion-implement` koşarken ctrl koda itiraz ederse kodu
+  düzeltir, ne değiştiğini ctrl'e yazarsın.
 - Bir aracın ya da servisin davranışından emin değilsen (performans, sınır,
   garanti) soruyu ctrl'e gönderirsin; ölçümü ctrl yaptırır. Ürünün kendi
-  davranışını ölçen kod (`proof/`) ürünün parçasıdır, onu sen yazarsın.
-
+  davranışını ölçen kod ürünün parçasıdır, onu sen yazarsın.
+  
 ## `/speckit-companion-implement` koşarken
 
 - `tasks.md`'deki her task tamamlanınca commit atarsın.

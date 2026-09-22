@@ -12,9 +12,8 @@ bu dosya repoyu geliştirene.
 | `bin/newrepo`, `pi/` | git sunucusunda repo açma | laptop, sunucu |
 | `claude/CLAUDE.md` | kullanıcının global CLAUDE.md'si | `$CLAUDE_CONFIG_DIR/CLAUDE.md` |
 | `claude/roles/` | rol metinleri: `protocol`, `ctrl`, `impl` | `$CLAUDE_CONFIG_DIR/roles/` |
-| `claude/constitution-base.md` | anayasanın çekirdeği; denetçi okur, projeye kopyalanmaz | `$CLAUDE_CONFIG_DIR/` |
 | `claude/skills/` | global skill'ler (`spike`, `context: fork`) | `$CLAUDE_CONFIG_DIR/skills/` |
-| `templates/` | projeye kopyalanan şablonlar; `project/` rol dizinlerinin yer tutuculu dosyaları | `~/.local/share/devenv/templates` |
+| `templates/` | projeye kopyalanan şablonlar; `project/` rol dizinlerinin yer tutuculu dosyaları; `speckit/constitution.md` her projenin anayasası (`--speckit` yazar; araç ve rol adı taşımaz) | `~/.local/share/devenv/templates` |
 | `lib/` | `lib.mkEnv`: projelerin `flake.nix`'inin kullandığı devshell kütüphanesi | flake input'u |
 | `tests/` | `devenv create` senaryoları | — |
 
@@ -26,7 +25,7 @@ Kurulumu `install.sh` yapar ve kopyalar, symlink kurmaz. Bu makinede
 ```
 <ad>/            git değil; Claude burada çalışmaz; CLAUDE.md protokolü import eder
 ├── <ad>-impl/   ürün, tek git reposu (remote <ad>.git); yazan oturum
-└── <ad>-ctrl/   denetçi; git değil; yalnız kendi dizinine yazar (inputs/,
+└── <ad>-ctrl/   denetçi; git değil; yalnız kendi dizinine yazar (work/,
                  reference/), karar verir
 ```
 
@@ -52,7 +51,7 @@ Kurulumu `install.sh` yapar ve kopyalar, symlink kurmaz. Bu makinede
 - **Ürünsüz.** Şablonlara ve rol metinlerine hiçbir projenin adı, kararı ya da
   örneği girmez.
 - **Adlar İngilizce, içerik Türkçe.** Dosya ve dizin adları İngilizcedir
-  (`inputs/`, `reference/`), metnin kendisi Türkçedir.
+  (`work/`, `reference/`), metnin kendisi Türkçedir.
 
 ## Değişiklikten sonra
 

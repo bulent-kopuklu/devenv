@@ -40,11 +40,8 @@ rm -f "$config/CLAUDE.md"
 install -m 644 "$here/claude/CLAUDE.md" "$config/CLAUDE.md"
 echo "kopyalandi: $config/CLAUDE.md"
 
-# Anayasanin cekirdegi: denetci bunu okur ve projenin anayasasini bunun ustune
-# kurar. Projeye kopyalanmaz; dosyayi `/speckit-constitution` yazar.
+# Eski kurulumlarin kopyasi: anayasa artik sablonlarla gelir.
 rm -f "$config/constitution-base.md"
-install -m 644 "$here/claude/constitution-base.md" "$config/constitution-base.md"
-echo "kopyalandi: $config/constitution-base.md"
 
 # Rol metinleri ve global skill'ler. Projeler bunlari kopyalamaz: rol metnini
 # import eder, skill'i global'den cagirir. Guncelleme bu script'in bir kez

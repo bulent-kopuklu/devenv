@@ -1,16 +1,4 @@
-<!--
-Her projede geçerli çekirdek ilkeler. Bu dosya projeye KOPYALANMAZ: denetçi
-bunu okur, üstüne referans incelemesinden ve kullanıcıdan geleni ekler,
-projenin anayasasını `/speckit-constitution` prompt'u olarak verir. Dosyayı
-komut yazar; sürüm ve tarih alanlarını da o doldurur.
-
-Çekirdek beş ilkedir. Projeye özel ilke en çok iki tane eklenir; toplam yediyi
-geçmez. Anayasa araç ve rol adı taşımaz: ürünün kuralını söyler, kimin hangi
-araçla çalıştığını değil. Mecburi teknoloji ve platform kısıtları ilkelere
-değil "Ek Kısıtlar"a girer.
--->
-
-# Anayasa
+# {{NAME}} Anayasası
 
 ## Core Principles
 
@@ -112,16 +100,9 @@ mekanizmasının hatası işlevsel testte görünmez, ancak biri onu kırmaya
 
 - Üretilen doküman ve çıktı dosyaları (spec, plan, araştırma notu, task listesi,
   checklist) Türkçe yazılır (MUST). Şablon İngilizce olsa bile içerik Türkçe
-  doldurulur, teknik terimler çevrilmez. Kod ve commit mesajları İngilizcedir.
-
-<!-- Projeye özel kısıtlar buraya: mecburi platform, mecburi teknoloji,
-     uyumluluk ve operasyon kısıtları. İlkelere teknoloji adı girmez. -->
-
-## Geliştirme Akışı ve Kalite Kapıları
-
-<!-- Projeye özel akış ve kalite kapıları buraya. Ölçülmemiş işin tamam
-     sayılmaması İlke I'de, ilkelere uyumun izi plan'ın Constitution Check'inde
-     durur; burada tekrarlanmaz. -->
+  doldurulur. Şablonun başlıkları, kimlik biçimleri ve anahtar kelimeleri içerik
+  değildir; olduğu gibi kalır. Teknik terimler çevrilmez. Kod ve commit mesajları
+  İngilizcedir.
 
 ## Governance
 
@@ -130,9 +111,10 @@ mekanizmasının hatası işlevsel testte görünmez, ancak biri onu kırmaya
 - **Değişiklik usulü**: Öneri, hangi ilkeyi neden değiştirdiğini ve etkilediği
   mevcut kararları yazılı olarak belirtir. Proje sahibi onaylamadan hiçbir ilke
   eklenemez, değiştirilemez, kaldırılamaz.
-- **Çekirdek**: I–V ortaktır; projeye özel ilkeler VI'dan itibaren ve en çok iki
-  tane eklenir. Çekirdekte yapılan değişiklik yalnız bu projede kalır; başka
-  projelerde de geçerli olması isteniyorsa çekirdeğin kendisine taşınmalıdır.
+- **Kapsam**: Anayasa ürünün gereksinimini ve teknoloji kararını taşımaz:
+  gereksinim spec'e, teknoloji kararı plan'ın girdisine gider. Bu metin her
+  projede ortaktır; bir projede yapılan değişiklik yalnız o projede kalır, başka
+  projelerde de geçerli olması isteniyorsa ortak metne taşınır.
 - **Sürümleme**: Semantic versioning. MAJOR = geri uyumsuz ilke kaldırma ya da
   yeniden tanımlama; MINOR = yeni ilke ya da bölüm; PATCH = ifade düzeltmesi.
 - **Uyum denetimi**: Her spec, plan ve task incelemesinde anayasa uyumu kontrol
@@ -140,5 +122,4 @@ mekanizmasının hatası işlevsel testte görünmez, ancak biri onu kırmaya
   olarak kaydedilir; plan'da gerekçeli sapma Complexity Tracking tablosuna
   yazılır. Sessiz sapma kabul edilmez.
 
-<!-- Çekirdek sürümü: 2.0.0 (2026-09-16). Projenin anayasasındaki sürüm ve
-     tarih satırını komut kendi şablonuna göre yazar. -->
+**Version**: 1.0.0 | **Ratified**: {{DATE}} | **Last Amended**: {{DATE}}

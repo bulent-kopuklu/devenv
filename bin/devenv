@@ -20,6 +20,7 @@ takes the current directory as <name>/ and its name as the project name.
 import argparse, importlib.util, os, shutil, subprocess, sys
 
 sys.dont_write_bytecode = True  # dillerin create.py'si sablon dizininde __pycache__ birakmasin
+from datetime import date
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -187,11 +188,6 @@ def run(*cmd):
 def speckit():
     """Spec Kit'i bu projeye kurar: CLI guncel, init ve extension'lar.
 
-    Anayasa kopyalanmaz: init placeholder'li sablonunu birakir, icerigi denetci
-    hazirlar ve dosyayi `/speckit-constitution` yazar. Hazir bir metin
-    kopyalanirsa komut onu her kosuda yeniden harmanlar ve neyin kalacagina
-    model karar verir.
-
     Orchestration extension'i kurulmaz: hakem subagent'i ve after_* hook'lari
     karari yazan oturumun icinde verir, o karar denetcinindir.
     """
@@ -215,6 +211,16 @@ def speckit():
     ls.write_text("enabled: false\ncapabilities: []\n")
     subprocess.run(["git", "add", "-N", str(ls)], check=True)
     print(f"created: {ls} (living specs kapali; git add it to keep it)")
+
+
+def constitution(name):
+    """Anayasayi sablondan yazar. Metin her projede aynidir; `/speckit-constitution`
+    kosulmaz, cunku komut metni harmanlar ve neyin kalacagina model karar verir."""
+    dst = Path(".specify/memory/constitution.md")
+    text = (TEMPLATES / "speckit" / "constitution.md").read_text()
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    dst.write_text(text.replace("{{NAME}}", name).replace("{{DATE}}", date.today().isoformat()))
+    print(f"created: {dst}")
 
 
 def optional_hooks():
@@ -298,7 +304,7 @@ def parser():
     c.add_argument("--node", help=".nvmrc icin node major surumu, ornek 22")
     c.add_argument("--speckit", action="store_true",
                    help="Spec Kit kur: self upgrade, init + agent-context "
-                        "(CLAUDE.md blogu), companion, living specs kapali; anayasayi denetci hazirlar")
+                        "(CLAUDE.md blogu), companion, living specs kapali; anayasa sablondan yazilir")
     return ap
 
 
@@ -327,7 +333,7 @@ def create_project(name):
     impl, ctrl = root / f"{name}-impl", root / f"{name}-ctrl"
     impl.mkdir(parents=True, exist_ok=True)
     ctrl.mkdir(exist_ok=True)
-    subs = {"NAME": name, "ROOT": str(root), "CONFIG": tilde(CONFIG), "WIKI": str(WIKI)}
+    subs = {"NAME": name, "ROOT": str(root), "CONFIG": tilde(CONFIG), "CONFIGABS": str(CONFIG), "WIKI": str(WIKI)}
     render("parent", root, subs)
     render("ctrl", ctrl, subs)
     if not (CONFIG / "roles" / "protocol.md").is_file():
@@ -418,6 +424,7 @@ def setup(a, langs, targets, subs):
 
     if a.speckit:
         speckit()
+        constitution(subs["NAME"])
 
 
 def build():

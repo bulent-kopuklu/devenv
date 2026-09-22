@@ -74,8 +74,12 @@ check("yeni: ust CLAUDE.md protokolu import eder", f"@{CFG}/roles/protocol.md" i
 check("yeni: ctrl CLAUDE.md rolu import eder", f"@{CFG}/roles/ctrl.md" in (ctrl / "CLAUDE.md").read_text())
 check("yeni: ctrl CLAUDE.md", (ctrl / "CLAUDE.md").is_file())
 check("yeni: ctrl feature-branch.sh impl yolunu tasir", f'impl="{t}/ornek/ornek-impl"' in (ctrl / "scripts/feature-branch.sh").read_text() and os.access(ctrl / "scripts/feature-branch.sh", os.X_OK))
+check("yeni: ctrl reviewer agent'i", (ctrl / ".claude/agents/reviewer.md").is_file())
+check("yeni: review global CLAUDE.md'yi mutlak yolla okur",
+      f"`{CFG}/CLAUDE.md`" in (ctrl / ".claude/skills/review/SKILL.md").read_text()
+      and f"Read(/{CFG}/CLAUDE.md)" in settings(ctrl / ".claude/settings.json")["allow"])
 check("yeni: ctrl skill'leri", all((ctrl / ".claude/skills" / s / "SKILL.md").is_file()
-                                   for s in ("reference", "constitution")))
+                                   for s in ("reference", "review")))
 check("yeni: impl CLAUDE.local.md rolu import eder", f"@{CFG}/roles/impl.md" in (impl / "CLAUDE.local.md").read_text())
 check("yeni: baslik proje adi, dizin adi degil", (impl / "CLAUDE.md").read_text().startswith("# ornek\n"))
 check("yeni: yer tutucu kalmadi", not any(re.search(r"\{\{[A-Z]+\}\}", p.read_text()) for p in root.rglob("*")
@@ -84,6 +88,8 @@ mk = (impl / "Makefile").read_text()
 check("yeni: Makefile yalniz go ve proto parcasi", "go_build" in mk and "proto_lint" in mk and "cargo" not in mk and "cmake" not in mk and "npm" not in mk)
 check("yeni: Makefile gate hedefi", "\ngate:" in mk and "\ntest-integration:" in mk)
 check("yeni: speckit cagrildi", "[speckit]" in out)
+anayasa = impl / ".specify/memory/constitution.md"
+check("yeni: anayasa yazildi, proje adiyla", anayasa.is_file() and anayasa.read_text().startswith("# ornek Anayasası\n"))
 check("yeni: oturum komutlari basildi", "claude -n ornek-impl" in out and "claude -n ornek-ctrl" in out)
 cs, ls = settings(ctrl / ".claude/settings.json"), settings(impl / ".claude/settings.local.json")
 check("yeni: ctrl impl'e yazamaz", f"Edit(/{impl}/**)" in cs["deny"] and cs["deny"][0].startswith("Edit(//"))
@@ -91,6 +97,9 @@ check("yeni: ctrl impl'i ve wiki'yi okur", str(impl) in cs["additionalDirectorie
 check("yeni: impl ctrl'e yazamaz, ctrl'i okuyamaz",
       f"Edit(/{ctrl}/**)" in ls["deny"] and f"Read(/{ctrl}/**)" in ls["deny"]
       and str(ctrl) not in ls.get("additionalDirectories", []))
+check("yeni: iki rolde autocompact esigi %60",
+      all(json.loads(p.read_text()).get("env", {}).get("CLAUDE_AUTOCOMPACT_PCT_OVERRIDE") == "61"
+          for p in (ctrl / ".claude/settings.json", impl / ".claude/settings.local.json")))
 check("yeni: impl spike cagiramaz", "Skill(spike)" in ls["deny"] and "Skill(spike *)" in ls["deny"])
 check("yeni: impl'in yuklediklerinde ctrl'in yolu yok",
       str(ctrl) not in (impl / "CLAUDE.local.md").read_text())
@@ -108,6 +117,7 @@ check("yeni: yerel dosyalar git status'ta yok", "CLAUDE.local.md" not in status 
 
 # dolu dizin: once sorar; N ise dokunmaz, y ise ustune yazar ve silmez
 (impl / "CLAUDE.md").write_text("# degisti\n")
+(impl / ".specify/memory/constitution.md").write_text("# degisti\n")
 (impl / "kendi.txt").write_text("kullanicinin\n")
 (impl / ".claude/settings.local.json").write_text(json.dumps({"permissions": {"allow": ["Bash(ls)"]}}))
 out, code = devenv(t, "create", "ornek", "-l", "go", "--speckit", answer="n")
@@ -122,6 +132,7 @@ check("dolu y: izinler birlesmedi, sablonla ezildi",
       "Bash(ls)" not in settings(impl / ".claude/settings.local.json")["allow"])
 check("dolu y: baska dosya silinmedi", (impl / "kendi.txt").read_text() == "kullanicinin\n")
 check("dolu y: Spec Kit yeniden kuruldu", "[speckit]" in out)
+check("dolu y: anayasa sablonla ezildi", (impl / ".specify/memory/constitution.md").read_text().startswith("# ornek Anayasası\n"))
 check("dolu y: exclude tekrarlanmadi", (impl / ".git/info/exclude").read_text().count("CLAUDE.local.md") == 1)
 
 # create . : bulunulan dizin proje dizini; ayni kural

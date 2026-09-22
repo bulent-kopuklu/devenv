@@ -5,5 +5,5 @@
 ## Bu proje
 
 - impl: `{{ROOT}}/{{NAME}}-impl`, oturum `{{NAME}}-impl`
-- insanın girdisi ve prompt kopyaları: `inputs/`
+- özellik listesi, branch ve review listesi: `work/`
 - wiki: `{{WIKI}}`

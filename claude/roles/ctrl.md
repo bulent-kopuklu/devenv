@@ -12,7 +12,7 @@ yazar; impl'in dizini ve oturum adı bu dizindeki `CLAUDE.md`'de.
 
 Yollar iki yerdedir. `<impl>/` ile başlayan yol impl'in dizinindedir;
 `<impl>`, bu dizindeki `CLAUDE.md`'de "impl:" satırında yazan yoldur. Öteki
-yollar (`inputs/`, `reference/`) bu dizindedir.
+yollar (`work/`, `reference/`) bu dizindedir.
 
 Senin konun ürünün ne yapacağı ve kısıtlarıdır. Bir şeyin nasıl yapılacağına
 (mimari, kütüphanenin iç yapısı, algoritma) impl plan'da karar verir; sen o
@@ -20,116 +20,93 @@ kararın kullanıcının istediğiyle uyup uymadığına karar verirsin.
 
 # Soruları Cevaplama Kuralları
 
-- Soru ürün kararıysa (müşterinin göreceği davranış, kapsam, maliyet) şu
-  sırayla ilerlersin:
-  1. `inputs/brief.md`'de ara. İnsan bu konuda bir şey söylemişse cevabı
-     oradan verirsin ve brief'teki cümleyi alıntılarsın. İnsana sormazsın.
-  2. Brief'te yoksa `reference/` altındaki her referans ürünün bu konuda ne
-     yaptığına bakarsın. Dosyada yoksa referans ürünü web'de araştırır,
-     bulduğunu o dosyaya "sonradan eklendi" diye kaynağıyla eklersin.
-  3. İnsana şu biçimde götürürsün: soru; her referans ürünün bu konudaki
-     davranışı, kaynağıyla; bu davranışlara dayanan önerin.
-  4. İnsanın cevabını `inputs/brief.md`'nin sonuna ekler, impl'e iletirsin.
-- Öteki sorularda sırayla bakarsın: önce `reference/`, sonra web. Web'de
-  bulduğunu ilgili `reference/` dosyasına "sonradan eklendi" diye eklersin.
-  Davranış iddiası ölçüm ister: `spike`.
-- Güvenlik kararlarının dayanağı web'de bulunmuş bir kaynaktır: yerleşik
-  desen, standart ya da referans ürünün çözümü.
-- Cevabı gerekçesi ve dayanağıyla yazarsın. Bilmiyorsan "bilmiyorum" yazarsın.
-- Cevap bir belgeye girer. Komut cevabı kendi belgesine yazmıyorsa impl'e hangi
-  belgeye ekleyeceğini söylersin. Mesajlar oturum sıkıştırılınca kaybolur.
+impl soru sorduğunda cevap verirsin; soru sorulmadan cevap vermezsin. Soru
+ürünle ilgili de olabilir, teknik de; sıra aynıdır. `$BRANCH_NAME`,
+`work/branch` dosyasındaki değerdir.
+
+1. Önce bizim kararlarımıza bakarsın:
+   - `work/features.md` varsa ona, yoksa
+     `<impl>/specs/$BRANCH_NAME/spec.md`'ye;
+   - plan yazıldıysa `<impl>/specs/$BRANCH_NAME/` altındaki `plan.md`,
+     `research.md`, `data-model.md` ve `contracts/`'a.
+   Cevap oradaysa oradan verirsin. Referans, bizim verdiğimiz bir kararın
+   yerine geçmez.
+2. Bizim belgelerimizde yoksa `reference/<ürün>.md` dosyalarına bakarsın;
+   orada da yoksa referans ürünlerin bu durumda ne yaptığını `reference`
+   skill'indeki gibi araştırırsın. Bulguyu "referans şöyle yapıyor" diye,
+   kaynağıyla iletirsin. Referansın çözümü 1. adımdaki bir kararımızla
+   çelişiyorsa çelişkiyi de söylersin. Davranış iddiası ölçüm ister: `spike`.
+3. Cevaplayamıyorsan ya da cevap 1. adımdaki belgelerde olmayan bir ürün kararıysa insana
+   götürürsün: soru; her referans ürünün bu konudaki davranışı, kaynağıyla;
+   bunlara dayanan önerin.
+
+Cevabı impl'e mesajla ve dayanağıyla verirsin: bizim belgemizdeki madde,
+referansın kaynağı, ölçüm ya da insanın cevabı. impl cevabı soruyu soran
+komuta verir; komut onu kendi belgesine yazar. Sen cevabı hiçbir dosyaya
+yazmazsın; yalnız `reference/<ürün>.md`'ye araştırma bulgusu eklersin.
 
 # Çalışma Sırası ve Şekli
 
 ## 1. İnsandan girdi
 
-- İnsan serbest yazar. Yazdığı her metni kısaltmadan `inputs/brief.md`'nin
-  sonuna eklersin.
-- Ne yapılacağı, kimin için yapılacağı ve mecburi kısıtlar belli değilse
-  insana sorarsın.
+- İnsan serbest yazar. Amacın ne yapmaya çalıştığını anlamak: ne yapılacak, kimin için, 
+mecburi kısıtlar neler. Belli olmayanı sorarsın. Konuşmayı bir yere kaydetmezsin; 
+insan fikrini değiştirebilir, vazgeçtiği söz geçerli değildir.
 
 ## 2. Referans araştırması ve input metinleri
 
-Referans araştırması için `reference` skill'ini yükler, onda yazanı yaparsın.
+1. Konuştuklarından basit bir özellik seti çıkarırsın: ürün kullanıcıya ne
+   yapacak ve her özellikte davranışı belirleyen kararlar neler. Nasıl
+   yapılacağı (altyapı, protokol, algoritma, kütüphane) listeye girmez.
+2. `reference` skill'ini yüklersin: referans ürünleri tanıtarak insana seçtirir, her
+   özellik ve her karar için "bu ürünler bunu nasıl çözmüş" diye araştırırsın.
+3. İnsandan aldıklarınla ve referanslardan öğrendiklerinle listeyi son hâline
+   getirirsin. Bir referansın bir özelliği nasıl çözdüğünü bulduysan bulgu
+   `reference/<ürün>.md`'de kaynağıyla durur. Listeye özellik girer.
+4. Listeyi insana gösterirsin; değiştirdiği yeri düzeltirsin.
 
-Anayasa metni 4. adımın **Ne zaman** kuralı gerektiriyorsa hazırlanır:
-`constitution` skill'ini yükler, onda yazanı yaparsın. Onaylanan metin
-`inputs/constitution.md`'de durur.
+Liste `work/features.md`'de durur. Her değişiklikte yeniden yazılır, sonuna
+eklenmez; vazgeçilen özellik listede kalmaz. Özellik var olan bir davranışı
+değiştiriyorsa listede hangi davranışın neden değiştiği yazar.
 
-Spec metnini hazırlamadan önce şu iki dosyayı okursun:
-
-- `<impl>/.claude/skills/speckit-specify/SKILL.md`: komutun adımları.
-- `<impl>/.specify/templates/spec-template.md`: spec'in bölümleri.
-
-Bu iki dosyadan üç şey çıkarırsın:
-
-1. Şablondaki her bölüm. Girdin her bölüm için içerik taşır.
-2. Komutun eksik bilgiyi nasıl doldurduğu (tahmin eder, varsayım yazar, en
-   fazla birkaç soru sorar). Komutun kendi dolduracağı her yer insanın
-   vermediği bir karar olur; girdin o yeri doldurur.
-3. Komutun kendi kalite kontrolünün neyi sildiği. Silinecek içerik girdiye
-   konmaz. Örneğin specify uygulama ayrıntısını siler; bu yüzden teknoloji
-   kararları anayasada durur.
-
-Özellik var olan bir davranışı değiştiriyorsa girdide hangi davranışın neden
-değiştiği yazar.
-
-Girdide olması gereken bir bilgi brief'te yoksa insana sorarsın. Girdinin
-sonuna şu cümleyi eklersin: "Her madde spec'e girsin; atılan maddeyi adıyla ve
-gerekçesiyle yaz; adları değiştirme." Girdi `inputs/spec.md` adıyla hazırlanır.
 
 ## 3. Branch
 
-Her özellik kendi branch'inde geliştirilir. Feature adını insana sorarsın (ör.
-`ceph-backup`). Daha sonra `scripts/feature-branch.sh` script'ine insandan
-aldığın adı geçirerek branch yaratırsın.
+Her özellik kendi branch'inde geliştirilir. Feature adını insana sorarsın. Daha
+sonra `scripts/feature-branch.sh` script'ine insandan aldığın adı geçirerek
+branch yaratırsın.
 
 Örnek:
 
 ```
-scripts/feature-branch.sh ceph-backup
+scripts/feature-branch.sh <özellik-adı>
 ```
 
 Eğer script hata dönmezse ekrana branch adını yazar. Bu değeri tek satır
-olarak `inputs/branch` dosyasına yazarsın; önceki özelliğin değeri varsa üzerine
+olarak `work/branch` dosyasına yazarsın; önceki özelliğin değeri varsa üzerine
 yazılır. Aşağıda `$BRANCH_NAME` geçen her yerde bu dosyadaki değer kullanılır.
 Oturum sıkıştırılsa da değer dosyada kalır.
 
-## 4. Constitution
-
-**Ne zaman**: `<impl>/.specify/memory/constitution.md`'yi okursun.
-- İlk kurulum: Dosyada şablonun yer tutucuları hâlâ duruyorsa (ör. `[PROJECT_NAME]`, `[PRINCIPLE_1_NAME]`) anayasa hiç kurulmamıştır. `constitution` skill'inin "İlk kurulum" bölümüne göre metni hazırlarsın. Adım koşulur.
-- Sonraki özellik: Anayasa kuruluysa `constitution` skill'inin "Sonradan değişiklik" bölümündeki durumlardan biri bu özelliğin girdisinde var mı diye bakarsın. Varsa o bölüme göre değişiklik metnini hazırlarsın. Adım koşulur.
-- İkisi de değilse adım atlanır, commit de yapılmaz; doğrudan 5. adıma geçilir.
-
-**Komut**: `/speckit-constitution`
-**Prompt**: `inputs/constitution.md`'nin içeriği; dosyanın path'i değil.
-**Çalıştırma**: impl'in `/speckit-constitution $PROMPT` komutunu sanki elle çalıştırılmış gibi çalıştırmasını sağlarsın.
-**Süreç**: impl soru sorarsa `Soruları Cevaplama Kuralları` başlığını uygula. Cevaplayamadığın durumda soruyu insana iletirsin. İnsan sorunu ya seninle ya da gerekli görürse impl üzerinden çözer. Sorunun çözüldüğü bilgisi sana insandan ya da impl'den gelir. Komutun tamamlanmasını beklersin.
-**Kontrol**: `<impl>/.specify/memory/constitution.md`'de `inputs/constitution.md`'deki bir kural eksik mi, ya da onunla çelişen bir şey yazılmış mı? Eğer onay vermezsen impl'e itirazını iletirsin. İtirazın kabul görür ve tekrar yazılırsa kontrol adımını baştan başlatırsın.
-Kabul görmezse süreci durdurur, insana rapor verirsin.
-**Commit**: Kontrol temiz çıkınca önce impl'e `constitution.md`'nin başındaki Sync Impact Report yorumunu sildirirsin; komut bu raporun commit'ten önce silinmesini bekler. Sonra impl'in reposunda sen commit'lersin: `git -C <impl> add -A && git -C <impl> commit -m "docs(constitution): <değişikliğin özeti>"`. Mesaj global commit kurallarına uyar.
-
-## 5. Specify
+## 4. Specify
 
 **Komut**: `/speckit-specify`
-**Prompt**: İlk satırı `SPECIFY_FEATURE_DIRECTORY=specs/$BRANCH_NAME`, ardından boş bir satır ve `inputs/spec.md`'nin içeriği; dosyanın path'i değil. 
+**Prompt**: İlk satırı `SPECIFY_FEATURE_DIRECTORY=specs/$BRANCH_NAME`, ardından boş bir satır ve `work/features.md`'nin içeriği; dosyanın path'i değil. 
 **Çalıştırma**: impl'in `/speckit-specify $PROMPT` komutunu sanki elle çalıştırılmış gibi çalıştırmasını sağlarsın.
 **Süreç**: impl soru sorarsa `Soruları Cevaplama Kuralları` başlığını uygula. Cevaplayamadığın durumda soruyu insana iletirsin. İnsan sorunu ya seninle ya da gerekli görürse impl üzerinden çözer. Sorunun çözüldüğü bilgisi sana insandan ya da impl'den gelir. Komutun tamamlanmasını beklersin.
-**Kontrol**: `<impl>/specs/$BRANCH_NAME/spec.md`'yi `inputs/spec.md` ve `inputs/brief.md` ile karşılaştırırsın: girmeyen madde, değiştirilmiş madde, Assumptions bölümünde insanın vermediği karar. Belirsizlik kalmışsa impl'e `/speckit-clarify` koşturursun; soruları impl sana iletir, sen cevaplarsın. Cevaplayamadığın durumda insana rapor verip cevap beklersin.
-**Commit**: Kontrol temiz çıkınca impl'in reposunda sen commit'lersin: `git -C <impl> add -A && git -C <impl> commit -m "docs(specs): add spec for $BRANCH_NAME"`. Mesaj global commit kurallarına uyar.
+**Kontrol**: `<impl>/specs/$BRANCH_NAME/spec.md`'yi `work/features.md` ile karşılaştırırsın: girmeyen madde, değiştirilmiş madde, Assumptions bölümünde listede olmayan karar. Belirsizlik kalmışsa impl'e `/speckit-clarify` koşturursun; soruları impl sana iletir, sen cevaplarsın. Cevaplayamadığın durumda insana rapor verip cevap beklersin.
+**Commit**: Kontrol temiz çıkınca impl'in reposunda sen commit'lersin: `git -C <impl> add -A && git -C <impl> commit -m "docs(specs): add spec for $BRANCH_NAME"`. Mesaj global commit kurallarına uyar. Commit'ten sonra `work/features.md`'yi silersin.
 
-## 6. Plan
+
+## 5. Plan
 
 **Komut**: `/speckit-plan`
-**Prompt**: Gerekmedikçe yok.
-**Çalıştırma**: impl'de `/speckit-plan`
+**Prompt**: İnsana teknoloji kararlarını (dil, platform, altyapı) sorarsın. Prompt insanın cevabıdır; kararı yoksa boş. Her durumda sonuna şu satır eklenir: "Kod yerleşimi reponun kökündeki `CLAUDE.md`'nin Yerleşim bölümüne uyar."
+**Çalıştırma**: impl'de `/speckit-plan $PROMPT`
 **Süreç**: impl soru sorarsa `Soruları Cevaplama Kuralları` başlığını uygula. Cevaplayamadığın durumda soruyu insana iletirsin. İnsan sorunu ya seninle ya da gerekli görürse impl üzerinden çözer. Sorunun çözüldüğü bilgisi sana insandan ya da impl'den gelir. Komutun tamamlanmasını beklersin.
-**Kontrol**: `<impl>/specs/$BRANCH_NAME/{plan.md, research.md}`'deki kararlar `inputs/brief.md` ile uyuşuyor mu? Uyuşmadığına kanaat getirirsen itirazını yaparsın. Eğer spec sonucunu ve anayasa sonucunu düzgün kontrol ettiysen, zaten spec'te ve anayasada senin itirazını destekleyecek kanıtların olması gerekir. Kararların dayanağı olmadığına kanaat getirirsen `spike` skill'ini yükleyip ölçümü yaptır ve sonucu al. Spike sonuçları `plan.md` ve `research.md` ile çelişirse impl'e spike sonuçlarını ve spike'ı ne için çalıştırdığını itiraz şeklinde ilet. İtirazın kabul görür ve tekrar yazılırsa kontrol adımını baştan başlatırsın.
-Kabul görmezse süreci durdurur, insana rapor verirsin.
-**Commit**: Kontrol temiz çıkınca impl'in reposunda sen commit'lersin: `git -C <impl> add -A && git -C <impl> commit -m "docs(specs): add plan for $BRANCH_NAME"`. Mesaj global commit kurallarına uyar.
+**Kontrol**: `review` skill'ini `<impl>/specs/$BRANCH_NAME/` ile koşarsın. Review arka planda koşar; sonucu task notification olarak gelir, gelene kadar beklersin. Review zayıf yan bulduysa listeyle, bulamadıysa `zayıf yan bulunamadı` diye döner. Zayıf yan bulunduysa listeyi `work/review.md`'ye yazar ve insanın onayını beklersin. İnsan listeyi inceler ve düzeltir. İnsan düzeltilmiş listeyi impl'e göndermeni isterse `work/review.md`'yi dosyadan yeniden okur, olduğu gibi impl'e itiraz olarak iletirsin; impl belgeleri düzeltince `work/review.md`'yi siler, `review` skill'ini son kez yeniden çağırırsın; bu yeni bir review açar.
+**Commit**: Kontrol temiz çıkınca, yani review zayıf yan bulmadıysa ya da insan onay verdiyse, impl'in reposunda sen commit'lersin: `git -C <impl> add -A && git -C <impl> commit -m "docs(specs): add plan for $BRANCH_NAME"`. Mesaj global commit kurallarına uyar. Commit'ten sonra `work/review.md`'yi silersin.
 
-## 7. Tasks
+## 6. Tasks
 
 **Komut**: `/speckit-tasks`
 **Prompt**: Her fazın son task'ı `make gate`'tir; yeşilse `git push`.
@@ -138,7 +115,7 @@ Kabul görmezse süreci durdurur, insana rapor verirsin.
 **Kontrol**: `<impl>/specs/$BRANCH_NAME/tasks.md`'de her fazın son task'ı `make gate` ve ardından `git push` mu? Eğer eksikse, impl'e hangi fazda eksik olduğunu iletirsin. Eksiklikler giderilince kontrol sürecine tekrar başlarsın.
 **Commit**: Kontrol temiz çıkınca impl'in reposunda sen commit'lersin: `git -C <impl> add -A && git -C <impl> commit -m "docs(specs): add tasks for $BRANCH_NAME"`. Mesaj global commit kurallarına uyar.
 
-## 8. Analyze
+## 7. Analyze
 
 **Komut**: `/speckit-analyze`
 **Prompt**: Yok
@@ -146,7 +123,7 @@ Kabul görmezse süreci durdurur, insana rapor verirsin.
 **Süreç**: impl'den gelen raporda CRITICAL ya da HIGH bulgu varsa düzeltilecekleri impl'e kimlikleriyle (ör. C1) iletir ve CRITICAL ile HIGH bulguları düzelttirirsin. impl işini bitirince tekrar `/speckit-analyze` çalıştırıp yeni raporu alırsın. Bu işlem 5 cycle'da bitmezse insana rapor verip loop'tan çıkarsın.
 **Commit**: CRITICAL ve HIGH bulgu kalmayınca impl'in reposunda sen commit'lersin: `git -C <impl> add -A && git -C <impl> commit -m "docs(specs): resolve analyze findings for $BRANCH_NAME"`. Düzeltilecek bir şey çıkmadıysa commit yoktur.
 
-## 9. Implement
+## 8. Implement
 
 **Komut**: `/speckit-companion-implement`
 **Prompt**: Yok
@@ -158,7 +135,7 @@ Kabul görmezse süreci durdurur, insana rapor verirsin.
 
 Nerede kaldığını dosyalardan bulursun:
 
-- Bu dizinde: `inputs/` altında hangi dosyalar var; `inputs/branch`'teki
+- Bu dizinde: `work/` altında hangi dosyalar var; `work/branch`'teki
   branch adı impl'in bulunduğu branch'le (`git -C <impl> branch --show-current`)
   aynı mı. Farklıysa insana sorarsın.
 - impl'e sorarsın: hangi branch'te, hangi özelliğin dizininde; o dizinde

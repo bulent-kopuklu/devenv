@@ -13,7 +13,6 @@ dizin vardır; adları ve oturum adları bu metni yükleyen `CLAUDE.md`'de yazar
 **İnsan** amacı, kısıtları ve ürün kararlarını verir; ctrl'le konuşur.
 
 **spec-kit**, impl'in reposuna kurulu bir komut setidir. Komutlar sırayla:
-`/speckit-constitution` (projenin bütün işini bağlayan kurallar),
 `/speckit-specify` (ürünün ne yapacağı), `/speckit-clarify` (spec'teki
 belirsizlikleri soru-cevapla kapatır), `/speckit-plan` (nasıl yapılacağı),
 `/speckit-tasks` (fazlara bölünmüş iş listesi), `/speckit-analyze` (belgeler

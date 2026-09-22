@@ -12,5 +12,8 @@
       "Bash(git push *)",
       "Bash(make gate)"
     ]
+  },
+  "env": {
+    "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "61"
   }
 }

@@ -8,9 +8,13 @@
       "Edit(/{{ROOT}}/{{NAME}}-impl/**)"
     ],
     "allow": [
+      "Read(/{{CONFIGABS}}/CLAUDE.md)",
       "Bash(scripts/feature-branch.sh *)",
       "Bash(git -C {{ROOT}}/{{NAME}}-impl add *)",
       "Bash(git -C {{ROOT}}/{{NAME}}-impl commit *)"
     ]
+  },
+  "env": {
+    "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "61"
   }
 }
