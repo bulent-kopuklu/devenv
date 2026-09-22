@@ -1,48 +1,56 @@
 # dev-templates
 
-Project scaffolding as `nix flake init` templates plus a devshell library.
+Project scaffolding: the `devenv` command, `nix flake init` templates and a
+devshell library.
+
+## Install
 
 ```bash
-nix flake init -t github:bulent-kopuklu/devenv#base    # flake.nix, .envrc, .gitignore
-nix flake init -t github:bulent-kopuklu/devenv#cpp     # .clangd, .clang-format, .editorconfig
-nix flake init -t github:bulent-kopuklu/devenv#rust    # rustfmt.toml
-nix flake init -t github:bulent-kopuklu/devenv#go      # .golangci.yml
-nix flake init -t github:bulent-kopuklu/devenv#node    # biome.json
-nix flake init -t github:bulent-kopuklu/devenv#claude  # CLAUDE.md
-nix flake init -t github:bulent-kopuklu/devenv#shell   # shell.nix + .envrc (use nix) when flake.nix cannot be committed
+./install.sh              # everything
+NO_PI=1 ./install.sh      # skip the git-server side
 ```
 
-Everything for a language lives in `templates/<lang>/`. For every language it
-is given, `devenv create` copies `files/` into the project, adds `make.mk` to
-the `Makefile` and copies `rules.md` to `.claude/rules/<lang>.md`; a missing
-part is skipped. A language that needs something else has a `create.py`, and
-then `devenv` runs that instead (`ctx.defaults()` does the above).
+It copies, it does not symlink: `bin/` → `~/.local/bin`, `templates/` →
+`~/.local/share/devenv/templates`, `claude/` → the Claude config directory,
+`pi/` → the git server. Run it again after pulling. `devenv --version` prints
+the version and the commit the install came from.
 
-`nix flake init` never overwrites existing files. In the generated `flake.nix` edit two lines:
+## `devenv create`
 
-```nix
-langs = [ "rust" "cpp" ];   # rust cpp go node java android
-targets = [ "aarch64" ];    # aarch64 armv7
+```bash
+devenv create ornek -l go -l rust --speckit
+devenv create . -l rust -l cpp --target aarch64
+devenv create ornek -l node --node 22
 ```
 
-`lib.mkEnv { pkgs, langs, targets, src, android }` returns `{ packages, shellHook }`.
-Rust comes from oxalica/rust-overlay; a `rust-toolchain.toml` in `src` wins over
-the default stable toolchain (then it must list cross targets itself). Cross
-linkers are exported as `CARGO_TARGET_<TRIPLE>_LINKER`, nothing is written to
-`.cargo/config.toml`. Node follows `.nvmrc` / `.node-version` (`22` → `nodejs_22`), default is nixpkgs' `nodejs`; `bun` is the default package manager for new projects, pnpm/npm are used when their lockfile exists.
+| option | |
+|---|---|
+| `<name>` or `.` | project name; `.` takes the current directory as the project directory |
+| `-l`, `--lang` | `rust` `cpp` `go` `node` `java` `android`, repeatable |
+| `--target` | cross target: `aarch64` `armv7`, repeatable |
+| `--node` | node major version for `.nvmrc` |
+| `--speckit` | install Spec Kit into the product repo |
 
-## Layout and the root Makefile
+```
+ornek/
+├── CLAUDE.md
+├── ornek-impl/        the product repo
+└── ornek-ctrl/        the reviewer
+```
 
-Code lives under `components/<name>/`, one language per component, its manifest
-(`go.mod`, `Cargo.toml`, `CMakeLists.txt`, `package.json`) inside it. The root
-`Makefile` reads each component's language from that manifest, so a new
-component is just a new directory. `devenv create` writes the `Makefile` from
-`templates/make/base.mk`, each chosen language's `templates/<lang>/make.mk`
-(`templates/proto/make.mk` with go or rust) and `templates/make/targets.mk`.
-Gradle (java, android) is not driven.
-A shared contract is a component too (`buf.yaml`): it is only linted
-(`buf lint`), never built — each consumer generates its own code during its
-build (`go generate` runs before `go build`; Rust uses `build.rs`).
+If the directory is not empty it asks first (y/N). Nothing is committed and no
+remote is added. Before the first step, in `ornek-impl`: add the remote, commit
+the skeleton, `git push -u origin main`. Then start the two sessions:
+
+```bash
+cd ornek/ornek-impl && claude -n ornek-impl
+cd ornek/ornek-ctrl && claude -n ornek-ctrl
+```
+
+## Makefile
+
+Code lives under `components/<name>/`, one language per component; a new
+component is a new directory. Gradle (java, android) is not driven.
 
 ```bash
 make                                   # build, VARIANT=debug TARGET=host
@@ -55,94 +63,33 @@ make clean                             # build/
 make distclean                         # + dist/, components/*/{node_modules,target}
 ```
 
-Output goes to `build/<target>/<variant>/bin`. The rule itself is in the
-`CLAUDE.md` template under `## Yerleşim`. Spec Kit's plan template proposes its
-own `src/` tree; the reviewer gives this layout in the plan prompt.
-
-## Two-role projects (`devenv create`)
+## `nix flake init` templates
 
 ```bash
-devenv create ornek -l go -l rust --speckit
+nix flake init -t github:bulent-kopuklu/devenv#base            # flake.nix, .envrc, .gitignore
+nix flake init -t github:bulent-kopuklu/devenv#cpp             # .clangd, .clang-format, .editorconfig
+nix flake init -t github:bulent-kopuklu/devenv#rust            # rustfmt.toml
+nix flake init -t github:bulent-kopuklu/devenv#go              # .golangci.yml
+nix flake init -t github:bulent-kopuklu/devenv#node            # biome.json
+nix flake init -t github:bulent-kopuklu/devenv#android-native  # cmake-android helper, VSCode cmake tasks
+nix flake init -t github:bulent-kopuklu/devenv#claude          # CLAUDE.md
+nix flake init -t github:bulent-kopuklu/devenv#shell           # shell.nix + .envrc when flake.nix cannot be committed
 ```
 
-```
-ornek/                 not a git repo; nobody runs Claude here
-├── CLAUDE.md          imports the shared protocol
-├── ornek-impl/        the product repo (remote: ornek.git); everything above happens here
-└── ornek-ctrl/        the reviewer: CLAUDE.md, settings, skills
-```
+`nix flake init` never overwrites existing files. In the generated `flake.nix`
+edit two lines:
 
-Nothing is committed and no remote is added. Before the first step, add the
-remote in `ornek-impl`, commit the skeleton and publish main once with
-`git push -u origin main`; after that impl never pushes main.
-
-One session writes (`claude -n ornek-impl`), one reviews (`claude -n ornek-ctrl`);
-they talk over `SendMessage`. impl runs the stock `/speckit-*` commands one
-step at a time and `/speckit-companion-implement`; the reviewer starts each
-step, checks what it produced, answers impl's questions and has impl run analyze
-and resolve what it finds. The other Companion commands and the workflow engine are not used:
-they move to the next step on their own.
-
-The reviewer gets two skills of its own (`reference`, `constitution`): one
-keeps the person's input and researches the reference products, the other
-decides by rule what belongs in the constitution and what stays in a spec. The
-constitution itself is never copied into the product repo; its core lives in
-`claude/constitution-base.md`, the reviewer builds the project's text on top of
-it and `/speckit-constitution` writes the file.
-
-The role texts live once, in `claude/roles/`, and `install.sh` copies them to
-`$CLAUDE_CONFIG_DIR/roles/`. Project files only
-import them and carry what is specific to the project: names, paths,
-permissions. Updating a role is one `./install.sh`, not a walk through projects.
-
-- The product repo keeps its committed `CLAUDE.md` about the product. The role
-  import and the permissions carry absolute paths, so they go to
-  `CLAUDE.local.md` and `.claude/settings.local.json`, both in
-  `.git/info/exclude`.
-- impl may not read or edit the reviewer's directory, and nothing it loads
-  points there; it may not call the `spike` skill. The reviewer may read impl
-  but not edit it. `Edit` deny
-  rules also stop the Write tool and `>` redirects, not `cp` or `git commit`
-  from Bash; that part is the role text's rule.
-- Names inside the product come from the argument, never from the directory:
-  the `CLAUDE.md` title is `ornek`, not `ornek-impl`.
-- `devenv create . -l <lang>` takes the current directory as `ornek/` and its
-  name as the project name; everything after that is the same as
-  `devenv create ornek`.
-- If the project directory is not empty, `devenv create` asks first (y/N). On
-  y it writes the template files over the existing ones; it deletes nothing.
-- `devenv` does not install the orchestration extension: its judge and
-  `after_*` hooks decide inside the writing session, and in this layout the
-  reviewer decides.
-
-`spike` is a global skill (`claude/skills/spike`, `context: fork`): it runs in
-its own subagent, opens no agents of its own and writes only to the wiki.
-
-## Claude Code skill
-
-`skills/devenv` drives the templates from inside any project or an empty folder:
-`/devenv rust c++ --target aarch64` (or a menu when arguments are missing), then
-detect, apply, init the language's own project files, and prove the editor will
-be green. Install once (symlinks into `~/.claude/skills`, so `git pull` updates them):
-
-```bash
-./install.sh
+```nix
+langs = [ "rust" "cpp" ];   # rust cpp go node java android
+targets = [ "aarch64" ];    # aarch64 armv7
 ```
 
-`install.sh` kopyalar, symlink kurmaz: `bin/` → `~/.local/bin`, `templates/` →
-`~/.local/share/devenv/templates`, `claude/roles/` ve `claude/skills/*` →
-Claude config dizini. `devenv` şablonları önce depoda
-(`<kök>/templates`), yoksa oradan okur — klondan çalıştırmak da kurulu hâli
-kullanmak da çalışır. `devenv --version` sürümü ve kurulu kopyanın geldiği
-commit'i basar (`devenv 1.0.0 (d7b508c 2026-09-11)`); commit'lenmemiş
-değişiklikten kurulduysa `+degisiklik` ekler. `VERSION` elle artırılır.
+`lib.mkEnv { pkgs, langs, targets, src, android }` returns
+`{ packages, shellHook }`. A `rust-toolchain.toml` in `src` overrides the
+default stable Rust (it must then list the cross targets itself). Node follows
+`.nvmrc` / `.node-version`.
 
 ## Repos on the git server
-
-`pi/newrepo` runs on the server, `bin/newrepo` runs on the laptop and calls it over ssh.
-`install.sh` copies both into place: the laptop side into `~/.local/bin`, the server side to
-`dietpi@mediagw.local:/home/dietpi/.local/bin` over scp (`NO_PI=1` skips it). The laptop side
-creates the bare repo and only prints the clone / fork-flow commands:
 
 ```bash
 git config --global url."git@git.kopuklu.io:/mnt/storage/workspace/git-repos/".insteadOf "git.kopuklu.io:"
