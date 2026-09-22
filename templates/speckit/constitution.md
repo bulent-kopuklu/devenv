@@ -13,8 +13,7 @@ iddiayı taşımaz; hangi sürümün davranışı olduğu bilinmez.
 sürüm ve ortamda, sonuç ne, nasıl yeniden koşulur (MUST). Dış bir kayda bağlantı
 eklenebilir ama tek kanıt o olamaz; ürünün belgeleri kendi kendine yetmelidir.
 
-Ölçülemiyorsa iddia kurulmaz; ölçüm borcu yazılır ve iddiaya dayanan iş "tamam"
-sayılmaz (MUST).
+Ölçülemiyorsa iddia kurulmaz (MUST).
 
 Teknoloji seçimi bu ilkeye değil İlke V'e tabidir. Seçimin gerekçesi bir davranış
 iddiasına dayanıyorsa yalnız o iddia buraya girer.
@@ -119,7 +118,6 @@ mekanizmasının hatası işlevsel testte görünmez, ancak biri onu kırmaya
   yeniden tanımlama; MINOR = yeni ilke ya da bölüm; PATCH = ifade düzeltmesi.
 - **Uyum denetimi**: Her spec, plan ve task incelemesinde anayasa uyumu kontrol
   edilir. Sapma ya reddedilir ya da gerekçesi ve süresi yazılı bir istisna
-  olarak kaydedilir; plan'da gerekçeli sapma Complexity Tracking tablosuna
-  yazılır. Sessiz sapma kabul edilmez.
+  olarak kaydedilir. Sessiz sapma kabul edilmez.
 
 **Version**: 1.0.0 | **Ratified**: {{DATE}} | **Last Amended**: {{DATE}}
