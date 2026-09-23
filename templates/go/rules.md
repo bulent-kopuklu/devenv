@@ -56,7 +56,7 @@ koşulu ve hata yolu vardır.
 - Bir fonksiyon tek iş yapar; gövdesi ekrana sığar (~50 satır).
 - Closure (func literal) birkaç satırlık yapıştırıcıdır. Birkaç satırı geçen,
   dallanan ya da hata üreten closure isimli fonksiyon ya da method olur.
-  Closure'lardan oluşan struct (`Def{Build: func…, Decide: func…}`) yerine
+  Closure'lardan oluşan struct (`StructName{Member1: func…, Member2: func…}`) yerine
   interface'i isimli bir tip uygular.
 - switch/select'in her case'i birkaç satırdır; iş, case'in çağırdığı
   fonksiyondadır.
