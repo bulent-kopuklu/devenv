@@ -52,6 +52,19 @@ koşulu ve hata yolu vardır.
 - Arka plan işi (relay, cron) request ctx'ine bağlanmaz; kendi ömür ctx'i vardır.
   Aksi halde istek bitince iş yarım kalır.
 
+## Fonksiyon boyu ve yapı
+- Bir fonksiyon tek iş yapar; gövdesi ekrana sığar (~50 satır).
+- Closure (func literal) birkaç satırlık yapıştırıcıdır. Birkaç satırı geçen,
+  dallanan ya da hata üreten closure isimli fonksiyon ya da method olur.
+  Closure'lardan oluşan struct (`Def{Build: func…, Decide: func…}`) yerine
+  interface'i isimli bir tip uygular.
+- switch/select'in her case'i birkaç satırdır; iş, case'in çağırdığı
+  fonksiyondadır.
+- İç içe blok derinliği en çok 3.
+- Bu bölüm `_test.go` dosyalarına uygulanmaz.
+- `.golangci.yml`'deki `funlen` ve `gocognit` yalnız açık aşımı yakalar; norm bu
+  bölümdür. Aşan fonksiyon bölünür, `//nolint` yazılmaz.
+
 ## Hata
 - Hata değerdir; panic programcı hatasıdır. Ağ, I/O, parse, DB, bus → error.
 - `if err != nil { return fmt.Errorf("<op>: %w", err) }`. Bağlam ekle, mesajı
