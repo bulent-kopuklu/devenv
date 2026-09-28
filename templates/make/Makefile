@@ -6,10 +6,10 @@
 #
 #   make                                   build, debug, host
 #   make build VARIANT=release TARGET=aarch64
-#   make test COMPONENTS="api agent"       unit (ve contract)
+#   make test COMPONENTS="api agent"       unit (ve contract); evidence'ın kendi testleri
 #   make test-integration                  gerçek dış sistemle, tek süreç
 #   make evidence:<ad>                     bir bileşenin ya da sistemin evidence'ı; EVIDENCE=short|full
-#   make evidence:<ad> SCENARIO=<senaryo>  tek senaryo
+#   make evidence:<ad> SCENARIO="<s> <s>"  yalnız bu senaryolar
 #   make evidence:all                      bütün evidence
 #   make gate                              build, lint, test, test-integration, evidence:all
 #   make bench                             performans ölçümü, kapının dışında
@@ -37,12 +37,12 @@ TEST_RUN := $(abspath $(RUNS))/$(PROJECT)/$(shell date +%Y%m%d-%H%M%S)-$(subst :
 endif
 export VARIANT TARGET BUILD BIN TEST_RUN
 
-GOALS := test test-integration bench
+GOALS := test-integration bench
 
 .DEFAULT_GOAL := build
-.PHONY: build lint $(GOALS) evidence\:all gate dist clean distclean
+.PHONY: build test lint $(GOALS) evidence\:all gate dist clean distclean
 
-build lint:
+build test lint:
 	@for c in $(COMPONENTS); do $(MAKE) -C components/$$c $@ || exit 1; done
 	@$(MAKE) -C evidence $@
 

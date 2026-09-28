@@ -201,11 +201,10 @@ reçeteler orada, `tests/`'e ait olanlar `tests/` içinde koşar.
 - `test-integration`: `go test -race -count=1 -tags integration ./...`
   (paketlerin yanındaki `*_integration_test.go` dosyaları); `tests/` içinde
   `go test -race -count=1 ./integration/...`.
-- `bench`: `tests/` içinde `go test -count=1 -timeout 60m -v -bench . ./bench/...`.
-  Test ve Benchmark fonksiyonları birlikte koşar: container'lı ölçüm ve
-  negatif kontrolleri Test fonksiyonu olarak da yazılabilir. go test'in
-  varsayılan 10 dakikalık sınırı uzun bench'i panic'le keser; `-v` Test
-  fonksiyonunun `t.Logf` ile bastığı sonucu gösterir.
+- `bench`: `tests/` içinde `go test -count=1 -v -bench . ./bench/...`. Test
+  ve Benchmark fonksiyonları birlikte koşar; sonucu `results/<host>.jsonl`'a
+  ekleyen ve bir öncekiyle karşılaştıran bir Test fonksiyonu olabilir. `-v`
+  onun `t.Logf` ile bastığı sonucu gösterir.
 - `lint`: bileşen kökünde ve `tests/` içinde `golangci-lint run ./...`;
   paketin yanındaki integration dosyalarını `.golangci.yml`'deki `build-tags`
   görünür kılar.
@@ -220,9 +219,11 @@ Bileşenin probe'ları `evidence/<bileşen>/probes/`'ta ayrı bir Go modülüdü
 - Her probe `probes/<ad>/` altında bir main paketidir; binary'nin adı dizinin
   adıdır. Probe'ların ortak kodu `probes/internal/`'dadır.
 - `evidence/<bileşen>/Makefile`:
-  - `build`: `probes/` içinde `go test -race ./...`, sonra
-    `CGO_ENABLED=0 go build -trimpath -ldflags='-s -w' -o $(OUT)/bin/ ./...`.
+  - `build`: `probes/` içinde
+    `CGO_ENABLED=0 go build -trimpath -ldflags='-s -w -X main.version=$(VERSION)' -o $(OUT)/bin/ ./...`.
     Probe `-race`'siz, release bayraklarıyla ve host için derlenir;
-    `TARGET`'a bakmaz.
+    `TARGET`'a bakmaz. `VERSION` bileşeninki gibi bulunur, tag öneki
+    `components/<bileşen>/v*`'dır.
+  - `test`: `probes/` içinde `go test -race ./...`.
   - `lint`: `probes/` içinde `golangci-lint run ./...`.
   - `run`: `$(MAKE) build OUT=$(RUN)`, sonra `TEST_RUN=$(RUN) uv run run.py`.

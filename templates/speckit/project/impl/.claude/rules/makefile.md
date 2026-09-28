@@ -13,18 +13,20 @@ evidence dizini eklemek kök Makefile'ı ve `evidence/Makefile`'ı değiştirmez
 | hedef | ne yapar |
 |---|---|
 | `build` | varsayılan hedef; bütün bileşenleri ve evidence'ın probe'larını derler |
-| `test` | unit ve contract testleri |
+| `test` | unit ve contract testleri; evidence'ta probe'ların ve script'lerin kendi testleri |
 | `test-integration` | integration testleri |
 | `bench` | bench'ler; kapıya girmez |
 | `lint` | bileşenlerde ve evidence'ta formatter denetimi ve linter'lar |
 | `evidence:<ad>` | bir bileşenin (`evidence/<ad>/`) ya da sistemin (`evidence/systems/<ad>/`) evidence'ı |
-| `evidence:all` | bütün evidence dizinleri |
+| `evidence:all` | `sysenv/` dışındaki bütün evidence dizinleri |
 | `gate` | sırayla `build`, `lint`, `test`, `test-integration`, `evidence:all` |
 | `dist` | release derler, teslim edilenleri `dist/<target>/` altına toplar |
 | `clean` | `build/`'i siler |
 | `distclean` | `clean`'e ek olarak `dist/`'i siler ve bileşenlerin `distclean`'ini çağırır |
 
 Tek bileşen için hedef `COMPONENTS` ile daraltılır: `make test COMPONENTS=api`.
+`build`, `test` ve `lint`'te evidence da yalnız o bileşenlerin dizinlerine
+daralır; sistemler ve `sysenv/` dışarıda kalır.
 
 ## Parametreler
 
@@ -35,7 +37,7 @@ Tek bileşen için hedef `COMPONENTS` ile daraltılır: `make test COMPONENTS=ap
 | `COMPONENTS` | varsayılan `components/` altında `Makefile`'ı olan bütün bileşenler; boşlukla ayrılmış bir alt küme verilebilir |
 | `RUNS` | koşu çıktısının kökü; env'den gelir |
 | `EVIDENCE` | `short`, `full`; evidence senaryolarını seçer |
-| `SCENARIO` | tek bir evidence senaryosunun adı; verilmezse `EVIDENCE`'ın seçtiği hepsi |
+| `SCENARIO` | boşlukla ayrılmış bir ya da birkaç evidence senaryosunun adı; verilmezse `EVIDENCE`'ın seçtiği hepsi |
 
 Geçersiz bir `VARIANT` ya da `TARGET` değeri make başlamadan hata verir.
 Testler ve evidence `TARGET=host`'ta koşar; başka bir hedefte istenince make
@@ -60,14 +62,16 @@ hata verir.
 
 ## evidence'ın Makefile'ları
 
-1. `evidence/Makefile` devenv'den gelir ve dilsizdir: `build` ve `lint`'i her
-   evidence dizinine indirir, `evidence:<ad>`'ı adın dizinine, `evidence:all`'u
-   hepsine. Olmayan bir ad hata verir.
-2. Bir evidence dizinini (`evidence/<bileşen>/` ya da
-   `evidence/systems/<ad>/`) açtığın commit'te onun `Makefile`'ını yazarsın.
-   `build`, `lint` ve `run` hedeflerinin hepsini tanımlar; işi olmayanın
-   reçetesi boştur (`@:`).
-   - `build`: dizinin probe'larını derler, `$(OUT)/bin/`'e yazar.
+1. `evidence/Makefile` devenv'den gelir ve dilsizdir: `build`, `test` ve
+   `lint`'i her evidence dizinine indirir, `evidence:<ad>`'ı adın dizinine,
+   `evidence:all`'u `sysenv/` dışındaki hepsine. Olmayan bir ad hata verir.
+2. Bir evidence dizinini (`evidence/<bileşen>/`, `evidence/systems/<ad>/` ya
+   da `evidence/sysenv/`) açtığın commit'te onun `Makefile`'ını yazarsın.
+   `build`, `test`, `lint` ve `run` hedeflerinin hepsini tanımlar; işi
+   olmayanın reçetesi boştur (`@:`). `sysenv/`'in `run`'ı yoktur.
+   - `build`: dizinin probe'larını derler, `$(OUT)/bin/`'e yazar; test koşmaz.
+   - `test`: probe'ların ve script'lerin kendi testleri (denetçinin negatif
+     kontrolü gibi); dış sistem açmaz.
    - `lint`: probe'ların ve script'lerin lint'i.
    - `run`: probe'ları `$(MAKE) build OUT=$(RUN)` ile koşu dizinine derler,
      senaryoları koşar; çıktısı `$(RUN)` altındadır.
@@ -88,6 +92,8 @@ hata verir.
   `$(RUNS)/<proje>/<zaman>-<hedef>/` (hedefteki `:` `-` olur). gate'in alt
   make'leri aynı dizini kullanır; her evidence dizini `$(TEST_RUN)/<dizin>`
   altına yazar.
+- bench sonucu `components/<ad>/tests/bench/results/<host>.jsonl`'a sürüm
+  başına bir satır olarak eklenir; dosya commit'lenir.
 - `RUNS` env'den gelir, verilmezse `$XDG_STATE_HOME/runs`, o da yoksa
   `~/.local/state/runs`'tır; yeniden başlatmada silinmez. CI'da işin artifact
   dizini verilir. `clean` ve `distclean` ona dokunmaz, yalnız insan temizler.

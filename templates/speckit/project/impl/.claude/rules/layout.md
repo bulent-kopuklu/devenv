@@ -25,7 +25,7 @@ Bu dosya dilden bağımsızdır. Bir dilin kaynağı ve testleri nereye koyduğu
   evidence/
   ├── Makefile                 devenv'den gelir
   ├── pyproject.toml, uv.lock  script'lerin manifest'i
-  ├── sysenv/                  ortam düzeneği
+  ├── sysenv/                  ortam düzeneği; kendi Makefile'ı
   ├── <bileşen>/               yalnız bu bileşeni kullanan senaryolar
   │   ├── Makefile
   │   ├── probes/<ad>/         probe'lar
@@ -49,7 +49,7 @@ Bu dosya dilden bağımsızdır. Bir dilin kaynağı ve testleri nereye koyduğu
   değişince probe'un adı yalan olur mu?
 - Tek bileşeni kullanan senaryo `evidence/<bileşen>/`'dedir; birden çoğunu
   kullanan `evidence/systems/<ad>/`'dedir. Sistem bir deployable bileşimidir;
-  onu getiren plan adlandırır, sonraki plan'lar yoluyla anar. Sistem
+  adı bir bileşenin adı olamaz; onu getiren plan adlandırır, sonraki plan'lar yoluyla anar. Sistem
   probe'ları kopyalamaz, bileşenin dizininden derletir. Yön tektir: sistem
   bileşenin evidence'ını kullanır; bileşen evidence'ı kullanmaz.
 - Bileşenden bağımsız olan her şey `sysenv/`'dedir: container ve ağ kurmak,
@@ -70,7 +70,7 @@ Bu dosya dilden bağımsızdır. Bir dilin kaynağı ve testleri nereye koyduğu
 - `make evidence:<ad>` dizinin giriş noktasını koşar: Python'da
   `uv run run.py`, yetiyorsa bir shell script'i. Giriş noktası işi baştan
   sona yapar; çıktısını `TEST_RUN` ortam değişkeninin gösterdiği
-  dizine yazar; `SCENARIO` tek bir senaryoyu, `EVIDENCE` (`short`|`full`)
+  dizine yazar; `SCENARIO` bir ya da birkaç senaryoyu, `EVIDENCE` (`short`|`full`)
   hangi senaryoların koşacağını seçer; bir ihlal ya da atlanan senaryo varsa
   sıfırdan farklı çıkış koduyla biter.
 - Bir iş hem probe'a hem script'e yazılabiliyorsa script'e yazılır. Probe'a
@@ -112,6 +112,7 @@ Bu dosya dilden bağımsızdır. Bir dilin kaynağı ve testleri nereye koyduğu
   | evidence | `evidence/<bileşen>/<NN_katman>/` ya da `evidence/systems/<ad>/`; script (Yerleşim) | `make evidence:<ad>` |
   | bench | `components/<ad>/tests/bench/` | `make bench` |
   | probe | `evidence/<bileşen>/probes/<ad>/`, her biri bir binary | `make build` derler, `make evidence:<ad>` derler ve başlatır; `$(BIN)`'e ve teslime girmez |
+  | probe'ların ve script'lerin kendi testleri | test ettikleri kodun yanında, `evidence/` altında | `make test` |
 
 - unit, integration ve contract spec-kit'in adlarıdır (plan ve tasks
   şablonundaki `tests/unit`, `tests/integration`, `tests/contract`). Hikâyenin
@@ -125,8 +126,8 @@ Bu dosya dilden bağımsızdır. Bir dilin kaynağı ve testleri nereye koyduğu
   test onun yanında kalır; yardımcı iki yere kopyalanmaz.
 - Her bench `tests/bench/` altındadır, tek bir fonksiyonu ölçen de; kodun
   yanında bench olmaz. bench ürünün uçtan uca özelliklerini süreç içinde kısa
-  süre koşar ve sonucunu sürüm başına saklar; amacı sürümler arasındaki
-  gerilemeyi görmektir. evidence'ın düzeneğini ve probe'larını kullanmaz.
+  süre koşar ve sonucunu sürüm başına `tests/bench/results/<host>.jsonl`'a
+  ekler; amacı sürümler arasındaki gerilemeyi görmektir. evidence'ın düzeneğini ve probe'larını kullanmaz.
   bench kapının dışındadır.
 - `NN_katman` dizinleri alttan üste numaralanır (10, 20, …); numara kodun
   katmanını söyler, spec'in kimliğini taşımaz. Kodda spec kimliği (FR, SC, T)
