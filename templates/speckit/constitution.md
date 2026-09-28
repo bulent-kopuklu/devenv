@@ -34,9 +34,10 @@ taşır. Ürün belgesinde durmayan kanıt, belgeyi okuyan için yoktur; yazılm
 
 3. Bir hata bulununca, düzeltmeden önce onu yeniden üreten test yazılır ve
    düzeltilmemiş kodda kırmızı yandığı gösterilir (MUST). Kanıt, o kırmızı
-   koşunun arşivdeki çıktısıdır. Test ve düzeltme aynı commit'e girer (MUST).
+   koşunun çıktısıdır: evidence'ta koşu dizininde durur, öteki testlerde
+   düzeltme commit'ine yazılır. Test ve düzeltme aynı commit'e girer (MUST).
 
-4. Test ve kapı koşularının çıktısı, sonraki koşunun ve temizliğin silmediği bir
+4. evidence koşularının çıktısı, sonraki koşunun ve temizliğin silmediği bir
    yerde saklanır; yeri plan.md'de yazar (MUST). Commit'lenmiş ve bir kez geçmiş
    bir test ya da kapı kırmızı yanarsa bu bir bulgudur. Tekrar koşu onu kapatmaz;
    bulgu, mekanizması açıklanana kadar açık kalır (MUST).

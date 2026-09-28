@@ -38,8 +38,11 @@ ctrl'ün itirazlarına göre belgeyi ya da kodu düzeltmek.
 
 - Her task'ın işi bitip `tasks.md`'de `[X]`'i koyunca, task'ın değişikliğiyle
   birlikte commit'lersin.
-- Faz bitince sonuç raporuna fazın ilk ve son commit'ini ve son koşunun
-  dizinini eklersin.
+- Bir hatayı düzelttiğin commit'in mesajına, testin düzeltilmemiş koddaki
+  kırmızı çıktısını yazarsın.
+- Faz bitince sonuç raporuna fazın ilk ve son commit'ini ve
+  `make test-integration`'ın sonucunu eklersin; fazda kırmızı yanan her testi
+  çıktısıyla yazarsın.
 - Commit geçmişini olduğu gibi bırakırsın: `rebase`, `squash` ve
   `commit --amend` kullanmazsın.
 
@@ -51,8 +54,9 @@ ctrl'ün itirazlarına göre belgeyi ya da kodu düzeltmek.
   integration testi eksiktir; "Tests to add or update" o testi ister. Düşen
   test integration ya da daha alçak düzeydeyse onun kırmızısı kanıttır.
 - `/speckit-bug-fix`'te assessment bir test istiyorsa önce o testi yazar,
-  düzeltilmemiş kodda koşarsın. Kırmızı yanarsa koşu dizinini ctrl'e yazar,
-  sonra düzeltmeye geçersin. Kırmızı yanmazsa test hatayı üretmiyor demektir:
+  düzeltilmemiş kodda koşarsın. Kırmızı yanarsa ctrl'e bildirir ve düzeltmeye
+  geçersin; `fix.md`'nin Local Verification bölümüne kırmızı ve yeşil koşunun
+  çıktısını, evidence'ta koşu dizinini yazarsın. Kırmızı yanmazsa test hatayı üretmiyor demektir:
   kodu değiştirmeden durur, ctrl'e yazarsın.
 
 ## Ortam
@@ -122,11 +126,11 @@ Esnetilmek istenilen kurallar icin ctrl vasitasiyla insandan onay alinir.
   | tür | yer | koşan hedef |
   |---|---|---|
   | unit | paketin yanında `*_test.go` | `make test` |
-  | integration | `components/<ad>/tests/integration/<NN_katman>/` | `make test-integration` |
+  | integration | `components/<ad>/tests/integration/<NN_katman>/`, ilk satır `//go:build integration` | `make test-integration` |
   | integration, iç alana dokunmak zorunda | paketinde `*_integration_test.go`, ilk satır `//go:build integration` | `make test-integration` |
   | contract | `components/<ad>/tests/contract/` | `make test` |
   | evidence | `components/<ad>/tests/evidence/<NN_katman>/`, kendi manifest'iyle; dili Go olmak zorunda değil (Yerleşim) | `make test-evidence` |
-  | bench | `components/<ad>/tests/bench/` | `make bench` |
+  | bench | `components/<ad>/tests/bench/`, ilk satır `//go:build bench` | `make bench` |
   | evidence'ın koştuğu servisler | `components/<ad>/tests/evidence/services/<ad>/`, her biri bir `main` paketi; ürünü kullanan örnek uygulama | `make test-evidence` başlatır; `make build`'e ve teslime girmez |
 
 - unit, integration ve contract spec-kit'in adlarıdır (plan ve tasks
@@ -149,7 +153,8 @@ Esnetilmek istenilen kurallar icin ctrl vasitasiyla insandan onay alinir.
 - integration gerçek dış sistemle koşar (testcontainers ya da gömülü sunucu).
   Mock'lu veritabanı testi integration sayılmaz.
 - Go test süreci, bench dışında, `-race` ile koşar; evidence'ın başlattığı Go binary'si teslim
-  edildiği gibi derlenir. Her Go test paketinde `goleak.VerifyTestMain`.
+  edildiği gibi, release bayraklarıyla ve `-race`'siz derlenir: ölçülen, teslim edilen
+  kütüphanedir. Her Go test paketinde `goleak.VerifyTestMain`.
 - Zamana bağlı unit davranışı `testing/synctest` balonunda sınanır; balonda
   saati `time.Sleep` ilerletir. integration'da sabit bekleme
   (`time.Sleep`, `time.After`, `time.NewTimer`) yoktur; olay ya da işaret

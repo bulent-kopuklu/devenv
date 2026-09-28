@@ -41,9 +41,14 @@ verir.
 - Derleme çıktısı `build/<target>/<variant>/`, teslim edilen binary'ler
   `$(BIN)` = `build/<target>/<variant>/bin/` altındadır. `dist` bu `bin/`'i
   toplar.
-- Test ve kapı koşularının çıktısı `$(RUNS)` altında, koşu başına bir
-  dizindedir. Varsayılanı repo içindeki `runs/`; git dışındadır. `clean` ve
-  `distclean` ona dokunmaz, yalnız insan temizler.
+- evidence koşularının çıktısı `$(TEST_RUN)` altındadır; unit ve integration
+  terminale yazar. Bir make çağrısı tek bir koşu dizini açar:
+  `$(RUNS)/<proje>/<zaman>-<hedef>/`. gate'in alt make'leri aynı dizini
+  kullanır; her reçete `$(TEST_RUN)/$@` altına yazar.
+- `RUNS` env'den gelir, verilmezse `/tmp`'dir. `/tmp` açılışta temizlenebilir;
+  arşiv kalıcı olmalıysa `RUNS` env'de verilir; CI'da işin artifact dizini
+  verilir. `clean` ve `distclean` ona dokunmaz, yalnız insan temizler.
+- Reçeteler POSIX `sh` ile koşar; bash'e özgü bir şey kullanmaz.
 
 ## Bileşeni bağlamak
 

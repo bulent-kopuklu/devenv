@@ -13,16 +13,25 @@
 #   make build-agent                       tek bileşen
 #   make dist TARGET=armv7                 release çıktısı → dist/armv7/
 #   make clean | distclean                 RUNS'a dokunmaz
+#   RUNS=~/runs make gate                  koşu çıktısının kökü; verilmezse /tmp
 
 VARIANT    ?= debug
 TARGET     ?= host
 COMPONENTS ?= $(notdir $(wildcard components/*))
-RUNS       ?= runs
+RUNS       ?= /tmp
+PROJECT    := {{NAME}}
 $(if $(filter $(VARIANT),debug release),,$(error VARIANT=$(VARIANT); seçenekler: debug release))
 $(if $(filter $(TARGET),host aarch64 armv7),,$(error TARGET=$(TARGET); seçenekler: host aarch64 armv7))
 $(if $(and $(filter-out host,$(TARGET)),$(filter test test-% bench,$(MAKECMDGOALS))),\
   $(error testler yalnız host'ta koşar; TARGET=$(TARGET) için make build))
 BIN := $(abspath build)/$(TARGET)/$(VARIANT)/bin
+
+# Bir make çağrısı tek koşu dizini açar; gate'in alt make'leri onu export'tan
+# devralır, her reçete kendi $(TEST_RUN)/$@ altına yazar.
+ifndef TEST_RUN
+TEST_RUN := $(abspath $(RUNS))/$(PROJECT)/$(shell date +%Y%m%d-%H%M%S)-$(or $(firstword $(MAKECMDGOALS)),build)
+endif
+export TEST_RUN
 
 .DEFAULT_GOAL := build
 .PHONY: build test test-integration test-evidence bench lint gate dist clean distclean

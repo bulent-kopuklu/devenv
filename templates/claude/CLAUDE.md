@@ -12,9 +12,9 @@
   `make test-evidence`, `make bench` (kapının dışında). Türlerin yeri dilin kural
   dosyasının "Test" bölümünde.
 - `make gate` sırayla `build`, `lint`, `test`, `test-integration`
-  ve `test-evidence` koşar. Bir türün testi yoksa hedefi boş geçer. Her koşunun
-  çıktısı `RUNS` altına koşu başına bir dizine yazılır; `clean` ve `distclean`
-  ona dokunmaz, yalnız insan temizler.
+  ve `test-evidence` koşar. Bir türün testi yoksa hedefi boş geçer. evidence
+  koşusunun çıktısı `RUNS` altına koşu başına bir dizine yazılır; `clean` ve
+  `distclean` ona dokunmaz, yalnız insan temizler.
 
 ## Yerleşim
 

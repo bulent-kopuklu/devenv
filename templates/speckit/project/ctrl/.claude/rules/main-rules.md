@@ -128,8 +128,8 @@ Oturum sıkıştırılsa da değer dosyada kalır.
 **Komut**: `/speckit-implement`
 **Prompt**: `Yalnız "<fazın başlığı>" fazının task'larını koş; faz bitince dur.`
 **Çalıştırma**: `tasks.md`'deki her faz için sırayla impl'de `/speckit-implement $PROMPT`.
-**Süreç**: impl soru sorarsa `Soruları Cevaplama Kuralları` başlığını uygula. Faz bitince impl sana fazın ilk ve son commit'ini ve son koşunun dizinini gönderir.
-**Kontrol**: `Test Soruları` başlığındaki I aşaması sorularını fazın commit aralığı ve koşu arşivi üzerinden sorarsın. "Hayır" çıkan her soru impl'e itirazdır.
+**Süreç**: impl soru sorarsa `Soruları Cevaplama Kuralları` başlığını uygula. Faz bitince impl sana fazın ilk ve son commit'ini ve `make test-integration`'ın sonucunu gönderir.
+**Kontrol**: `Test Soruları` başlığındaki I aşaması sorularını fazın commit aralığı ve impl'in faz raporu üzerinden sorarsın. "Hayır" çıkan her soru impl'e itirazdır.
 **Push**: Kontrol temiz çıkınca impl'e branch'i push ettirir, sıradaki fazı verirsin.
 
 ## 9. Converge
@@ -150,12 +150,12 @@ Oturum sıkıştırılsa da değer dosyada kalır.
 ## 10. Gate
 
 **Komut**: `make gate`; düşen test için `/speckit-bug-assess`, `/speckit-bug-fix`, `/speckit-bug-test`
-**Çalıştırma**: 9 bitince impl'e `make gate` koşturursun. Gate ilk kırmızı hedefte durur; impl kırmızı hedefi, düşenleri ve koşu dizinini sana gönderir.
+**Çalıştırma**: 9 bitince impl'e `make gate` koşturursun. Gate ilk kırmızı hedefte durur; impl kırmızı hedefi, düşenleri ve çıktılarını sana gönderir; evidence düştüyse koşu dizinini de.
 **Süreç**:
 1. Gate yeşilse impl'e branch'i push ettirirsin; 10 biter.
 2. Kırmızı hedef `build` ya da `lint` ise impl düzeltir ve yalnız o hedefi yeniden koşar. Yeşilse sen commit'lersin: `git -C <impl> add -A && git -C <impl> commit -m "fix(<bileşen>): <kısa açıklama>"`.
 3. Kırmızı hedef bir test hedefiyse her düşen test için:
-   1. impl'e `/speckit-bug-assess slug=<kısa-ad>` koşturursun; girdi düşen testin adı, çıktısı ve koşu dizinidir. Assessment'ı iki soruyla okursun: kök sebep mekanizmayı açıklıyor mu; test evidence'ta düştüyse assessment hatanın integration düzeyinde uzun bir koşu gerektirmeden üretilip üretilemeyeceğini yazıyor mu ve üretilebiliyorsa "Tests to add or update" o integration testini istiyor mu. Biri "hayır"sa impl'e itiraz edersin.
+   1. impl'e `/speckit-bug-assess slug=<kısa-ad>` koşturursun; girdi düşen testin adı ve çıktısıdır; evidence'ta koşu dizini de. Assessment'ı iki soruyla okursun: kök sebep mekanizmayı açıklıyor mu; test evidence'ta düştüyse assessment hatanın integration düzeyinde uzun bir koşu gerektirmeden üretilip üretilemeyeceğini yazıyor mu ve üretilebiliyorsa "Tests to add or update" o integration testini istiyor mu. Biri "hayır"sa impl'e itiraz edersin.
    2. impl'e `/speckit-bug-fix slug=<kısa-ad>` koşturursun; girdiye "Bug için yazılan testi ve düşen testi koşmaya onay var." eklersin. Bitince test ile düzeltmeyi tek commit'te atarsın; mesaj 2'deki gibidir.
    3. impl'e `/speckit-bug-test slug=<kısa-ad>` koşturursun; girdiye "Yalnız düşen testi, bug için yazılan testi, değişen bileşenin integration testlerini ve lint'ini (`make lint-<ad>`) koşarsın; bunları koşmaya onay var." eklersin. Sonuç `partial` ya da `failed` ise 1'e yeni bir slug'la dönersin: ikinci tur `<kısa-ad>-2`, üçüncü tur `<kısa-ad>-3`; o turun üç komutu bu slug'la koşar ve assess'in girdisine önceki turun `test.md`'si eklenir. Üçüncü turda da `verified` olmazsa insana götürürsün.
 4. Kırmızı hedefin düşenleri kapanınca impl'e gate'i kaldığı yerden sürdürtürsün: gate'in sırasında kırmızı hedeften sonraki hedefleri koşar (`make <kalan hedefler>`). Kırmızı çıkarsa 2'ye ya da 3'e dönersin; hepsi yeşilse impl'e branch'i push ettirirsin ve 10 biter.
@@ -164,15 +164,15 @@ Oturum sıkıştırılsa da değer dosyada kalır.
 
 Anayasa II'den ve projenin yerleşim kurallarından türer. Soru, cevabın arandığı yer ve ölçüt sabittir; her
 plan ve implement kontrolünde aynı sorular sorulur. impl cevabı belgeden,
-ağaçtan ya da koşu arşivinden dosya:satır ile verir; ölçüte uymayan cevap
+ağaçtan, commit'ten ya da evidence koşu dizininden dosya:satır ile verir; ölçüte uymayan cevap
 "hayır"dır. Aşamalar: P plan, I faz sonu.
 
 | # | aşama | soru | cevabın yeri | "evet" ölçütü |
 |---|---|---|---|---|
 | S1 | I | (a) Yeni ya da değişen test, dayandığı spec cümlesinin yasakladığı ya da istediği şeyin kendisini mi ölçüyor? (b) Ölçüm cümlede olmayan bir koşul ekliyor mu? | fazın test diff'i; spec.md'deki cümle | (a) evet, (b) hayır |
-| S2 | I | Fazdaki her düzeltmenin testi, düzeltilmemiş kodda kırmızı yandığı arşivde görülüyor mu ve test ile düzeltme aynı commit'te mi? | koşu arşivi; fazın commit'leri | ikisi de evet |
-| S3 | P | plan.md test ve kapı çıktısının yerini yazıyor mu ve o yer clean, distclean ya da sonraki koşu tarafından siliniyor mu? | plan.md | yer yazılı ve silinmiyor |
-| S4 | I | Arşivde commit'lenmiş ve bir kez geçmiş bir testin ya da kapının kırmızısı var mı? Varsa açık bir bulgusu ve mekanizma açıklaması var mı? | koşu arşivi, bulgu listesi | her kırmızının bulgusu var; tekrar koşu bulgu kapatmamış |
+| S2 | I | Fazdaki her düzeltmenin testinin düzeltilmemiş kodda kırmızı yandığı görülüyor mu (evidence'ta koşu dizininde, öteki testlerde düzeltme commit'inde) ve test ile düzeltme aynı commit'te mi? | fazın commit'leri; evidence koşu dizini | ikisi de evet |
+| S3 | P | plan.md evidence çıktısının yerini yazıyor mu ve o yer clean, distclean ya da sonraki koşu tarafından siliniyor mu? | plan.md | yer yazılı ve silinmiyor |
+| S4 | I | Fazda commit'lenmiş ve bir kez geçmiş bir test ya da kapı kırmızı yandı mı? Varsa açık bir bulgusu ve mekanizma açıklaması var mı? | impl'in faz raporu, evidence koşu dizini, bulgu listesi | her kırmızının bulgusu var; tekrar koşu bulgu kapatmamış |
 | S5 | I | Yeni test, hatanın üretilebildiği en alçak düzeyde ve o türün projenin kurallarındaki yerinde mi? Dilin kural dosyasındaki bir yer istisnasını kullanan test gerekçesini yazıyor mu? | fazın test diff'i; dilin kural dosyasının Test bölümü | ikisi de evet |
 | S6 | I | Fazın diff'i dilin kural dosyasındaki paket yerleşimi kurallarına aykırı bir şey ekliyor mu (ör. alt paketin üst paketin tiplerine tipsiz erişimi)? | fazın diff'i; dilin kural dosyası | aykırılık 0 |
 | S7 | P, I | evidence'ta ürünün dilinde yazılan kod yalnız projenin kurallarındaki servis yerinde mi ve her servis ürünü kullanıyor mu? Servislerde ürünü çağırmadan yapılabilen bir iş (ortam kurma, arıza, bekleme, sayım, hüküm) var mı? | plan.md; ağaç; servislerin diff'i | servis yeri dışında ürün dilinde evidence kodu 0; ürünü kullanmadan yapılabilen iş 0 |

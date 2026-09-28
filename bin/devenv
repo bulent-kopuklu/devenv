@@ -408,6 +408,7 @@ def setup(a, langs, targets, subs):
     rules = create_langs(langs, subs["NAME"])
 
     copy("make")
+    edit("Makefile", lambda t: t.replace("{{NAME}}", subs["NAME"]))
     subprocess.run(["git", "add", "-N", "Makefile"], check=True)
     print("git:     Makefile intent-to-added; it belongs to the project, git add it to keep it")
 

@@ -96,8 +96,9 @@ check("yeni: impl CLAUDE.md speckit sablonundan, templates/claude'dan degil",
 check("yeni: baslik proje adi, dizin adi degil", (root / "CLAUDE.md").read_text().startswith("# ornek\n"))
 check("yeni: yer tutucu kalmadi", not any(re.search(r"\{\{[A-Z]+\}\}", p.read_text()) for p in root.rglob("*")
                                          if p.is_file() and ".git" not in p.parts))
-check("yeni: Makefile dilsiz iskelet",
-      (impl / "Makefile").read_text() == (DEVENV.parents[1] / "templates/make/Makefile").read_text())
+check("yeni: Makefile dilsiz iskelet, proje adi argumandan",
+      (impl / "Makefile").read_text()
+      == (DEVENV.parents[1] / "templates/make/Makefile").read_text().replace("{{NAME}}", "ornek"))
 check("yeni: dilin Makefile bilgisi kuralinda", "## Makefile'da Go bileşeni" in (impl / ".claude/rules/go.md").read_text())
 check("yeni: speckit cagrildi", "[speckit]" in out)
 anayasa = impl / ".specify/memory/constitution.md"
@@ -184,7 +185,7 @@ check("tek: CLAUDE.md kokte, baslik proje adi", (p / "CLAUDE.md").read_text().st
 check("tek: Makefile ve dil kurallari kokte", (p / "Makefile").is_file() and (p / ".claude/rules/go.md").is_file())
 ignored = lambda f: subprocess.run(["git", "-C", str(p), "check-ignore", "-q", f]).returncode == 0
 check("tek: editor ayari .vscode'da ve git'e girer", (p / ".vscode/settings.json").is_file() and not ignored(".vscode/settings.json"))
-check("tek: RUNS git disinda", ignored("runs/x"))
+check("tek: Makefile proje adini tasir", "PROJECT    := ornek\n" in (p / "Makefile").read_text())
 check("tek: rol dosyalari yok", not (p / "CLAUDE.local.md").exists() and not (p / ".claude/settings.local.json").exists())
 check("tek: Spec Kit yok", "[speckit]" not in out and not (p / ".specify").exists())
 check("tek: tek oturum basildi", "claude -n ornek\n" in out and "ornek-impl" not in out)

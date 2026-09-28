@@ -131,15 +131,24 @@ bir goroutine'de çıkan panic bütün süreci düşürür.
 Bileşeni kökteki Makefile'a bağlarken reçeteler şöyledir; her komut
 `components/<ad>/` içinde koşar.
 - `build-<ad>`: önce `go generate ./...`, sonra `go build <bayraklar> ./...` ile
-  bütün paketler; ardından yalnız main paketleri
-  `go build <bayraklar> -o $(BIN)/ $$(go list -f '{{if eq .Name "main"}}{{.ImportPath}}{{end}}' ./...)`
+  bütün paketler; ardından `tests/` dışındaki main paketleri
+  `go build <bayraklar> -o $(BIN)/ $$(go list -f '{{if eq .Name "main"}}{{.ImportPath}}{{end}}' ./... | grep -v /tests/)`
   ile `$(BIN)`'e (liste boşsa bu adım atlanır). `go build -o <dizin>` main
   paketi olmayan modülde hata verdiği için bütün paketler ayrı derlenir.
+  evidence servisleri `tests/` altında olduğu için `$(BIN)`'e ve `dist`'e girmez.
 - Bayraklar: debug `-gcflags='all=-N -l'`, release `-trimpath -ldflags='-s -w'`.
 - `TARGET` host değilse her go komutunun önüne `GOOS=linux CGO_ENABLED=0` ve
   hedefin mimarisi gelir: aarch64 `GOARCH=arm64`, armv7 `GOARCH=arm GOARM=7`.
   Devshell `CC`'yi host derleyicisine ayarlar; `CC` tanımlıyken Go cross
   derlemede cgo'yu açar ve host derleyicisi hedefi derleyemez. cgo isteyen
   bileşen hedefin `CC`'si için ayrı karar ister; plan'da yazılır.
-- `test-<ad>`: `go test -race ./...`.
-- `lint-<ad>`: `golangci-lint run ./...`.
+- `test-<ad>`: `go test -race ./...`. integration ve bench dosyaları etiketli
+  olduğu için unit ve contract koşar.
+- `test-integration-<ad>`: `go test -race -count=1 -tags integration ./...`.
+- `test-evidence-<ad>`: `mkdir -p $(TEST_RUN)/$@`; servisler release bayraklarıyla, `-race`'siz
+  `go build -trimpath -ldflags='-s -w' -o $(TEST_RUN)/$@/bin/ ./tests/evidence/services/...`
+  ile koşu dizinine derlenir; sonra `tests/evidence/` içinde
+  `TEST_RUN=$(TEST_RUN)/$@ uv run run.py`.
+- `bench-<ad>`: `go test -tags bench -run '^$$' -bench . ./tests/bench/...`.
+- `lint-<ad>`: `golangci-lint run ./...`; etiketli dosyaları `.golangci.yml`'deki
+  `build-tags` görünür kılar.
