@@ -57,8 +57,9 @@ Kurulumu `install.sh` yapar ve kopyalar, symlink kurmaz. Bu makinede
   `CLAUDE.md`'ye, Spec Kit'e ve rol dosyalarına dokunmaz.
 - **Kök Makefile dilsiz bir iskelettir.** Arayüzü (hedefler, parametreler,
   çıktı yeri) taşır, reçete taşımaz; bir hedefi bileşenlerin kendi
-  Makefile'larına indirir. Bileşenin Makefile'ını bileşeni açan agent yazar;
-  bileşen eklemek kökü değiştirmez. Bir dilin reçete bilgisi (bayraklar,
+  Makefile'larına, evidence hedeflerini yine dilsiz olan `evidence/Makefile`'a
+  indirir. Bileşenin ve evidence dizininin Makefile'ını onu açan agent yazar;
+  bileşen ya da evidence dizini eklemek kökü değiştirmez. Bir dilin reçete bilgisi (bayraklar,
   cross) o dilin `rules.md`'sindeki Makefile bölümündedir.
 - **Orchestration kurulmaz.** Hakem ve `after_*` hook'ları kararı yazan
   oturumun içinde veriyordu; bu düzende karar denetçinindir.

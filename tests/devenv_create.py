@@ -99,6 +99,8 @@ check("yeni: yer tutucu kalmadi", not any(re.search(r"\{\{[A-Z]+\}\}", p.read_te
 check("yeni: Makefile dilsiz iskelet, proje adi argumandan",
       (impl / "Makefile").read_text()
       == (DEVENV.parents[1] / "templates/make/Makefile").read_text().replace("{{NAME}}", "ornek"))
+check("yeni: evidence/Makefile sablondan",
+      (impl / "evidence/Makefile").read_text() == (DEVENV.parents[1] / "templates/make/evidence/Makefile").read_text())
 check("yeni: dilin Makefile bilgisi kuralinda", "## Makefile'da Go bileşeni" in (impl / ".claude/rules/go.md").read_text())
 check("yeni: speckit cagrildi", "[speckit]" in out)
 anayasa = impl / ".specify/memory/constitution.md"
@@ -159,7 +161,7 @@ impl = t / "ornek/ornek-impl"
 with open(impl / "Makefile", "a") as f:
     f.write("\nprojenin-hedefi:\n\t@true\n")
 (impl / "rustfmt.toml").write_text("max_width = 80\n")
-once = {f: (impl / f).read_text() for f in ("CLAUDE.md", "CLAUDE.local.md", ".golangci.yml", "Makefile",
+once = {f: (impl / f).read_text() for f in ("CLAUDE.md", "CLAUDE.local.md", ".golangci.yml", "Makefile", "evidence/Makefile",
                                              ".claude/rules/go.md", ".claude/rules/main-rules.md",
                                              ".claude/rules/layout.md")}
 out, code = devenv(impl, "add", "-l", "rust")
