@@ -137,18 +137,22 @@ Bileşeni kökteki Makefile'a bağlarken reçeteler şöyledir; her komut
   paketi olmayan modülde hata verdiği için bütün paketler ayrı derlenir.
   evidence servisleri `tests/` altında olduğu için `$(BIN)`'e ve `dist`'e girmez.
 - Bayraklar: debug `-gcflags='all=-N -l'`, release `-trimpath -ldflags='-s -w'`.
-- `TARGET` host değilse her go komutunun önüne `GOOS=linux CGO_ENABLED=0` ve
-  hedefin mimarisi gelir: aarch64 `GOARCH=arm64`, armv7 `GOARCH=arm GOARM=7`.
-  Devshell `CC`'yi host derleyicisine ayarlar; `CC` tanımlıyken Go cross
-  derlemede cgo'yu açar ve host derleyicisi hedefi derleyemez. cgo isteyen
-  bileşen hedefin `CC`'si için ayrı karar ister; plan'da yazılır.
+- Her `go build` `CGO_ENABLED=0` ile koşar. Devshell `CC`'yi export ettiği için
+  Go varsayılan olarak cgo'yu açar: host'ta binary nix'in glibc'sine dinamik
+  bağlanır ve nix store'u olmayan makinede açılmaz, cross'ta host derleyicisi
+  hedefi derleyemez. Testler `-race` için cgo'lu kalır. cgo isteyen bileşen ayrı
+  karar ister; plan'da yazılır.
+- `TARGET` host değilse `go build`'in önüne ayrıca `GOOS=linux` ve hedefin
+  mimarisi gelir: aarch64 `GOARCH=arm64`, armv7 `GOARCH=arm GOARM=7`.
 - `test-<ad>`: `go test -race ./...`. integration ve bench dosyaları etiketli
   olduğu için unit ve contract koşar.
 - `test-integration-<ad>`: `go test -race -count=1 -tags integration ./...`.
 - `test-evidence-<ad>`: `mkdir -p $(TEST_RUN)/$@`; servisler release bayraklarıyla, `-race`'siz
-  `go build -trimpath -ldflags='-s -w' -o $(TEST_RUN)/$@/bin/ ./tests/evidence/services/...`
+  `CGO_ENABLED=0 go build -trimpath -ldflags='-s -w' -o $(TEST_RUN)/$@/bin/ ./tests/evidence/services/...`
   ile koşu dizinine derlenir; sonra `tests/evidence/` içinde
   `TEST_RUN=$(TEST_RUN)/$@ uv run run.py`.
-- `bench-<ad>`: `go test -tags bench -run '^$$' -bench . ./tests/bench/...`.
+- `bench-<ad>`: `go test -tags bench -count=1 -bench . ./tests/bench/...`. Test ve
+  Benchmark fonksiyonları birlikte koşar: container'lı ölçüm ve negatif
+  kontrolleri Test fonksiyonu olarak da yazılabilir.
 - `lint-<ad>`: `golangci-lint run ./...`; etiketli dosyaları `.golangci.yml`'deki
   `build-tags` görünür kılar.

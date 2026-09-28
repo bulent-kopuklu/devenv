@@ -45,9 +45,9 @@ verir.
   terminale yazar. Bir make çağrısı tek bir koşu dizini açar:
   `$(RUNS)/<proje>/<zaman>-<hedef>/`. gate'in alt make'leri aynı dizini
   kullanır; her reçete `$(TEST_RUN)/$@` altına yazar.
-- `RUNS` env'den gelir, verilmezse `/tmp`'dir. `/tmp` açılışta temizlenebilir;
-  arşiv kalıcı olmalıysa `RUNS` env'de verilir; CI'da işin artifact dizini
-  verilir. `clean` ve `distclean` ona dokunmaz, yalnız insan temizler.
+- `RUNS` env'den gelir, verilmezse `$XDG_STATE_HOME/runs`, o da yoksa
+  `~/.local/state/runs`'tır; yeniden başlatmada silinmez. CI'da işin artifact
+  dizini verilir. `clean` ve `distclean` ona dokunmaz, yalnız insan temizler.
 - Reçeteler POSIX `sh` ile koşar; bash'e özgü bir şey kullanmaz.
 
 ## Bileşeni bağlamak

@@ -13,12 +13,12 @@
 #   make build-agent                       tek bileşen
 #   make dist TARGET=armv7                 release çıktısı → dist/armv7/
 #   make clean | distclean                 RUNS'a dokunmaz
-#   RUNS=~/runs make gate                  koşu çıktısının kökü; verilmezse /tmp
+#   RUNS=~/runs make gate                  koşu çıktısının kökü; verilmezse ~/.local/state/runs
 
 VARIANT    ?= debug
 TARGET     ?= host
 COMPONENTS ?= $(notdir $(wildcard components/*))
-RUNS       ?= /tmp
+RUNS       ?= $(or $(XDG_STATE_HOME),$(HOME)/.local/state)/runs
 PROJECT    := {{NAME}}
 $(if $(filter $(VARIANT),debug release),,$(error VARIANT=$(VARIANT); seçenekler: debug release))
 $(if $(filter $(TARGET),host aarch64 armv7),,$(error TARGET=$(TARGET); seçenekler: host aarch64 armv7))
