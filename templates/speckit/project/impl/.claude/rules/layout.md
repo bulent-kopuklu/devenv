@@ -1,0 +1,96 @@
+# Yerleşim ve test
+
+DIKKAT: Asagida anlatilan yerlesim plani, `speckit-plan` da mumkun oldugunca uygulanmalidir. 
+Esnetilmek istenilen kurallar icin ctrl vasitasiyla insandan onay alinir.
+
+Bu dosya dilden bağımsızdır. Bir dilin kaynağı ve testleri nereye koyduğu,
+`tests/`'i teslimden nasıl ayırdığı `.claude/rules/<dil>.md`'nin Yerleşim ve
+Test bölümlerindedir.
+
+## Yerleşim
+
+- Kod yalnız `components/<ad>/` altında durur. Bir bileşenin ürün kodu (teslim
+  edilen kütüphane ya da binary) tek dildir. Başka bir dilde bileşen
+  gerekiyorsa plan'da yazılır ve proje sahibine sorulur.
+- Bileşen dizini bileşenin köküdür: kendi `Makefile`'ı, manifest'i (`go.mod`,
+  `Cargo.toml` gibi), kaynağı ve `tests/`'i orada durur. Kaynağın yeri dilin
+  alışkanlığıdır; dilin kural dosyası yazar.
+- `tests/` bileşenin içindedir ama teslimin parçası değildir: derlenen,
+  dağıtılan ya da yayımlanan pakete girmez.
+- evidence'ta ürünün dilinde yalnız ürünü kullanan kod yazılır: kullanıcıyı
+  taklit eden servisler (command gönderen, event yazan, saga ve handler koşan
+  kod). Her servis `tests/evidence/services/<ad>/` altında bir binary'dir;
+  yalnız ürünü kullanır ve gördüğünü kaydeder.
+- Bir insanın eliyle ve gözüyle yapacağı her şey script'tir: ortamı kurmak
+  (container, ağ, şema), servisleri başlatıp durdurmak, arıza sokmak (kill,
+  durdurma, ağ kesme, gecikme), veritabanına ve broker'a bakmak, saymak, hüküm
+  vermek, rapor yazmak. Script'ler `tests/evidence/` altında, kendi
+  manifest'iyle durur. Tercihimiz Python'dur; Burada kullanilan python 
+  development icin degildir o yuzden bağımlılıkları uv ile `pyproject.toml` ve 
+  `uv.lock`'ta durur (uv devshell'den gelir, paketler flake'e girmez). 
+  Başka bir dil seçilirse plan'da yazılır ve proje sahibine sorulur.
+- `tests/evidence/` ya da `tests/bench/` Python ise `make` oradaki `run.py`'ı
+  `uv run run.py` ile koşar. `run.py` işi baştan sona yapar; çıktısını `TEST_RUN`
+  ortam değişkeninin gösterdiği dizine yazar; `EVIDENCE` (`short`|`full`) hangi
+  senaryoların koşacağını seçer; bir ihlal ya da atlanan senaryo varsa sıfırdan
+  farklı çıkış koduyla biter.
+- Bir iş hem servise hem script'e yazılabiliyorsa script'e yazılır. Servise
+  ancak ürünü çağırmadan yapılamıyorsa girer.
+- Yeni bileşen `components/` altında yeni dizindir; plan'da yazılır ve proje
+  sahibine sorulur.
+- Kökte yalnız projenin geneline ait olan durur: `Makefile`, `flake.nix`,
+  formatter/linter config'leri, editör ayarı `.vscode/`, `CLAUDE.md`, `README.md`, 
+  `docs/`. Spec Kit kullanılıyorsa onun yerleri de: `specs/`, `.specify/`, living
+  specs'in `living-specs.yml`'ı ve `capabilities/`'i. Kök dizine kaynak kodu ya
+  da bunların dışında yeni dizin eklenmez.
+- `docs/` yalnız insan içindir. Ajan oraya istendiğinde yazar ve düzenlerken
+  okuyabilir. Ama `docs/` otorite değildir: oturum açılışında okunmaz; spec,
+  plan, tasks ve kod ona dayanmaz ve referans vermez. `docs/` ile spec/plan
+  çelişirse spec/plan esastır, `docs/` güncellenir.
+- Bileşenler arası sözleşme (proto, OpenAPI) kendi bileşeninde durur
+  (`components/<ad>/`, manifest `buf.yaml`). Kodunu onu kullanan her bileşen
+  kendi build'inde üretir: Go `//go:generate`, Rust `build.rs`. Sözleşme
+  bileşeni derlenmez; Makefile'ında yalnız `lint` doludur: `buf lint`.
+- Bir bileşenin testleri, test servisi ve bench'i kendi dizinindedir
+  (`components/<ad>/tests/`); bileşen dizini kopyalanınca testleriyle taşınır.
+
+## Test
+
+- Bu bölüm genel düzendir. Proje kendi ihtiyacına göre tür, katman, hedef ya
+  da denetim ekleyip çıkarabilir; tür → yer → hedef mantığı değişmez. Eklenen
+  her şey plan'da yazılır ve proje sahibine sorulur. Kodun yanında duran
+  testlerin dosya adı, etiketi ve aracı dilin kural dosyasının Test
+  bölümündedir.
+- Testin türü, hatanın üretilebildiği en alçak düzeydir (anayasa II); yeri türünden gelir:
+
+  | tür | yer | koşan hedef |
+  |---|---|---|
+  | unit | kodun yanında | `make test` |
+  | integration | `components/<ad>/tests/integration/<NN_katman>/` | `make test-integration` |
+  | integration, iç alana dokunmak zorunda | kodun yanında, integration diye ayrılmış | `make test-integration` |
+  | contract | `components/<ad>/tests/contract/` | `make test` |
+  | evidence | `components/<ad>/tests/evidence/<NN_katman>/`, kendi manifest'iyle; dili ürünün dili olmak zorunda değil (Yerleşim) | `make test-evidence` |
+  | bench | `components/<ad>/tests/bench/` | `make bench` |
+  | evidence'ın koştuğu servisler | `components/<ad>/tests/evidence/services/<ad>/`, her biri bir binary; ürünü kullanan örnek uygulama | `make test-evidence` başlatır; `make build`'e ve teslime girmez |
+
+- unit, integration ve contract spec-kit'in adlarıdır (plan ve tasks
+  şablonundaki `tests/unit`, `tests/integration`, `tests/contract`). Hikâyenin
+  acceptance senaryosunun testi integration'dır; `contracts/` belgesinin testi
+  contract'tır. evidence, spec-kit'te karşılığı olmayan türdür: birden çok süreç
+  ve arıza. unit, iç alana eriştiği için `tests/unit/` yerine kodun yanında
+  durur.
+- Kodun yanındaki unit testi dış sistemi (veritabanı, broker, container)
+  açmaz. Dış sistem açan test integration'dır; iç alana dokunmuyorsa
+  `tests/integration/`'dadır.
+- Her bench `tests/bench/` altındadır, tek bir fonksiyonu ölçen de; kodun
+  yanında bench olmaz. bench kapının dışındadır.
+- `NN_katman` dizinleri alttan üste numaralanır (10, 20, …); numara kodun
+  katmanını söyler, spec'in kimliğini taşımaz. Kodda spec kimliği (FR, SC, T)
+  geçmez.
+- integration gerçek dış sistemle koşar (testcontainers ya da gömülü sunucu).
+  Mock'lu veritabanı testi integration sayılmaz.
+- evidence'ın başlattığı binary teslim edildiği gibi, release bayraklarıyla
+  derlenir: ölçülen, teslim edilen kütüphanedir.
+- integration'da sabit bekleme yoktur; olay ya da işaret beklenir.
+- Kapanış testi vardır (integration): başlat, iş ver, iptal et; arkada
+  çalışan hiçbir iş kalmadığını ve in-flight işin tamamlandığını doğrula.

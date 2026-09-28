@@ -12,13 +12,35 @@ Go kodu yazarken uyulan standart; kütüphane ve servis için.
   (`codec.go`), birden çok paket kullanıyorsa bir `internal/` paketine. Testlerin
   çağırması bu kurala girmez.
 
-## Paket yerleşimi
+## Yerleşim
+- Bileşen bir Go modülüdür; `go.mod` bileşen kökündedir
+  (`components/<ad>/go.mod`). Modül yolu repo'nun yolu ve bileşenin
+  dizinidir (`<repo>/components/<ad>`): `go get` modülü bu yoldan bulur.
+  Go'da `src` yoktur; kaynak modül kökündedir.
 - Modül düzeni Go'nun belgesine uyar (https://go.dev/doc/modules/layout):
   public paket kökte, destek paketleri `internal/<ad>/` altında, teslim edilen
   binary'ler `cmd/<ad>/` altında. Paket olabildiğince `internal/`'dadır.
 - Kod, tiplerinin paketinden aşağı inmez: bir internal paket üst paketin
   tiplerine `reflect.Value`, `any` ya da geri çağrı üzerinden ulaşmak zorunda
   kalıyorsa o kod üst pakette kalır.
+- `tests/` iç içe ikinci modüldür: `module <modül>/tests`; ürünü `require`
+  eder ve `replace <modül> => ../` ile kullanır. Yolu ürünün yolunun altında
+  olduğu için ürünün `internal` paketlerini import edebilir, unexported adlara
+  erişemez. Testlerin ortak yardımcısı (ör. `internal/testenv`) ürünün
+  `internal/`'ında tek kopya durur. İç içe modül bileşen kökündeki `./...`'e
+  ve yayımlanan modüle girmez; `tests/` teslimden böyle ayrılır.
+- Kardeş bileşeni kullanan bileşen onu `require` eder ve
+  `replace <kardeş> => ../<kardeş>` ile monorepo'daki kopyasını kullanır.
+  `replace` yalnız ana modülde geçerlidir: bileşeni `go get` ile çeken,
+  kardeşini `require`'daki sürümden alır. Yayımlanan bileşen
+  `components/<ad>/vX.Y.Z` tag'iyle sürümlenir.
+- Public paketteki bir tipin exported metotları ya tipin dosyasında ya da adı
+  metodun adıyla başlayan dosyada durur (`read.go` → `ReadStream`, `ReadAll`).
+  O dosyada yalnız o işlem(ler) ve yardımcıları bulunur.
+- Dosyanın adı içindeki exported adları kapsar: adların kendisi, ortak fiilleri
+  ya da nesneleri, ya da metotları taşınan tipin adı.
+- Public bir işlem, başka bir paketteki aynı adlı işleme tek bir delege olamaz
+  (ayna yasağı).
 
 ## Kütüphane
 - Logger, metrik ve trace sağlayıcısını kullanan uygulama verir: `*slog.Logger`,
@@ -116,8 +138,9 @@ bir goroutine'de çıkan panic bütün süreci düşürür.
 - Süre ölçümü `time.Since` (monotonic). Zaman damgası UTC.
 
 ## Bağımlılık ve derleme
-- `go.mod`/`go.sum` commit; `go mod tidy` temiz; `replace` gerekçeli ve geçici;
-  `tests/` modülünün kaynağa `replace`'i kalıcıdır.
+- `go.mod`/`go.sum` commit; ürünün ve `tests/`'in modülünde `go mod tidy`
+  temiz; `replace` gerekçeli ve geçici; kardeş bileşene ve `tests/`'ten ürüne
+  `replace` kalıcıdır (Yerleşim).
 - Eklemeden önce stdlib ve `golang.org/x`'e bak; 20 satırlık işe kütüphane
   eklenmez.
 - `go.mod`'a `toolchain` direktifi yazılmaz. Go sürümü devshell'den gelir;
@@ -128,18 +151,35 @@ bir goroutine'de çıkan panic bütün süreci düşürür.
 - Binary'ye sürüm/commit `-ldflags "-X"` ile gömülür ve başlangıç log'unda
   görünür.
 
+## Test
+- unit paketin yanında `*_test.go`'dur; Go'da unexported ada yalnız aynı
+  paketten erişildiği için `tests/unit/` yoktur.
+- Exported API'yi kullanan integration `tests/integration/<NN_katman>/`'dadır
+  ve etiket istemez. unexported'a dokunmak zorunda olan integration paketinde
+  `*_integration_test.go`'dur, ilk satırı `//go:build integration`.
+- Her test paketinde `goleak.VerifyTestMain`. `TestMain` etiketsiz bir
+  dosyadadır; etiketli dosyada durursa etiketsiz koşuda derlenmez ve goleak o
+  koşuda yoktur.
+- Kodun paketinde `Benchmark` fonksiyonu olmaz; bench `tests/bench/`'tedir.
+- Test süreci, bench dışında, `-race` ile koşar; evidence'ın başlattığı
+  servisler `-race`'siz derlenir.
+- Zamana bağlı unit davranışı `testing/synctest` balonunda sınanır; balonda
+  saati `time.Sleep` ilerletir. integration'da `time.Sleep`, `time.After`,
+  `time.NewTimer` yoktur. Kaçınılmaz istisna `//nolint:forbidigo // <neden>`
+  ile yazılır.
+- Interface yalnızca test için açılmaz; önce somut tip, gerçek ikinci
+  implementasyon gelince interface.
+
 ## Makefile'da Go bileşeni
-Bileşenin `Makefile`'ı `components/<ad>/`'dadır; reçeteler şöyledir.
-- Kaynak dizini kökteki public paketin adıdır (`alazes/`); `go.mod` oradadır.
-  Go'da `src` kullanılmaz. `tests/` kendi `go.mod`'uyla ayrı bir modüldür ve
-  kaynağı `replace ../<kaynak>` ile kullanır; kaynağın dışında olduğu için
-  onun `internal` paketlerine erişemez.
-- `build`: kaynak dizininde önce `go generate ./...`, sonra
+Bileşenin `Makefile`'ı `components/<ad>/`'da, `go.mod`'un yanındadır;
+reçeteler orada, `tests/`'e ait olanlar `tests/` içinde koşar.
+- `build`: önce `go generate ./...`, sonra
   `go build <bayraklar> ./...` ile bütün paketler; ardından main paketleri
   `go build <bayraklar> -o $(BIN)/ $$(go list -f '{{if eq .Name "main"}}{{.ImportPath}}{{end}}' ./...)`
   ile `$(BIN)`'e (liste boşsa bu adım atlanır). `go build -o <dizin>` main
   paketi olmayan modülde hata verdiği için bütün paketler ayrı derlenir.
-  `tests/` derlenmez; evidence servisleri teslime girmez.
+  `./...` iç içe `tests/` modülüne inmez: testler ve evidence servisleri
+  derlenmez, teslime girmez.
 - Bayraklar: debug `-gcflags='all=-N -l'`, release `-trimpath -ldflags='-s -w'`.
 - Her `go build` `CGO_ENABLED=0` ile koşar. Devshell `CC`'yi export ettiği için
   Go varsayılan olarak cgo'yu açar: host'ta binary nix'in glibc'sine dinamik
@@ -148,11 +188,10 @@ Bileşenin `Makefile`'ı `components/<ad>/`'dadır; reçeteler şöyledir.
   karar ister; plan'da yazılır.
 - `TARGET` host değilse `go build`'in önüne ayrıca `GOOS=linux` ve hedefin
   mimarisi gelir: aarch64 `GOARCH=arm64`, armv7 `GOARCH=arm GOARM=7`.
-- `test`: kaynak dizininde `go test -race ./...`; contract testi varsa
+- `test`: `go test -race ./...`; contract testi varsa
   `tests/` içinde `go test -race ./contract/...`.
-- `test-integration`: kaynak dizininde
-  `go test -race -count=1 -tags integration ./...` (iç alana dokunan
-  `*_integration_test.go` dosyaları); `tests/` içinde
+- `test-integration`: `go test -race -count=1 -tags integration ./...`
+  (paketlerin yanındaki `*_integration_test.go` dosyaları); `tests/` içinde
   `go test -race -count=1 ./integration/...`.
 - `test-evidence`: koşu dizini `$(TEST_RUN)/<ad>/test-evidence`'tır; `<ad>`
   bileşenin adıdır, `$(notdir $(CURDIR))`. `tests/` içinde servisler release
@@ -165,7 +204,7 @@ Bileşenin `Makefile`'ı `components/<ad>/`'dadır; reçeteler şöyledir.
   negatif kontrolleri Test fonksiyonu olarak da yazılabilir. go test'in
   varsayılan 10 dakikalık sınırı uzun bench'i panic'le keser; `-v` Test
   fonksiyonunun `t.Logf` ile bastığı sonucu gösterir.
-- `lint`: kaynak dizininde ve `tests/` içinde `golangci-lint run ./...`;
+- `lint`: bileşen kökünde ve `tests/` içinde `golangci-lint run ./...`;
   paketin yanındaki integration dosyalarını `.golangci.yml`'deki `build-tags`
   görünür kılar.
 - `distclean`: boş.

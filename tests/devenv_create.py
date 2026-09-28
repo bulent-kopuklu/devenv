@@ -76,9 +76,9 @@ check("yeni: bos dizinde soru yok", "ezeyim mi" not in out)
 check("yeni: ust dizin repo degil", not (root / ".git").exists())
 check("yeni: impl repo, ctrl degil", (impl / ".git").is_dir() and not (ctrl / ".git").exists())
 check("yeni: ust CLAUDE.md protokolu tasir", "## Çalışma sırası" in (root / "CLAUDE.md").read_text())
-check("yeni: rol metinleri ve Makefile sozlesmesi .claude/rules altinda",
+check("yeni: rol metinleri, yerlesim ve Makefile sozlesmesi .claude/rules altinda",
       (ctrl / ".claude/rules/main-rules.md").is_file() and (impl / ".claude/rules/main-rules.md").is_file()
-      and (impl / ".claude/rules/makefile.md").is_file())
+      and (impl / ".claude/rules/layout.md").is_file() and (impl / ".claude/rules/makefile.md").is_file())
 check("yeni: proje dosyalari config'ten import etmez",
       not any(f"@{CFG}" in p.read_text() for p in root.rglob("*.md") if ".git" not in p.parts))
 check("yeni: ctrl CLAUDE.md", (ctrl / "CLAUDE.md").is_file())
@@ -160,7 +160,8 @@ with open(impl / "Makefile", "a") as f:
     f.write("\nprojenin-hedefi:\n\t@true\n")
 (impl / "rustfmt.toml").write_text("max_width = 80\n")
 once = {f: (impl / f).read_text() for f in ("CLAUDE.md", "CLAUDE.local.md", ".golangci.yml", "Makefile",
-                                             ".claude/rules/go.md", ".claude/rules/main-rules.md")}
+                                             ".claude/rules/go.md", ".claude/rules/main-rules.md",
+                                             ".claude/rules/layout.md")}
 out, code = devenv(impl, "add", "-l", "rust")
 check("ekle: cikis 0", ok(code))
 check("ekle: flake'te go ve rust", 'langs = [ "go" "rust" ];' in (impl / "flake.nix").read_text())

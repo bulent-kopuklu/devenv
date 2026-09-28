@@ -12,7 +12,7 @@ bu dosya repoyu geliştirene.
 | `bin/newrepo`, `pi/` | git sunucusunda repo açma | laptop, sunucu |
 | `claude/CLAUDE.md` | kullanıcının global CLAUDE.md'si | `$CLAUDE_CONFIG_DIR/CLAUDE.md` |
 | `claude/skills/` | global skill'ler (`spike`, `context: fork`) | `$CLAUDE_CONFIG_DIR/skills/` |
-| `templates/` | projeye kopyalanan şablonlar; `claude/CLAUDE.md` `--speckit`'siz projenin CLAUDE.md'si; `speckit/` yalnız `--speckit`'in yazdıkları: `project/` üst dizinin ve rol dizinlerinin dosyaları (rol metni ve impl'in Makefile sözleşmesi `.claude/rules/`'da), `constitution.md` her projenin anayasası (araç ve rol adı taşımaz) | `~/.local/share/devenv/templates` |
+| `templates/` | projeye kopyalanan şablonlar; `claude/CLAUDE.md` `--speckit`'siz projenin CLAUDE.md'si; `speckit/` yalnız `--speckit`'in yazdıkları: `project/` üst dizinin ve rol dizinlerinin dosyaları (rol metni, impl'in yerleşim ve Makefile sözleşmesi `.claude/rules/`'da), `constitution.md` her projenin anayasası (araç ve rol adı taşımaz) | `~/.local/share/devenv/templates` |
 | `lib/` | `lib.mkEnv`: projelerin `flake.nix`'inin kullandığı devshell kütüphanesi | flake input'u |
 | `tests/` | `devenv create` senaryoları | — |
 
