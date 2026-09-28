@@ -14,6 +14,7 @@ DEVENV = Path(__file__).resolve().parents[1] / "bin" / "devenv"
 WORK = Path(tempfile.mkdtemp(prefix="devenv-test-"))
 CFG = WORK / "cfg"
 os.environ["CLAUDE_CONFIG_DIR"] = str(CFG)
+CFG.mkdir(); (CFG / "CLAUDE.md").write_text("# global kurallar\n")
 results = []
 
 
@@ -58,6 +59,10 @@ def settings(p):
         return {"deny": [], "allow": [], "additionalDirectories": []}
 
 
+def speckit_template(rel, name):
+    return (DEVENV.parents[1] / "templates/speckit/project" / rel).read_text().replace("{{NAME}}", name)
+
+
 def git_init(path):
     subprocess.run(["git", "init", "-q", str(path)], check=True)
 
@@ -70,23 +75,30 @@ check("yeni: cikis 0", ok(code))
 check("yeni: bos dizinde soru yok", "ezeyim mi" not in out)
 check("yeni: ust dizin repo degil", not (root / ".git").exists())
 check("yeni: impl repo, ctrl degil", (impl / ".git").is_dir() and not (ctrl / ".git").exists())
-check("yeni: ust CLAUDE.md protokolu import eder", f"@{CFG}/roles/protocol.md" in (root / "CLAUDE.md").read_text())
-check("yeni: ctrl CLAUDE.md rolu import eder", f"@{CFG}/roles/ctrl.md" in (ctrl / "CLAUDE.md").read_text())
+check("yeni: ust CLAUDE.md protokolu tasir", "## Çalışma sırası" in (root / "CLAUDE.md").read_text())
+check("yeni: rol metinleri ve Makefile sozlesmesi .claude/rules altinda",
+      (ctrl / ".claude/rules/main-rules.md").is_file() and (impl / ".claude/rules/main-rules.md").is_file()
+      and (impl / ".claude/rules/makefile.md").is_file())
+check("yeni: proje dosyalari config'ten import etmez",
+      not any(f"@{CFG}" in p.read_text() for p in root.rglob("*.md") if ".git" not in p.parts))
 check("yeni: ctrl CLAUDE.md", (ctrl / "CLAUDE.md").is_file())
 check("yeni: ctrl feature-branch.sh impl yolunu tasir", f'impl="{t}/ornek/ornek-impl"' in (ctrl / "scripts/feature-branch.sh").read_text() and os.access(ctrl / "scripts/feature-branch.sh", os.X_OK))
 check("yeni: ctrl reviewer agent'i", (ctrl / ".claude/agents/reviewer.md").is_file())
-check("yeni: review global CLAUDE.md'yi mutlak yolla okur",
-      f"`{CFG}/CLAUDE.md`" in (ctrl / ".claude/skills/review/SKILL.md").read_text()
-      and f"Read(/{CFG}/CLAUDE.md)" in settings(ctrl / ".claude/settings.json")["allow"])
+check("yeni: review global kurallari projedeki kopyadan okur",
+      (ctrl / ".claude/skills/review/global-rules.md").read_text() == "# global kurallar\n"
+      and f"`{ctrl}/.claude/skills/review/global-rules.md`" in (ctrl / ".claude/skills/review/SKILL.md").read_text())
+check("yeni: hicbir proje dosyasi config dizinine gitmez",
+      not any(str(CFG) in p.read_text() for p in root.rglob("*") if p.is_file() and ".git" not in p.parts))
 check("yeni: ctrl skill'leri", all((ctrl / ".claude/skills" / s / "SKILL.md").is_file()
                                    for s in ("reference", "review")))
-check("yeni: impl CLAUDE.local.md rolu import eder", f"@{CFG}/roles/impl.md" in (impl / "CLAUDE.local.md").read_text())
-check("yeni: baslik proje adi, dizin adi degil", (impl / "CLAUDE.md").read_text().startswith("# ornek\n"))
+check("yeni: impl CLAUDE.md speckit sablonundan, templates/claude'dan degil",
+      (impl / "CLAUDE.md").read_text() == speckit_template("impl/CLAUDE.md", "ornek"))
+check("yeni: baslik proje adi, dizin adi degil", (root / "CLAUDE.md").read_text().startswith("# ornek\n"))
 check("yeni: yer tutucu kalmadi", not any(re.search(r"\{\{[A-Z]+\}\}", p.read_text()) for p in root.rglob("*")
                                          if p.is_file() and ".git" not in p.parts))
-mk = (impl / "Makefile").read_text()
-check("yeni: Makefile yalniz go ve proto parcasi", "go_build" in mk and "proto_lint" in mk and "cargo" not in mk and "cmake" not in mk and "npm" not in mk)
-check("yeni: Makefile gate hedefi", "\ngate:" in mk and "\ntest-integration:" in mk)
+check("yeni: Makefile dilsiz iskelet",
+      (impl / "Makefile").read_text() == (DEVENV.parents[1] / "templates/make/Makefile").read_text())
+check("yeni: dilin Makefile bilgisi kuralinda", "## Makefile'da Go bileşeni" in (impl / ".claude/rules/go.md").read_text())
 check("yeni: speckit cagrildi", "[speckit]" in out)
 anayasa = impl / ".specify/memory/constitution.md"
 check("yeni: anayasa yazildi, proje adiyla", anayasa.is_file() and anayasa.read_text().startswith("# ornek Anayasası\n"))
@@ -113,7 +125,7 @@ check("yeni: yerel dosyalar exclude'da",
 check("yeni: urun dosyalari exclude'da degil",
       not any(f in excl.splitlines() for f in ("CLAUDE.md", ".gitignore", ".envrc", ".golangci.yml", "Makefile")))
 check("yeni: impl commit, push ve gate'e izinli",
-      all(r in ls["allow"] for r in ("Bash(git add *)", "Bash(git commit *)", "Bash(git push *)", "Bash(make gate)")))
+      all(r in ls["allow"] for r in ("Bash(git add *)", "Bash(git commit *)", "Bash(git push *)", "Bash(make *)")))
 check("yeni: ctrl branch script'i ve impl commit'ine izinli",
       "Bash(scripts/feature-branch.sh *)" in cs["allow"] and f"Bash(git -C {impl} commit *)" in cs["allow"])
 status = subprocess.run(["git", "-C", str(impl), "status", "--porcelain"], capture_output=True, text=True).stdout
@@ -131,7 +143,7 @@ check("dolu N: dokunulmadi", (impl / "CLAUDE.md").read_text() == "# degisti\n" a
 out, code = devenv(t, "create", "ornek", "-l", "go", "--speckit", answer="y")
 check("dolu y: soruldu", "ezeyim mi" in out)
 check("dolu y: cikis 0", ok(code))
-check("dolu y: CLAUDE.md sablonla ezildi", (impl / "CLAUDE.md").read_text().startswith("# ornek\n"))
+check("dolu y: CLAUDE.md sablonla ezildi", (impl / "CLAUDE.md").read_text() == speckit_template("impl/CLAUDE.md", "ornek"))
 check("dolu y: izinler birlesmedi, sablonla ezildi",
       "Bash(ls)" not in settings(impl / ".claude/settings.local.json")["allow"])
 check("dolu y: baska dosya silinmedi", (impl / "kendi.txt").read_text() == "kullanicinin\n")
@@ -139,34 +151,75 @@ check("dolu y: Spec Kit yeniden kuruldu", "[speckit]" in out)
 check("dolu y: anayasa sablonla ezildi", (impl / ".specify/memory/constitution.md").read_text().startswith("# ornek Anayasası\n"))
 check("dolu y: exclude tekrarlanmadi", (impl / ".git/info/exclude").read_text().count("CLAUDE.local.md") == 1)
 
+# dil ekleme: go ile baslanan projeye sonradan rust modulu
+t = WORK / "ekle"; t.mkdir()
+out, code = devenv(t, "create", "ornek", "-l", "go", "--speckit")
+impl = t / "ornek/ornek-impl"
+with open(impl / "Makefile", "a") as f:
+    f.write("\nprojenin-hedefi:\n\t@true\n")
+(impl / "rustfmt.toml").write_text("max_width = 80\n")
+once = {f: (impl / f).read_text() for f in ("CLAUDE.md", "CLAUDE.local.md", ".golangci.yml", "Makefile",
+                                             ".claude/rules/go.md", ".claude/rules/main-rules.md")}
+out, code = devenv(impl, "add", "-l", "rust")
+check("ekle: cikis 0", ok(code))
+check("ekle: flake'te go ve rust", 'langs = [ "go" "rust" ];' in (impl / "flake.nix").read_text())
+check("ekle: rust kurallari ve dosyalari geldi", (impl / ".claude/rules/rust.md").is_file() and (impl / "clippy.toml").is_file())
+check("ekle: var olan dosya ezilmedi", (impl / "rustfmt.toml").read_text() == "max_width = 80\n")
+check("ekle: Makefile, go'nun ve rollerin dosyalari degismedi", all((impl / f).read_text() == v for f, v in once.items()))
+check("ekle: Spec Kit'e dokunulmadi", "[speckit]" not in out)
+out, code = devenv(impl, "add", "-l", "rust", "-l", "go")
+check("ekle: var olan dil yeniden eklenmez",
+      ok(code) and "zaten var" in out and 'langs = [ "go" "rust" ];' in (impl / "flake.nix").read_text())
+out, code = devenv(t, "add", "-l", "rust")
+check("ekle: urun reposu disinda reddedilir", not ok(code))
+
+# --speckit'siz: proje dizini urun reposu
+t = WORK / "tek"; t.mkdir()
+out, code = devenv(t, "create", "ornek", "--lang", "go")
+p = t / "ornek"
+check("tek: cikis 0", ok(code))
+check("tek: proje dizini repo", (p / ".git").is_dir())
+check("tek: impl ve ctrl yok", not (p / "ornek-impl").exists() and not (p / "ornek-ctrl").exists())
+check("tek: CLAUDE.md kokte, baslik proje adi", (p / "CLAUDE.md").read_text().startswith("# ornek\n"))
+check("tek: Makefile ve dil kurallari kokte", (p / "Makefile").is_file() and (p / ".claude/rules/go.md").is_file())
+ignored = lambda f: subprocess.run(["git", "-C", str(p), "check-ignore", "-q", f]).returncode == 0
+check("tek: editor ayari .vscode'da ve git'e girer", (p / ".vscode/settings.json").is_file() and not ignored(".vscode/settings.json"))
+check("tek: RUNS git disinda", ignored("runs/x"))
+check("tek: rol dosyalari yok", not (p / "CLAUDE.local.md").exists() and not (p / ".claude/settings.local.json").exists())
+check("tek: Spec Kit yok", "[speckit]" not in out and not (p / ".specify").exists())
+check("tek: tek oturum basildi", "claude -n ornek\n" in out and "ornek-impl" not in out)
+t = WORK / "tek-repo" / "repo"; t.mkdir(parents=True); git_init(t)
+out, code = devenv(t.parent, "create", "repo", "--lang", "go", answer="y")
+check("tek repo: var olan repoda kurulur", ok(code) and (t / "CLAUDE.md").read_text().startswith("# repo\n"))
+
 # create . : bulunulan dizin proje dizini; ayni kural
 t = WORK / "nokta" / "nokta"; t.mkdir(parents=True)
 out, code = devenv(t, "create", ".", "--lang", "go")
 check("nokta: cikis 0", ok(code))
 check("nokta: bos dizinde soru yok", "ezeyim mi" not in out)
-check("nokta: impl ve ctrl bulunulan dizinde", (t / "nokta-impl/.git").is_dir() and (t / "nokta-ctrl/CLAUDE.md").is_file())
+check("nokta: bulunulan dizin repo", (t / ".git").is_dir() and not (t / "nokta-impl").exists())
 check("nokta: ic ice dizin yok", not (t / "nokta").exists())
-check("nokta: baslik dizinin adi", (t / "nokta-impl/CLAUDE.md").read_text().startswith("# nokta\n"))
+check("nokta: baslik dizinin adi", (t / "CLAUDE.md").read_text().startswith("# nokta\n"))
+t = WORK / "nokta-speckit" / "iki"; t.mkdir(parents=True)
+out, code = devenv(t, "create", ".", "--lang", "go", "--speckit")
+check("nokta speckit: impl ve ctrl bulunulan dizinde", ok(code) and (t / "iki-impl/.git").is_dir() and (t / "iki-ctrl/CLAUDE.md").is_file())
+check("nokta speckit: baslik dizinin adi", (t / "CLAUDE.md").read_text().startswith("# iki\n"))
 t = WORK / "nokta-dolu" / "dolu"; t.mkdir(parents=True); (t / "notlar.md").write_text("x\n")
 out, code = devenv(t, "create", ".", "--lang", "go", answer="n")
-check("nokta dolu N: soruldu, dokunulmadi", "ezeyim mi" in out and not ok(code) and not (t / "dolu-impl").exists())
+check("nokta dolu N: soruldu, dokunulmadi", "ezeyim mi" in out and not ok(code) and not (t / ".git").exists())
 out, code = devenv(t, "create", ".", "--lang", "go", answer="y")
-check("nokta dolu y: kuruldu, dosya silinmedi", ok(code) and (t / "dolu-impl/.git").is_dir() and (t / "notlar.md").is_file())
+check("nokta dolu y: kuruldu, dosya silinmedi", ok(code) and (t / ".git").is_dir() and (t / "notlar.md").is_file())
 
 # reddedilenler
 t = WORK / "red"; (t / "repo").mkdir(parents=True); git_init(t / "repo")
-out, code = devenv(t, "create", "repo", "--lang", "go")
-check("red: ust dizin repo ise", not ok(code) and "ust dizin repo olamaz" in str(code))
+out, code = devenv(t, "create", "repo", "--lang", "go", "--speckit")
+check("red: speckit'te ust dizin repo ise", not ok(code) and "ust dizin repo olamaz" in str(code))
 out, code = devenv(t, "go")
 check("red: alt komutsuz cagri", not ok(code))
 out, code = devenv(t, "create", "x/y", "--lang", "go")
 check("red: adda '/'", not ok(code))
 out, code = devenv(t, "create", "ornek", "go")
 check("red: dil -l'siz", not ok(code))
-
-m = load()
-check("tilde: home altinda ~", m.tilde(Path.home() / ".config/claude") == "~/.config/claude")
-check("tilde: disarida mutlak", m.tilde(Path("/tmp/x")) == "/tmp/x")
 
 if all(results):
     shutil.rmtree(WORK)

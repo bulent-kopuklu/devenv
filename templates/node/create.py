@@ -6,4 +6,4 @@ def run(ctx):
     # formatter aynı dosyaları farklı biçimler.
     if not any(any(Path(".").glob(g)) for g in ("biome.json*", ".prettierrc*", "prettier.config.*")):
         ctx.copy_files("files")
-    ctx.makefile(ctx.dir / "make.mk")
+    ctx.rules(ctx.dir / "rules.md")

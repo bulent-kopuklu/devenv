@@ -1,4 +1,7 @@
 version: "2"
+run:
+  build-tags:
+    - integration
 linters:
   default: standard
   enable:
@@ -10,7 +13,17 @@ linters:
     - noctx
     - funlen
     - gocognit
+    - forbidigo
+    - nolintlint
   settings:
+    forbidigo:
+      analyze-types: true
+      forbid:
+        - pattern: ^time\.(Sleep|After|NewTimer)$
+          msg: "integration ve evidence testinde sabit bekleme yok; olayı ya da işareti bekle"
+    nolintlint:
+      require-explanation: true
+      require-specific: true
     funlen:
       lines: 80
       statements: -1
@@ -22,6 +35,11 @@ linters:
       default-signifies-exhaustive: false
   exclusions:
     rules:
+      # Sabit bekleme yasağı yalnız integration ve evidence testlerinde; unit'te
+      # synctest balonu saati time.Sleep ile ilerletir.
+      - path-except: (/tests/(integration|evidence)/|_integration_test\.go$)
+        linters:
+          - forbidigo
       - path: _test\.go
         linters:
           - funlen

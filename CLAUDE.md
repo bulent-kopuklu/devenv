@@ -8,12 +8,11 @@ bu dosya repoyu geliştirene.
 
 | yol | ne | kurulunca nereye |
 |---|---|---|
-| `bin/devenv` | `devenv create <ad\|.> -l <dil>... [--speckit]`: iki rollü proje | `~/.local/bin` |
+| `bin/devenv` | `devenv create <ad\|.> -l <dil>... [--speckit]`: proje; `--speckit` ile iki rollü. `devenv add -l <dil>...`: var olan projeye dil | `~/.local/bin` |
 | `bin/newrepo`, `pi/` | git sunucusunda repo açma | laptop, sunucu |
 | `claude/CLAUDE.md` | kullanıcının global CLAUDE.md'si | `$CLAUDE_CONFIG_DIR/CLAUDE.md` |
-| `claude/roles/` | rol metinleri: `protocol`, `ctrl`, `impl` | `$CLAUDE_CONFIG_DIR/roles/` |
 | `claude/skills/` | global skill'ler (`spike`, `context: fork`) | `$CLAUDE_CONFIG_DIR/skills/` |
-| `templates/` | projeye kopyalanan şablonlar; `project/` rol dizinlerinin yer tutuculu dosyaları; `speckit/constitution.md` her projenin anayasası (`--speckit` yazar; araç ve rol adı taşımaz) | `~/.local/share/devenv/templates` |
+| `templates/` | projeye kopyalanan şablonlar; `claude/CLAUDE.md` `--speckit`'siz projenin CLAUDE.md'si; `speckit/` yalnız `--speckit`'in yazdıkları: `project/` üst dizinin ve rol dizinlerinin dosyaları (rol metni ve impl'in Makefile sözleşmesi `.claude/rules/`'da), `constitution.md` her projenin anayasası (araç ve rol adı taşımaz) | `~/.local/share/devenv/templates` |
 | `lib/` | `lib.mkEnv`: projelerin `flake.nix`'inin kullandığı devshell kütüphanesi | flake input'u |
 | `tests/` | `devenv create` senaryoları | — |
 
@@ -21,6 +20,14 @@ Kurulumu `install.sh` yapar ve kopyalar, symlink kurmaz. Bu makinede
 `$CLAUDE_CONFIG_DIR` = `~/.config/claude`.
 
 ## Düzen
+
+`--speckit`'siz proje dizini ürün reposudur:
+
+```
+<ad>/            ürün, tek git reposu; tek oturum
+```
+
+`--speckit` ile:
 
 ```
 <ad>/            git değil; Claude burada çalışmaz; CLAUDE.md protokolü import eder
@@ -31,7 +38,7 @@ Kurulumu `install.sh` yapar ve kopyalar, symlink kurmaz. Bu makinede
 
 ## İlkeler
 
-- **İki rol.** Yazan oturum kendi kararlarını denetleyemiyor: aynı oturumdaki
+- **İki rol (`--speckit`).** Yazan oturum kendi kararlarını denetleyemiyor: aynı oturumdaki
   hakem temiz hakemden 20 kararın 9–10'unda ayrıştı, iki temiz hakem arası 3–4
   (cc-workspace `docs/sdlc/yazan-hakem-bagimsizligi.md`). Ayrı dizin, rolü
   kendi CLAUDE.md'sinden ve hafızayı ayrı getirir.
@@ -46,6 +53,12 @@ Kurulumu `install.sh` yapar ve kopyalar, symlink kurmaz. Bu makinede
   argümandır; sonrası tek yol. Proje dizini doluysa önce sorar (y/N); y ise
   şablon dosyalarını var olanların üstüne yazar, hiçbir şey silmez. Var olanı
   koruma, izin birleştirme, repo alma yoktur; o iş ayrı bir komutundur.
+- **Dil eklemek `add`'in işidir.** Var olan dosyaya dokunmaz; Makefile'a,
+  `CLAUDE.md`'ye, Spec Kit'e ve rol dosyalarına dokunmaz.
+- **Makefile dilsiz bir iskelettir.** Arayüzü (hedefler, parametreler, çıktı
+  yeri) taşır, reçete taşımaz; her bileşeni açan agent onu Makefile'a bağlar.
+  Bir dilin reçete bilgisi (bayraklar, cross) o dilin `rules.md`'sindeki
+  Makefile bölümündedir.
 - **Orchestration kurulmaz.** Hakem ve `after_*` hook'ları kararı yazan
   oturumun içinde veriyordu; bu düzende karar denetçinindir.
 - **Ürünsüz.** Şablonlara ve rol metinlerine hiçbir projenin adı, kararı ya da
@@ -55,11 +68,13 @@ Kurulumu `install.sh` yapar ve kopyalar, symlink kurmaz. Bu makinede
 
 ## Değişiklikten sonra
 
-- `python3 -B tests/devenv_create.py`: yeni proje, dolu dizinde N ve y,
-  `create .` boş ve dolu, reddedilen çağrılar. Nix build'i atlar, geçici dizinde
+- `python3 -B tests/devenv_create.py`: yeni proje `--speckit`'li ve
+  `--speckit`'siz, dolu dizinde N ve y, `create .` boş ve dolu, go projesine
+  `add` ile rust, reddedilen çağrılar. Nix build'i atlar, geçici dizinde
   koşar.
-- `templates/make/*.mk` ya da `templates/<dil>/make.mk` değişirse bir devshell'in içinde, cross hedefle
-  birlikte dene. Devshell `CC`'yi export eder; dışında görünmeyen hatalar
+- `templates/make/Makefile` değişirse boş bir dizinde her hedefi ve geçersiz
+  `VARIANT`/`TARGET`'ı koş. Bir dilin `rules.md`'sindeki Makefile bölümü
+  değişirse reçeteyi bir devshell'in içinde, cross hedefle birlikte dene. Devshell `CC`'yi export eder; dışında görünmeyen hatalar
   içinde çıkar. Değişiklikten önceki Makefile'ı aynı düzenekte koş: hatayı
   gösteremeyen deneme düzeltmeyi de kanıtlamaz.
 - `install.sh`'i gerçek config'e dokunmadan dene:

@@ -1,3 +1,5 @@
+# {{NAME}}
+
 # İki rollü proje
 
 Bir yazılım ürünü iki Claude Code oturumuyla geliştirilir. Proje dizininde üç
@@ -16,9 +18,12 @@ dizin vardır; adları ve oturum adları bu metni yükleyen `CLAUDE.md`'de yazar
 `/speckit-specify` (ürünün ne yapacağı), `/speckit-clarify` (spec'teki
 belirsizlikleri soru-cevapla kapatır), `/speckit-plan` (nasıl yapılacağı),
 `/speckit-tasks` (fazlara bölünmüş iş listesi), `/speckit-analyze` (belgeler
-arası tutarsızlık raporu) ve `/speckit-companion-implement` (bir fazın kodunu
-yazar). Bir komutun ne yaptığı impl'de `.claude/skills/<komut>/SKILL.md`
-dosyasında yazar.
+arası tutarsızlık raporu), `/speckit-implement` (bir fazın kodunu yazar; ctrl
+her fazı ayrı verir) ve `/speckit-converge` (kodun spec, plan ve tasks'a göre
+eksiklerini `tasks.md`'ye yeni bir faz olarak ekler). Bütün testler en sonda
+`make gate` ile koşar; düşen test `/speckit-bug-assess`, `/speckit-bug-fix` ve
+`/speckit-bug-test` ile kapanır. Bir komutun ne yaptığı impl'de
+`.claude/skills/<komut>/SKILL.md` dosyasında yazar.
 
 ## Çalışma sırası
 
@@ -41,3 +46,11 @@ dosyasında yazar.
   commit'ler ve `git push -u origin main` ile main'i bir kez gönderir.
 - impl branch'lerde çalışır ve branch'i push eder. Bir branch'i main'e insan
   alır.
+
+
+## Bu proje
+
+| rol | dizin | oturum |
+|---|---|---|
+| impl | `{{NAME}}-impl/` | `cd {{NAME}}-impl && claude -n {{NAME}}-impl` |
+| ctrl | `{{NAME}}-ctrl/` | `cd {{NAME}}-ctrl && claude -n {{NAME}}-ctrl` |

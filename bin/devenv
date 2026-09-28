@@ -1,23 +1,30 @@
 #!/usr/bin/env python3
-"""devenv - a two-role project: the product repo, the reviewer, and the devshell.
+"""devenv - a project and its devshell; with --speckit, a two-role project.
 
     devenv create ornek go rust --speckit
     devenv create . rust cpp --target aarch64
     devenv create ornek node --node 22
+    devenv add rust
 
-<name>/<name>-impl is the product repo. The templates are copied there and the
+Without --speckit <name>/ is the product repo. With --speckit the product repo
+is <name>/<name>-impl. The templates are copied into the product repo and the
 devshell is built so the runtimes are on disk. It creates no source files and
 reads no project tree: languages are what you name. Nothing is committed.
 Files that are machine-specific (the role import, absolute-path permissions,
 .direnv/) land in .git/info/exclude; everything else belongs to the project.
 flake.nix is intent-to-added because nix reads only files git knows about.
 
-<name>/<name>-ctrl is the reviewer's directory and <name>/CLAUDE.md carries the
-shared protocol. Role texts are not copied: the project files import them from
-the Claude config directory, so one install updates them all. `devenv create .`
-takes the current directory as <name>/ and its name as the project name.
+With --speckit <name>/<name>-ctrl is the reviewer's directory and
+<name>/CLAUDE.md carries the shared protocol. Each role's text is copied into
+its own .claude/rules/. `devenv create .` takes the current directory as
+<name>/ and its name as the project name.
+
+The Makefile is a skeleton with the interface and no recipes; each component
+is wired into it when it is added. `devenv add`, run in the product repo, adds
+languages to an existing project: the flake's langs and the language's files
+and rules. It overwrites nothing and leaves the Makefile alone.
 """
-import argparse, importlib.util, os, shutil, subprocess, sys
+import argparse, importlib.util, os, re, shutil, subprocess, sys
 
 sys.dont_write_bytecode = True  # dillerin create.py'si sablon dizininde __pycache__ birakmasin
 from datetime import date
@@ -34,7 +41,7 @@ TEMPLATES = next((c for c in (ROOT / "templates", SHARE / "templates") if c.is_d
 REF = os.environ.get("DEV_TEMPLATES_REF", "github:bulent-kopuklu/devenv")
 LANGS = ["rust", "cpp", "go", "node", "java", "android"]
 #: Bir dilin parcalari `templates/<dil>/` altinda: `files/` projeye kopyalanir,
-#: `make.mk` Makefile'a, `rules.md` `.claude/rules/<dil>.md` olur. Olmayan parca
+#: `rules.md` `.claude/rules/<dil>.md` olur. Olmayan parca
 #: atlanir. Dilde `create.py` varsa bunlar yapilmaz, o script cagrilir:
 #: varsayilandan farkli olan dil ne yapacagina kendisi karar verir.
 ALIAS = {"c++": "cpp", "cxx": "cpp", "c": "cpp", "ts": "node", "js": "node",
@@ -47,12 +54,12 @@ ALIAS = {"c++": "cpp", "cxx": "cpp", "c": "cpp", "ts": "node", "js": "node",
 COMPANION = os.environ.get(
     "SPECKIT_COMPANION",
     "https://github.com/alfredoperez/speckit-companion/releases/download/speckit-ext-v0.21.0/companion-0.21.0.zip")
-#: Rol metinlerini install.sh buraya kurar (`roles/`); proje dosyalari onlari
-#: buradan import eder. Wiki, denetcinin ve spike'in yazdigi yer.
+#: create global CLAUDE.md'nin bir kopyasini buradan ctrl'in review'una koyar.
+#: Wiki, denetcinin ve spike'in yazdigi yer.
 CONFIG = Path(os.environ.get("CLAUDE_CONFIG_DIR", Path.home() / ".claude"))
 WIKI = Path(os.environ.get("CC_WORKSPACE", Path.home() / "workspace/cc-workspace"))
 
-VERSION = "4.0.0"
+VERSION = "5.0.0"
 #: install.sh kopyalarken bunu deponun commit'iyle degistirir; depodan
 #: calistirilinca yerinde kalir ve git'ten okunur.
 BUILD = "@BUILD@"
@@ -75,16 +82,19 @@ def build_info():
 class Lang:
     """Bir dilin parcalarini alan baglam; `create.py`'ye de bu verilir."""
 
-    def __init__(self, name, project, makefile, rules):
-        self.name, self.project = name, project
+    def __init__(self, name, project, rules, keep=False):
+        self.name, self.project, self.keep = name, project, keep
         self.dir, self.templates = TEMPLATES / name, TEMPLATES
-        self._makefile, self._rules = makefile, rules
+        self._rules = rules
 
     def copy_files(self, sub, dest=".", replace=None):
-        """`<dil>/<sub>/` altini dest'e kopyalar."""
+        """`<dil>/<sub>/` altini dest'e kopyalar; `keep` ise var olan dosyayi atlar."""
         src = self.dir / sub
         for f in sorted(q for q in src.rglob("*") if q.is_file()):
             rel = Path(dest) / f.relative_to(src)
+            if self.keep and rel.exists():
+                print(f"atlandi: {rel} (var)")
+                continue
             text = f.read_text()
             for k, v in (replace or {}).items():
                 text = text.replace(k, v)
@@ -97,26 +107,19 @@ class Lang:
         """Varsayilan: olan parcalari al."""
         if (self.dir / "files").is_dir():
             self.copy_files("files")
-        if (self.dir / "make.mk").is_file():
-            self.makefile(self.dir / "make.mk")
         if (self.dir / "rules.md").is_file():
             self.rules(self.dir / "rules.md")
-
-    def makefile(self, part):
-        """Makefile'a bir parca ekler; ayni parca bir kez girer."""
-        if part not in self._makefile:
-            self._makefile.append(part)
 
     def rules(self, path):
         """`.claude/rules/<dil>.md` olarak kopyalanacak AI kurallari."""
         self._rules[self.name] = path
 
 
-def create_langs(langs, project):
-    """Her dilin parcalarini alir; Makefile parcalarini ve kurallari dondurur."""
-    makefile, rules = [], {}
+def create_langs(langs, project, keep=False):
+    """Her dilin parcalarini alir; kurallari dondurur."""
+    rules = {}
     for l in langs:
-        ctx = Lang(l, project, makefile, rules)
+        ctx = Lang(l, project, rules, keep)
         script = ctx.dir / "create.py"
         if not script.is_file():
             ctx.defaults()
@@ -125,16 +128,15 @@ def create_langs(langs, project):
         mod = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mod)
         mod.run(ctx)
-    return makefile, rules
+    return rules
 
 
-def write_makefile(parts):
-    """Makefile: ortak degiskenler, dillerin parcalari, ortak hedefler."""
-    body = [(TEMPLATES / "make" / "base.mk").read_text()]
-    body += [part.read_text() for part in parts]
-    body.append((TEMPLATES / "make" / "targets.mk").read_text())
-    Path("Makefile").write_text("".join(body))
-    print(f"created: Makefile ({' '.join(part.parent.name for part in parts)})")
+def copy_rules(rules):
+    for l, src in rules.items():
+        dst = Path(".claude/rules") / f"{l}.md"
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(src, dst)
+        print(f"created: {dst}")
 
 
 def copy(template):
@@ -154,17 +156,10 @@ def edit(path, subs):
     p.write_text(subs(p.read_text()))
 
 
-def tilde(p):
-    try:
-        return "~/" + str(Path(p).relative_to(Path.home()))
-    except ValueError:
-        return str(p)
-
-
 def render(template, dest, subs):
-    """`templates/project/<template>` altindakileri dest'e yazar, `{{AD}}` yer
-    tutucularini doldurarak."""
-    src = TEMPLATES / "project" / template
+    """`templates/speckit/project/<template>` altindakileri dest'e yazar, `{{AD}}`
+    yer tutucularini doldurarak."""
+    src = TEMPLATES / "speckit" / "project" / template
     for f in sorted(p for p in src.rglob("*") if p.is_file()):
         dst = Path(dest) / f.relative_to(src)
         text = f.read_text()
@@ -196,7 +191,7 @@ def speckit():
     run("specify", "self", "upgrade")
     run("specify", "init", "--here", "--force", "--non-interactive",
         "--script", "sh", "--integration", "claude", "--extension", "agent-context",
-        "--extension", COMPANION, "--trust-extension-urls")
+        "--extension", "bug", "--extension", COMPANION, "--trust-extension-urls")
     # init kurulamayan extension'i tabloda hata olarak basip 0 ile cikiyor.
     if not Path(".specify/extensions/companion/extension.yml").is_file():
         sys.exit(f"companion kurulamadi: {COMPANION}; nedeni init'in tablosunda")
@@ -266,28 +261,43 @@ def optional_hooks():
 ORNEKLER = """ornekler:
   devenv create ornek -l go -l rust --speckit   ./ornek/ornek-impl ve ./ornek/ornek-ctrl
   devenv create . --lang go --lang rust         bulundugun dizin proje dizini, adi proje adi
-  devenv create ornek -l cpp --target aarch64
-  devenv create ornek -l node --node 22"""
+  devenv create ornek -l cpp --target aarch64   ./ornek urun reposu
+  devenv create ornek -l node --node 22
+  devenv add -l rust                            urun reposunda: projeye rust ekler"""
 
-CREATE = """Iki rollu bir proje kurar:
+CREATE = """Proje kurar. --speckit'siz proje dizini urun reposudur:
 
-  <ad>/            git degil; Claude burada calismaz. CLAUDE.md ortak protokolu import eder
-    <ad>-impl/     urun reposu: flake.nix, Makefile, CLAUDE.md; --speckit ile Spec Kit.
-                   devshell burada derlenir. Rol import'u ve izinler git disinda:
-                   CLAUDE.local.md, .claude/settings.local.json
-    <ad>-ctrl/     denetci: CLAUDE.md, .claude/settings.json, skill'ler
+  <ad>/            urun reposu: flake.nix, Makefile, CLAUDE.md; devshell burada derlenir
 
-Rol metinleri kopyalanmaz, Claude config dizininden import edilir; once
-dev-templates'te install.sh calismis olmali.
+--speckit ile Spec Kit ve iki rollu duzen kurar:
+
+  <ad>/            git degil; Claude burada calismaz. CLAUDE.md ortak protokolu tasir
+    <ad>-impl/     urun reposu: flake.nix, Makefile, CLAUDE.md, Spec Kit, rol metni
+                   .claude/rules/'da. devshell burada derlenir. Makineye ozgu olanlar
+                   git disinda: CLAUDE.local.md, .claude/settings.local.json
+    <ad>-ctrl/     denetci: CLAUDE.md, rol metni .claude/rules/'da, .claude/settings.json,
+                   skill'ler
 
 Proje dizini doluysa once sorar (y/N). y ise sablon dosyalarini var olanlarin
-ustune yazar; baska dosyaya dokunmaz, hicbir sey silmez."""
+ustune yazar; baska dosyaya dokunmaz, hicbir sey silmez. Var olan projeye dil
+eklemek create'in isi degil: devenv add."""
+
+ADD = """Bulundugun urun reposuna dil ekler:
+
+  flake.nix        langs'e eklenir
+  dilin dosyalari  var olan dosya atlanir
+  .claude/rules/<dil>.md
+
+Makefile'a, CLAUDE.md'ye, Spec Kit'e ve rol dosyalarina dokunmaz; kaynak
+dosyasi yaratmaz. O dilde bir bileşen acilinca Makefile'a o baglanir. Sonra
+devshell yeniden derlenir."""
 
 
 def parser():
     ap = argparse.ArgumentParser(
         prog="devenv", formatter_class=argparse.RawDescriptionHelpFormatter,
-        description="Iki rollu proje: <ad>/<ad>-impl (urun, yazan) ve <ad>/<ad>-ctrl (denetci).",
+        description="Proje: <ad>/ urun reposu; --speckit ile <ad>/<ad>-impl (urun, yazan) "
+                    "ve <ad>/<ad>-ctrl (denetci).",
         epilog=ORNEKLER)
     ap.add_argument("--version", action="version", version=f"devenv {VERSION} ({build_info()})")
     sub = ap.add_subparsers(dest="command", required=True, metavar="komut")
@@ -303,16 +313,22 @@ def parser():
                    help="capraz derleme hedefi: aarch64 | armv7 (tekrarlanabilir)")
     c.add_argument("--node", help=".nvmrc icin node major surumu, ornek 22")
     c.add_argument("--speckit", action="store_true",
-                   help="Spec Kit kur: self upgrade, init + agent-context "
-                        "(CLAUDE.md blogu), companion, living specs kapali; anayasa sablondan yazilir")
+                   help="Spec Kit ve iki rollu duzen (<ad>-impl, <ad>-ctrl) kur: self upgrade, init + agent-context "
+                        "(CLAUDE.md blogu), bug, companion, living specs kapali; anayasa sablondan yazilir")
+    d = sub.add_parser("add", help="urun reposuna dil ekle",
+                       formatter_class=argparse.RawDescriptionHelpFormatter, description=ADD)
+    d.add_argument("-l", "--lang", dest="langs", action="append", required=True, metavar="dil",
+                   help=" | ".join(LANGS) + " (tekrarlanabilir)")
     return ap
 
 
-def create_project(name):
-    """Iki rollu duzeni kurar ve impl'e gecer; impl'in kurulumu main'e kalir.
+def create_project(name, speckit):
+    """Proje dizinini kurar ve urun reposuna gecer; reponun kurulumu main'e kalir.
 
-    Ust dizin git reposu olamaz: Claude'un hafizasi repoya gore tutulur, ust
-    dizin repo olursa impl ile ctrl ayni hafizayi paylasir.
+    --speckit'siz urun reposu proje dizininin kendisidir. --speckit ile iki
+    rollu duzen kurulur ve urun reposu impl'dir. O zaman ust dizin git reposu
+    olamaz: Claude'un hafizasi repoya gore tutulur, ust dizin repo olursa impl
+    ile ctrl ayni hafizayi paylasir.
     """
     if name == ".":
         root = Path.cwd()
@@ -321,7 +337,7 @@ def create_project(name):
         sys.exit(f"gecersiz proje adi: {name!r}")
     else:
         root = Path.cwd() / name
-    if (root / ".git").exists():
+    if speckit and (root / ".git").exists():
         sys.exit(f"{root} bir git reposu; ust dizin repo olamaz.")
     if root.is_dir() and any(root.iterdir()):
         try:
@@ -330,14 +346,23 @@ def create_project(name):
             answer = ""
         if answer.strip().lower() != "y":
             sys.exit("vazgecildi; hicbir seye dokunulmadi")
+    subs = {"NAME": name, "ROOT": str(root), "WIKI": str(WIKI)}
+    if not speckit:
+        root.mkdir(exist_ok=True)
+        os.chdir(root)
+        return subs
     impl, ctrl = root / f"{name}-impl", root / f"{name}-ctrl"
     impl.mkdir(parents=True, exist_ok=True)
     ctrl.mkdir(exist_ok=True)
-    subs = {"NAME": name, "ROOT": str(root), "CONFIG": tilde(CONFIG), "CONFIGABS": str(CONFIG), "WIKI": str(WIKI)}
     render("parent", root, subs)
     render("ctrl", ctrl, subs)
-    if not (CONFIG / "roles" / "protocol.md").is_file():
-        print(f"UYARI:   {CONFIG / 'roles'} yok; proje dosyalarinin import'lari bos kalir. "
+    # reviewer agent'i CLAUDE.md yuklemeden acilir; review global kurallari bu
+    # kopyadan okur, boylece ctrl proje disindan dosya okumaz.
+    genel = CONFIG / "CLAUDE.md"
+    if genel.is_file():
+        shutil.copy2(genel, ctrl / ".claude/skills/review/global-rules.md")
+    else:
+        print(f"UYARI:   {genel} yok; review genel kurallari okuyamaz. "
               "dev-templates'te install.sh'i calistir.")
     os.chdir(impl)
     return subs
@@ -350,12 +375,18 @@ def main():
     unknown = [l for l in langs if l not in LANGS]
     if unknown:
         sys.exit(f"unknown language: {' '.join(unknown)} (pick from {' '.join(LANGS)})")
+    if a.command == "add":
+        add(langs)
+        return
     targets = [ALIAS.get(t.lower(), t.lower()) for t in a.target if t.lower() != "none"]
 
-    subs = create_project(a.name)
+    subs = create_project(a.name, a.speckit)
     setup(a, langs, targets, subs)
     build()
     root, name = subs["ROOT"], subs["NAME"]
+    if not a.speckit:
+        print(f"oturum:    cd {root} && claude -n {name}")
+        return
     print(f"oturumlar: cd {root}/{name}-impl && claude -n {name}-impl")
     print(f"           cd {root}/{name}-ctrl && claude -n {name}-ctrl")
 
@@ -374,9 +405,9 @@ def setup(a, langs, targets, subs):
     subprocess.run(["git", "add", "-N", "flake.nix"], check=True)
     print("git:     flake.nix intent-to-added so nix can read it; git add it to keep it")
 
-    makefile, rules = create_langs(langs, subs["NAME"])
+    rules = create_langs(langs, subs["NAME"])
 
-    write_makefile(makefile)
+    copy("make")
     subprocess.run(["git", "add", "-N", "Makefile"], check=True)
     print("git:     Makefile intent-to-added; it belongs to the project, git add it to keep it")
 
@@ -388,31 +419,12 @@ def setup(a, langs, targets, subs):
         subprocess.run(["git", "add", "-N", ".nvmrc"], check=True)
         print(f"git:     .nvmrc ({a.node}) intent-to-added; the flake reads only what git knows")
 
-    copy("claude")
-    edit("CLAUDE.md", lambda t: t.replace("# PROJECT_NAME", f"# {subs['NAME']}"))
-    imports = []
-    for l, src in rules.items():
-        dst = Path(".claude/rules") / f"{l}.md"
-        dst.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(src, dst)
-        print(f"created: {dst}")
-        imports.append(f"- @{dst}\n")
-    if imports:
-        # Capa: sablonun Kurallar bolumundeki global-kurallar maddesi.
-        # Import'lar onun ALTINA girer. Capa sablondan kalkarsa import'lar
-        # sessizce yazilmaz; o yuzden ikisi birlikte degisir.
-        capa = "- Global `CLAUDE.md`'deki kurallar"
-        def ekle(metin):
-            for satir in metin.splitlines(keepends=True):
-                if satir.startswith(capa):
-                    return metin.replace(satir, satir + "".join(imports), 1)
-            sys.exit(f"CLAUDE.md'de capa bulunamadi: {capa!r}")
-        edit("CLAUDE.md", ekle)
-        print(f"claude:  {len(imports)} kural dosyasi import edildi")
-
-    # Rol import'u ve izinler makineye ozgu (mutlak yollar), commit'lenmez:
-    # repoyu baska makinede acan kirik bir import gormesin.
-    render("impl", Path("."), subs)
+    copy_rules(rules)
+    if a.speckit:
+        render("impl", Path("."), subs)
+    else:
+        copy("claude")
+        edit("CLAUDE.md", lambda t: t.replace("# PROJECT_NAME", f"# {subs['NAME']}"))
 
     already = Path(".git/info/exclude").read_text().splitlines()
     excluded = [f for f in LOCAL_ONLY if f not in already]
@@ -425,6 +437,28 @@ def setup(a, langs, targets, subs):
     if a.speckit:
         speckit()
         constitution(subs["NAME"])
+
+
+def add(langs):
+    """Urun reposuna dil ekler; `devenv add`in yardim metnindeki gibi."""
+    flake = Path("flake.nix")
+    if not flake.is_file():
+        sys.exit("flake.nix yok; devenv add urun reposunun kokunde calisir")
+    text = flake.read_text()
+    satir = re.compile(r"^( *)langs = \[([^\]]*)\];", re.M)
+    m = satir.search(text)
+    if not m:
+        sys.exit("flake.nix'te `langs = [ ... ];` satiri bulunamadi")
+    have = re.findall(r'"([^"]+)"', m.group(2))
+    new = [l for l in dict.fromkeys(langs) if l not in have]
+    if not new:
+        print(f"zaten var: {' '.join(langs)}")
+        return
+    flake.write_text(satir.sub(lambda _: m.group(1) + nix_list("langs", have + new).lstrip(), text, count=1))
+    print(f"edited:  flake.nix (langs: {' '.join(have + new)})")
+
+    copy_rules(create_langs(new, None, keep=True))
+    build()
 
 
 def build():

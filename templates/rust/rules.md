@@ -95,8 +95,24 @@ Crate köküne (`lib.rs` / `main.rs`):
 #![warn(clippy::panic)]
 ```
 - `make lint` önce `cargo fmt --check`, sonra `clippy --all-targets -- -D warnings`
-  koşar; uyarı hatadır. Faz sonunda `make gate`.
+  koşar; uyarı hatadır.
 - Testte `unwrap`/`expect` serbesttir: repo kökündeki `clippy.toml`
   (`allow-unwrap-in-tests`, `allow-expect-in-tests`).
 - Test dışında bilinçli `expect`/`panic!` gerekçesiyle yazılır:
   `#[expect(clippy::expect_used, reason = "…")]`. Gerekçe yorumda değil `reason`'da durur.
+
+## Makefile'da Rust bileşeni
+Bileşeni kökteki Makefile'a bağlarken reçeteler şöyledir.
+- Her cargo komutu `--manifest-path components/<ad>/Cargo.toml --target-dir
+  build/cargo` alır. target dizini bütün bileşenlere ve hedeflere ortaktır;
+  bağımlılıklar bir kez derlenir.
+- `build-<ad>`: `cargo build`; release'te `--release`; `TARGET` host değilse
+  `--target <triple>`: aarch64 `aarch64-unknown-linux-gnu`, armv7
+  `armv7-unknown-linux-gnueabihf` (triple'lar devshell'deki rustup'tan gelir).
+  Cargo çıktıyı kendi düzenine yazar: `build/cargo/[<triple>/]<debug|release>/`.
+  Oradaki çalıştırılabilirler
+  (`find <dizin> -maxdepth 1 -type f -executable ! -name '*.*'`) `$(BIN)`'e
+  kopyalanır; `dist` her dilin çıktısını aynı yerden toplar.
+- `test-<ad>`: `cargo test`; release'te `--release`.
+- `lint-<ad>`: Lint bölümündeki iki adım, `--manifest-path` ve `--target-dir` ile.
+- `distclean` bileşen dizinindeki `target/`'ı da siler.

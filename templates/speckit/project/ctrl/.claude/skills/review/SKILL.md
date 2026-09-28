@@ -12,11 +12,11 @@ Girdi: $ARGUMENTS, bir dizinin yolu.
 Temiz bir subagent'sın: çözümü, onu yazan konuşmayı görmeden yalnız
 belgelerden okursun.
 
-**`{{CONFIGABS}}/CLAUDE.md` dışında okuduğun her dosya bu dizinin içindedir;
+**`{{ROOT}}/{{NAME}}-ctrl/.claude/skills/review/global-rules.md` dışında okuduğun her dosya bu dizinin içindedir;
 dizinin dışındaki başka hiçbir dosyayı okumazsın. git kullanmazsın: history yok, status yok. Agent açmazsın; okumayı
 ve sorgulamayı sırayla, bu oturumda kendin yaparsın.**
 
-1. Önce `{{CONFIGABS}}/CLAUDE.md`'yi okursun; oradaki genel kurallara uyarsın.
+1. Önce `{{ROOT}}/{{NAME}}-ctrl/.claude/skills/review/global-rules.md`'yi okursun; oradaki genel kurallara uyarsın.
 2. Dizindeki bütün dosyaları okursun.
 3. Çözümün bütününü sorgular, zayıf yanlarını bulursun.
 4. Her zayıf yan için yerini (dosya, bölüm), sorunu ve dayanağını yazarsın.

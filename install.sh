@@ -43,12 +43,11 @@ echo "kopyalandi: $config/CLAUDE.md"
 # Eski kurulumlarin kopyasi: anayasa artik sablonlarla gelir.
 rm -f "$config/constitution-base.md"
 
-# Rol metinleri ve global skill'ler. Projeler bunlari kopyalamaz: rol metnini
-# import eder, skill'i global'den cagirir. Guncelleme bu script'in bir kez
-# kosmasidir, proje proje dolasmak degil.
+# Eski kurulumlarin kopyasi: rol metinleri artik sablonlarla projeye gelir.
 rm -rf "$config/roles"
-cp -r "$here/claude/roles" "$config/roles"
-echo "kopyalandi: $config/roles"
+
+# Global skill'ler. Projeler bunlari kopyalamaz, global'den cagirir; guncelleme
+# bu script'in bir kez kosmasidir, proje proje dolasmak degil.
 mkdir -p "$config/skills"
 for skill in "$here"/claude/skills/*/; do
   name=$(basename "$skill")

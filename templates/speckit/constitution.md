@@ -22,19 +22,31 @@ Gerekçe: Belgelenen davranış ile gözlenen davranış ayrışır, kararı yal
 taşır. Ürün belgesinde durmayan kanıt, belgeyi okuyan için yoktur; yazılmayan
 ölçüm bir sonraki soruda yeniden sorulur.
 
-### II. Kanıt Ölçtüğü Şeyin İçinden Çıkmaz
+### II. Testler iddianın kendisini ölçer; her bir hata, düzeltilmeden önce başarısız olan bir test aracılığıyla yeniden oluşturulur
 
-Ölçen kod ürün kodunu import etmez ve ürünün durumunu değiştirmez (MUST NOT).
-Doğrulayan taraf doğrulanan taraf olamaz.
+1. Test, hatanın üretilebildiği en alçak düzeyde yazılır: süreç içindeyse unit,
+   bir dış sistemle üretiliyorsa integration, süreçler arasıysa evidence. Yeri,
+   türünün projenin kurallarındaki yeridir (MUST).
 
-Bundan üç ayrım doğar ve bir dosyanın hangisi olduğu bulunduğu dizinden
-anlaşılır: üretimde koşan kod, kurulumu bir kez yapan kod, ölçen kod.
+2. Test, iddianın yasakladığı ya da istediği şeyin kendisini ölçer. İddiada
+   olmayan bir koşul eklemez; iddia bozulunca tesadüfen görülebilecek bir
+   sonucunu ölçmez (MUST NOT).
 
-Test kanıt değildir: birim test kodun kendi doğruluğunu sınar; kanıt kapısı
-ürünün dış dünyaya verdiği sözü sınar ve negatif kontrolü olmalıdır (MUST).
+3. Bir hata bulununca, düzeltmeden önce onu yeniden üreten test yazılır ve
+   düzeltilmemiş kodda kırmızı yandığı gösterilir (MUST). Kanıt, o kırmızı
+   koşunun arşivdeki çıktısıdır. Test ve düzeltme aynı commit'e girer (MUST).
 
-Gerekçe: Ürün kodu değiştiğinde kanıtın da değişmesi, kanıtı ürünün bir görüşüne
-çevirir.
+4. Test ve kapı koşularının çıktısı, sonraki koşunun ve temizliğin silmediği bir
+   yerde saklanır; yeri plan.md'de yazar (MUST). Commit'lenmiş ve bir kez geçmiş
+   bir test ya da kapı kırmızı yanarsa bu bir bulgudur. Tekrar koşu onu kapatmaz;
+   bulgu, mekanizması açıklanana kadar açık kalır (MUST).
+
+Gerekçe: Yeşil bir koşu, o koşuda ihlal görülmediğini söyler; iddianın doğru
+olduğunu söylemez. Hata, üretilebildiği en alçak düzeyde sınanmazsa ancak şans
+eseri görülür. İddianın kendisini değil bir sonucunu ölçen test, hatayı ancak o
+sonuç tesadüfen oluştuğunda görür. Düzeltilmemiş kodda kırmızı yanmamış test,
+düzeltmenin hatayı giderdiğini göstermez. Seyrek bir hatanın tek
+kırmızısının verisi silinirse hata bir daha görülmez.
 
 ### III. Tek Kaynak Spec
 

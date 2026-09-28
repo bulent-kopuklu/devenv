@@ -29,7 +29,15 @@ devenv create ornek -l node --node 22
 | `-l`, `--lang` | `rust` `cpp` `go` `node` `java` `android`, repeatable |
 | `--target` | cross target: `aarch64` `armv7`, repeatable |
 | `--node` | node major version for `.nvmrc` |
-| `--speckit` | install Spec Kit into the product repo |
+| `--speckit` | install Spec Kit and the two-role layout (`<name>-impl`, `<name>-ctrl`) |
+
+Without `--speckit` the project directory is the product repo:
+
+```
+ornek/                 the product repo: flake.nix, Makefile, CLAUDE.md
+```
+
+With `--speckit`:
 
 ```
 ornek/
@@ -39,28 +47,50 @@ ornek/
 ```
 
 If the directory is not empty it asks first (y/N). Nothing is committed and no
-remote is added. Before the first step, in `ornek-impl`: add the remote, commit
-the skeleton, `git push -u origin main`. Then start the two sessions:
+remote is added. Before the first step, in the product repo: add the remote,
+commit the skeleton, `git push -u origin main`. With `--speckit`, start the two
+sessions:
 
 ```bash
 cd ornek/ornek-impl && claude -n ornek-impl
 cd ornek/ornek-ctrl && claude -n ornek-ctrl
 ```
 
+## `devenv add`
+
+Run it in the product repo to add a language to an existing project, e.g. a
+Rust module in a project started with Go:
+
+```bash
+devenv add -l rust
+```
+
+It adds the language to `langs` in `flake.nix`, copies the language's files
+(an existing file is kept) and writes `.claude/rules/<lang>.md`. The Makefile,
+`CLAUDE.md`, Spec Kit and the role files are not touched. Then the devshell is
+rebuilt.
+
 ## Makefile
 
-Code lives under `components/<name>/`, one language per component; a new
-component is a new directory. Gradle (java, android) is not driven.
+The project gets a skeleton Makefile: the interface below, no recipes. Code
+lives under `components/<name>/`, one language per component; when a component
+is added it is wired into the Makefile as `<target>-<name>` and the aggregate
+targets call it. How to wire a language is in the language's
+`.claude/rules/<lang>.md`. Until a component is wired the aggregate targets do
+nothing.
 
 ```bash
 make                                   # build, VARIANT=debug TARGET=host
 make build VARIANT=release TARGET=aarch64
-make test COMPONENTS="api agent"       # test is host-only
-make build-agent                       # one component; also test-<name>, lint-<name>
+make test COMPONENTS="api agent"       # unit (and contract); tests are host-only
+make test-integration                  # against real external systems
+make test-evidence                     # many processes, faults; EVIDENCE=short|full
+make gate                              # build, lint, test, test-integration, test-evidence
+make bench                             # outside the gate
+make build-agent                       # one component
 make dist TARGET=armv7                 # release build → dist/armv7/
-make gate                              # distclean, build, lint, test, test-integration
 make clean                             # build/
-make distclean                         # + dist/, components/*/{node_modules,target}
+make distclean                         # + dist/
 ```
 
 ## `nix flake init` templates

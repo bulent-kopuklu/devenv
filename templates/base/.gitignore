@@ -2,9 +2,11 @@
 build/
 dist/
 target/
+runs/
 
 # IDE
 .vscode/*
+!.vscode/settings.json
 !.vscode/tasks-cmake.json
 !.vscode/tasks-cargo.json
 .idea/

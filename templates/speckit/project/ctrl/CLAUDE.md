@@ -1,6 +1,5 @@
 # {{NAME}}: denetçi
 
-@{{CONFIG}}/roles/ctrl.md
 
 ## Bu proje
 
