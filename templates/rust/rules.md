@@ -102,17 +102,17 @@ Crate köküne (`lib.rs` / `main.rs`):
   `#[expect(clippy::expect_used, reason = "…")]`. Gerekçe yorumda değil `reason`'da durur.
 
 ## Makefile'da Rust bileşeni
-Bileşeni kökteki Makefile'a bağlarken reçeteler şöyledir.
-- Her cargo komutu `--manifest-path components/<ad>/Cargo.toml --target-dir
-  build/cargo` alır. target dizini bütün bileşenlere ve hedeflere ortaktır;
-  bağımlılıklar bir kez derlenir.
-- `build-<ad>`: `cargo build`; release'te `--release`; `TARGET` host değilse
+Bileşenin `Makefile`'ı `components/<ad>/`'dadır; komutlar orada koşar.
+- Kaynak dizini Cargo'nun `src/`'idir; `Cargo.toml` bileşen dizinindedir.
+- Her cargo komutu `--target-dir $(BUILD)/cargo` alır. target dizini bütün
+  bileşenlere ve hedeflere ortaktır; bağımlılıklar bir kez derlenir.
+- `build`: `cargo build`; release'te `--release`; `TARGET` host değilse
   `--target <triple>`: aarch64 `aarch64-unknown-linux-gnu`, armv7
   `armv7-unknown-linux-gnueabihf` (triple'lar devshell'deki rustup'tan gelir).
-  Cargo çıktıyı kendi düzenine yazar: `build/cargo/[<triple>/]<debug|release>/`.
+  Cargo çıktıyı kendi düzenine yazar: `$(BUILD)/cargo/[<triple>/]<debug|release>/`.
   Oradaki çalıştırılabilirler
   (`find <dizin> -maxdepth 1 -type f -executable ! -name '*.*'`) `$(BIN)`'e
   kopyalanır; `dist` her dilin çıktısını aynı yerden toplar.
-- `test-<ad>`: `cargo test`; release'te `--release`.
-- `lint-<ad>`: Lint bölümündeki iki adım, `--manifest-path` ve `--target-dir` ile.
-- `distclean` bileşen dizinindeki `target/`'ı da siler.
+- `test`: `cargo test`; release'te `--release`.
+- `lint`: Lint bölümündeki iki adım, `--target-dir` ile.
+- `distclean`: bileşen dizinindeki `target/`'ı siler.

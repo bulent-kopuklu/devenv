@@ -69,8 +69,13 @@ DIKKAT: Asagida anlatilan yerlesim plani, `speckit-plan` da mumkun oldugunca uyg
 Esnetilmek istenilen kurallar icin ctrl vasitasiyla insandan onay alinir.
 
 - Kod yalnız `components/<ad>/` altında durur. Bir bileşenin ürün kodu (teslim
-  edilen kütüphane ya da binary) tek dildir; manifest'i bileşenin kökündedir.
-  Başka bir dilde bileşen gerekiyorsa plan'da yazılır ve proje sahibine sorulur.
+  edilen kütüphane ya da binary) tek dildir. Başka bir dilde bileşen
+  gerekiyorsa plan'da yazılır ve proje sahibine sorulur.
+- Bileşen dizininde üç şey durur: kendi `Makefile`'ı, kaynak dizini ve
+  `tests/`. Kaynak dizinini açarken bileşenin dilini plan'dan alır ve adını
+  dile göre seçersin: o dilde `src` olağansa `src`, tuhaf karşılanıyorsa
+  kökteki public paketin adı. Manifest'in yeri dilin alışkanlığıdır; dilin
+  kural dosyası yazar.
 - evidence'ta ürünün dilinde yalnız ürünü kullanan kod yazılır: kullanıcıyı
   taklit eden servisler (command gönderen, event yazan, saga ve handler koşan
   kod). Her servis `tests/evidence/services/<ad>/` altında bir binary'dir;
@@ -104,8 +109,7 @@ Esnetilmek istenilen kurallar icin ctrl vasitasiyla insandan onay alinir.
 - Bileşenler arası sözleşme (proto, OpenAPI) kendi bileşeninde durur
   (`components/<ad>/`, manifest `buf.yaml`). Kodunu onu kullanan her bileşen
   kendi build'inde üretir: Go `//go:generate`, Rust `build.rs`. Sözleşme
-  bileşeni derlenmez; Makefile'a yalnız `lint-<ad>` olarak bağlanır: bileşen
-  dizininde `buf lint`.
+  bileşeni derlenmez; Makefile'ında yalnız `lint` doludur: `buf lint`.
 - Bir bileşenin testleri, test servisi ve bench'i kendi dizinindedir
   (`components/<ad>/tests/`); bileşen dizini kopyalanınca testleriyle taşınır.
 - Public paketteki bir tipin exported metotları ya tipin dosyasında ya da adı
@@ -126,11 +130,11 @@ Esnetilmek istenilen kurallar icin ctrl vasitasiyla insandan onay alinir.
   | tür | yer | koşan hedef |
   |---|---|---|
   | unit | paketin yanında `*_test.go` | `make test` |
-  | integration | `components/<ad>/tests/integration/<NN_katman>/`, ilk satır `//go:build integration` | `make test-integration` |
+  | integration | `components/<ad>/tests/integration/<NN_katman>/` | `make test-integration` |
   | integration, iç alana dokunmak zorunda | paketinde `*_integration_test.go`, ilk satır `//go:build integration` | `make test-integration` |
   | contract | `components/<ad>/tests/contract/` | `make test` |
   | evidence | `components/<ad>/tests/evidence/<NN_katman>/`, kendi manifest'iyle; dili Go olmak zorunda değil (Yerleşim) | `make test-evidence` |
-  | bench | `components/<ad>/tests/bench/`, ilk satır `//go:build bench` | `make bench` |
+  | bench | `components/<ad>/tests/bench/` | `make bench` |
   | evidence'ın koştuğu servisler | `components/<ad>/tests/evidence/services/<ad>/`, her biri bir `main` paketi; ürünü kullanan örnek uygulama | `make test-evidence` başlatır; `make build`'e ve teslime girmez |
 
 - unit, integration ve contract spec-kit'in adlarıdır (plan ve tasks

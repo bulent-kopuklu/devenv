@@ -19,8 +19,13 @@
 ## Yerleşim
 
 - Kod yalnız `components/<ad>/` altında durur. Bir bileşenin ürün kodu (teslim
-  edilen kütüphane ya da binary) tek dildir; manifest'i bileşenin kökündedir.
-  Başka bir dilde bileşen gerekiyorsa plan'da yazılır ve proje sahibine sorulur.
+  edilen kütüphane ya da binary) tek dildir. Başka bir dilde bileşen
+  gerekiyorsa plan'da yazılır ve proje sahibine sorulur.
+- Bileşen dizininde üç şey durur: kendi `Makefile`'ı, kaynak dizini ve
+  `tests/`. Kaynak dizinini açarken bileşenin dilini plan'dan alır ve adını
+  dile göre seçersin: o dilde `src` olağansa `src`, tuhaf karşılanıyorsa
+  kökteki public paketin adı. Manifest'in yeri dilin alışkanlığıdır; dilin
+  kural dosyası yazar.
 - evidence'ta ürünün dilinde yalnız ürünü kullanan kod yazılır: kullanıcıyı
   taklit eden servisler (command gönderen, event yazan, saga ve handler koşan
   kod). Her servis `tests/evidence/services/<ad>/` altında bir binary'dir;
@@ -41,11 +46,13 @@
 - Bir iş hem servise hem script'e yazılabiliyorsa script'e yazılır. Servise
   ancak ürünü çağırmadan yapılamıyorsa girer.
 - Yeni bileşen `components/` altında yeni dizindir; plan'da yazılır ve proje
-  sahibine sorulur. Açıldığı commit'te kökteki `Makefile`'a bağlanır:
-  `<hedef>-<ad>` reçeteleri yazılır, toplu hedefler onları çağırır. Dilin
-  reçeteleri `.claude/rules/<dil>.md`'nin Makefile bölümünde. `Makefile`'ın
-  başındaki arayüzde olmayan bir hedef ya da parametre gerekiyorsa plan'da
-  yazılır ve proje sahibine sorulur.
+  sahibine sorulur. Açıldığı commit'te kendi `Makefile`'ı yazılır: kökteki
+  `Makefile`'ın başındaki hedeflerin ve `distclean`'in hepsini tanımlar, testi
+  olmayan türün hedefi boş geçer. Kök onu `COMPONENTS` üzerinden çağırır ve
+  değişmez; kökten `VARIANT`, `TARGET`, `BUILD`, `BIN` ve `TEST_RUN` gelir.
+  Dilin reçeteleri `.claude/rules/<dil>.md`'nin Makefile bölümünde. Arayüzde
+  olmayan bir hedef ya da parametre gerekiyorsa plan'da yazılır ve proje
+  sahibine sorulur.
 - Kökte yalnız projenin geneline ait olan durur: `Makefile`, `flake.nix`,
   formatter/linter config'leri, editör ayarı `.vscode/`, `CLAUDE.md`, `README.md`, `docs/`. Spec Kit kullanılıyorsa onun yerleri de: `specs/`, `.specify/`, living
   specs'in `living-specs.yml`'ı ve `capabilities/`'i. Kök dizine kaynak kodu ya
@@ -57,8 +64,7 @@
 - Bileşenler arası sözleşme (proto, OpenAPI) kendi bileşeninde durur
   (`components/<ad>/`, manifest `buf.yaml`). Kodunu onu kullanan her bileşen
   kendi build'inde üretir: Go `//go:generate`, Rust `build.rs`. Sözleşme
-  bileşeni derlenmez; Makefile'a yalnız `lint-<ad>` olarak bağlanır: bileşen
-  dizininde `buf lint`.
+  bileşeni derlenmez; Makefile'ında yalnız `lint` doludur: `buf lint`.
 - Build çıktısı `build/<target>/<variant>/`, release çıktısı `dist/<target>/`.
 - Bir bileşenin testleri, test servisi ve bench'i kendi dizinindedir
   (`components/<ad>/tests/`); bileşen dizini kopyalanınca testleriyle taşınır.

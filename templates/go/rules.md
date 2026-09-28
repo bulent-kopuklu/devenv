@@ -116,7 +116,8 @@ bir goroutine'de çıkan panic bütün süreci düşürür.
 - Süre ölçümü `time.Since` (monotonic). Zaman damgası UTC.
 
 ## Bağımlılık ve derleme
-- `go.mod`/`go.sum` commit; `go mod tidy` temiz; `replace` gerekçeli ve geçici.
+- `go.mod`/`go.sum` commit; `go mod tidy` temiz; `replace` gerekçeli ve geçici;
+  `tests/` modülünün kaynağa `replace`'i kalıcıdır.
 - Eklemeden önce stdlib ve `golang.org/x`'e bak; 20 satırlık işe kütüphane
   eklenmez.
 - `go.mod`'a `toolchain` direktifi yazılmaz. Go sürümü devshell'den gelir;
@@ -128,14 +129,17 @@ bir goroutine'de çıkan panic bütün süreci düşürür.
   görünür.
 
 ## Makefile'da Go bileşeni
-Bileşeni kökteki Makefile'a bağlarken reçeteler şöyledir; her komut
-`components/<ad>/` içinde koşar.
-- `build-<ad>`: önce `go generate ./...`, sonra `go build <bayraklar> ./...` ile
-  bütün paketler; ardından `tests/` dışındaki main paketleri
-  `go build <bayraklar> -o $(BIN)/ $$(go list -f '{{if eq .Name "main"}}{{.ImportPath}}{{end}}' ./... | grep -v /tests/)`
+Bileşenin `Makefile`'ı `components/<ad>/`'dadır; reçeteler şöyledir.
+- Kaynak dizini kökteki public paketin adıdır (`alazes/`); `go.mod` oradadır.
+  Go'da `src` kullanılmaz. `tests/` kendi `go.mod`'uyla ayrı bir modüldür ve
+  kaynağı `replace ../<kaynak>` ile kullanır; kaynağın dışında olduğu için
+  onun `internal` paketlerine erişemez.
+- `build`: kaynak dizininde önce `go generate ./...`, sonra
+  `go build <bayraklar> ./...` ile bütün paketler; ardından main paketleri
+  `go build <bayraklar> -o $(BIN)/ $$(go list -f '{{if eq .Name "main"}}{{.ImportPath}}{{end}}' ./...)`
   ile `$(BIN)`'e (liste boşsa bu adım atlanır). `go build -o <dizin>` main
   paketi olmayan modülde hata verdiği için bütün paketler ayrı derlenir.
-  evidence servisleri `tests/` altında olduğu için `$(BIN)`'e ve `dist`'e girmez.
+  `tests/` derlenmez; evidence servisleri teslime girmez.
 - Bayraklar: debug `-gcflags='all=-N -l'`, release `-trimpath -ldflags='-s -w'`.
 - Her `go build` `CGO_ENABLED=0` ile koşar. Devshell `CC`'yi export ettiği için
   Go varsayılan olarak cgo'yu açar: host'ta binary nix'in glibc'sine dinamik
@@ -144,17 +148,24 @@ Bileşeni kökteki Makefile'a bağlarken reçeteler şöyledir; her komut
   karar ister; plan'da yazılır.
 - `TARGET` host değilse `go build`'in önüne ayrıca `GOOS=linux` ve hedefin
   mimarisi gelir: aarch64 `GOARCH=arm64`, armv7 `GOARCH=arm GOARM=7`.
-- `test-<ad>`: `go test -race ./...`. integration ve bench dosyaları etiketli
-  olduğu için unit ve contract koşar.
-- `test-integration-<ad>`: `go test -race -count=1 -tags integration ./...`.
-- `test-evidence-<ad>`: `mkdir -p $(TEST_RUN)/$@`; servisler release bayraklarıyla, `-race`'siz
-  `CGO_ENABLED=0 go build -trimpath -ldflags='-s -w' -o $(TEST_RUN)/$@/bin/ ./tests/evidence/services/...`
+- `test`: kaynak dizininde `go test -race ./...`; contract testi varsa
+  `tests/` içinde `go test -race ./contract/...`.
+- `test-integration`: kaynak dizininde
+  `go test -race -count=1 -tags integration ./...` (iç alana dokunan
+  `*_integration_test.go` dosyaları); `tests/` içinde
+  `go test -race -count=1 ./integration/...`.
+- `test-evidence`: koşu dizini `$(TEST_RUN)/<ad>/test-evidence`'tır; `<ad>`
+  bileşenin adıdır, `$(notdir $(CURDIR))`. `tests/` içinde servisler release
+  bayraklarıyla, `-race`'siz
+  `CGO_ENABLED=0 go build -trimpath -ldflags='-s -w' -o <koşu dizini>/bin/ ./evidence/services/...`
   ile koşu dizinine derlenir; sonra `tests/evidence/` içinde
-  `TEST_RUN=$(TEST_RUN)/$@ uv run run.py`.
-- `bench-<ad>`: `go test -tags bench -count=1 -timeout 60m -v -bench . ./tests/bench/...`.
-  Test ve Benchmark fonksiyonları birlikte koşar: container'lı ölçüm ve negatif
-  kontrolleri Test fonksiyonu olarak da yazılabilir. go test'in varsayılan
-  10 dakikalık sınırı uzun bench'i panic'le keser; `-v` Test fonksiyonunun
-  `t.Logf` ile bastığı sonucu gösterir.
-- `lint-<ad>`: `golangci-lint run ./...`; etiketli dosyaları `.golangci.yml`'deki
-  `build-tags` görünür kılar.
+  `TEST_RUN=<koşu dizini> uv run run.py`.
+- `bench`: `tests/` içinde `go test -count=1 -timeout 60m -v -bench . ./bench/...`.
+  Test ve Benchmark fonksiyonları birlikte koşar: container'lı ölçüm ve
+  negatif kontrolleri Test fonksiyonu olarak da yazılabilir. go test'in
+  varsayılan 10 dakikalık sınırı uzun bench'i panic'le keser; `-v` Test
+  fonksiyonunun `t.Logf` ile bastığı sonucu gösterir.
+- `lint`: kaynak dizininde ve `tests/` içinde `golangci-lint run ./...`;
+  paketin yanındaki integration dosyalarını `.golangci.yml`'deki `build-tags`
+  görünür kılar.
+- `distclean`: boş.

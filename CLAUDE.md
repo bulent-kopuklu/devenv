@@ -55,10 +55,11 @@ Kurulumu `install.sh` yapar ve kopyalar, symlink kurmaz. Bu makinede
   koruma, izin birleştirme, repo alma yoktur; o iş ayrı bir komutundur.
 - **Dil eklemek `add`'in işidir.** Var olan dosyaya dokunmaz; Makefile'a,
   `CLAUDE.md`'ye, Spec Kit'e ve rol dosyalarına dokunmaz.
-- **Makefile dilsiz bir iskelettir.** Arayüzü (hedefler, parametreler, çıktı
-  yeri) taşır, reçete taşımaz; her bileşeni açan agent onu Makefile'a bağlar.
-  Bir dilin reçete bilgisi (bayraklar, cross) o dilin `rules.md`'sindeki
-  Makefile bölümündedir.
+- **Kök Makefile dilsiz bir iskelettir.** Arayüzü (hedefler, parametreler,
+  çıktı yeri) taşır, reçete taşımaz; bir hedefi bileşenlerin kendi
+  Makefile'larına indirir. Bileşenin Makefile'ını bileşeni açan agent yazar;
+  bileşen eklemek kökü değiştirmez. Bir dilin reçete bilgisi (bayraklar,
+  cross) o dilin `rules.md`'sindeki Makefile bölümündedir.
 - **Orchestration kurulmaz.** Hakem ve `after_*` hook'ları kararı yazan
   oturumun içinde veriyordu; bu düzende karar denetçinindir.
 - **Ürünsüz.** Şablonlara ve rol metinlerine hiçbir projenin adı, kararı ya da

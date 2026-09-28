@@ -19,8 +19,8 @@ With --speckit <name>/<name>-ctrl is the reviewer's directory and
 its own .claude/rules/. `devenv create .` takes the current directory as
 <name>/ and its name as the project name.
 
-The Makefile is a skeleton with the interface and no recipes; each component
-is wired into it when it is added. `devenv add`, run in the product repo, adds
+The root Makefile is a skeleton with the interface and no recipes; it hands
+each goal to the components' own Makefiles, written when a component is added. `devenv add`, run in the product repo, adds
 languages to an existing project: the flake's langs and the language's files
 and rules. It overwrites nothing and leaves the Makefile alone.
 """
@@ -289,7 +289,7 @@ ADD = """Bulundugun urun reposuna dil ekler:
   .claude/rules/<dil>.md
 
 Makefile'a, CLAUDE.md'ye, Spec Kit'e ve rol dosyalarina dokunmaz; kaynak
-dosyasi yaratmaz. O dilde bir bileşen acilinca Makefile'a o baglanir. Sonra
+dosyasi yaratmaz. O dilde bir bileşen acilinca kendi Makefile'iyla gelir. Sonra
 devshell yeniden derlenir."""
 
 
