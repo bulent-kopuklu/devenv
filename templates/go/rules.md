@@ -151,8 +151,10 @@ Bileşeni kökteki Makefile'a bağlarken reçeteler şöyledir; her komut
   `CGO_ENABLED=0 go build -trimpath -ldflags='-s -w' -o $(TEST_RUN)/$@/bin/ ./tests/evidence/services/...`
   ile koşu dizinine derlenir; sonra `tests/evidence/` içinde
   `TEST_RUN=$(TEST_RUN)/$@ uv run run.py`.
-- `bench-<ad>`: `go test -tags bench -count=1 -bench . ./tests/bench/...`. Test ve
-  Benchmark fonksiyonları birlikte koşar: container'lı ölçüm ve negatif
-  kontrolleri Test fonksiyonu olarak da yazılabilir.
+- `bench-<ad>`: `go test -tags bench -count=1 -timeout 60m -v -bench . ./tests/bench/...`.
+  Test ve Benchmark fonksiyonları birlikte koşar: container'lı ölçüm ve negatif
+  kontrolleri Test fonksiyonu olarak da yazılabilir. go test'in varsayılan
+  10 dakikalık sınırı uzun bench'i panic'le keser; `-v` Test fonksiyonunun
+  `t.Logf` ile bastığı sonucu gösterir.
 - `lint-<ad>`: `golangci-lint run ./...`; etiketli dosyaları `.golangci.yml`'deki
   `build-tags` görünür kılar.
