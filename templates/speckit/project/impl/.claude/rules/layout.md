@@ -80,8 +80,12 @@ Test bölümlerindedir.
   ve arıza. unit, iç alana eriştiği için `tests/unit/` yerine kodun yanında
   durur.
 - Kodun yanındaki unit testi dış sistemi (veritabanı, broker, container)
-  açmaz. Dış sistem açan test integration'dır; iç alana dokunmuyorsa
-  `tests/integration/`'dadır.
+  açmaz. Dış sistem açan test integration'dır; iç alana ve paketin test
+  yardımcılarına dokunmuyorsa `tests/integration/`'dadır. Yardımcıya bağlı
+  test onun yanında kalır; yardımcı iki yere kopyalanmaz.
+- Ölçen kodun kendi testleri (denetçinin negatif kontrolü, servisin testi)
+  test ettikleri kodun yanında, `tests/` altında durur; dış sistem açmıyorlarsa
+  unit'tir ve `make test`'te koşar.
 - Her bench `tests/bench/` altındadır, tek bir fonksiyonu ölçen de; kodun
   yanında bench olmaz. bench kapının dışındadır.
 - `NN_katman` dizinleri alttan üste numaralanır (10, 20, …); numara kodun

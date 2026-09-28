@@ -22,7 +22,7 @@ RUNS       ?= $(or $(XDG_STATE_HOME),$(HOME)/.local/state)/runs
 PROJECT    := {{NAME}}
 $(if $(filter $(VARIANT),debug release),,$(error VARIANT=$(VARIANT); seçenekler: debug release))
 $(if $(filter $(TARGET),host aarch64 armv7),,$(error TARGET=$(TARGET); seçenekler: host aarch64 armv7))
-$(if $(and $(filter-out host,$(TARGET)),$(filter test test-% bench,$(MAKECMDGOALS))),\
+$(if $(and $(filter-out host,$(TARGET)),$(filter test test-% bench gate,$(MAKECMDGOALS))),\
   $(error testler yalnız host'ta koşar; TARGET=$(TARGET) için make build))
 BUILD := $(abspath build)
 BIN   := $(BUILD)/$(TARGET)/$(VARIANT)/bin

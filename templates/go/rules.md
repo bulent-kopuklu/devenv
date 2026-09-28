@@ -183,6 +183,11 @@ reçeteler orada, `tests/`'e ait olanlar `tests/` içinde koşar.
   `./...` iç içe `tests/` modülüne inmez: testler ve evidence servisleri
   derlenmez, teslime girmez.
 - Bayraklar: debug `-gcflags='all=-N -l'`, release `-trimpath -ldflags='-s -w'`.
+  İki varyantta da `-ldflags` sürümü gömer: `-X main.version=$(VERSION)`.
+  `VERSION` bileşenin Makefile'ında
+  `$(shell git describe --tags --always --dirty --match 'components/$(notdir $(CURDIR))/v*')`'tır;
+  bileşenin tag'i yoksa commit'tir. `VERSION` bayraklardan önce tanımlanır:
+  `:=` sağ tarafı tanımlandığı satırda açar.
 - Her `go build` `CGO_ENABLED=0` ile koşar. Devshell `CC`'yi export ettiği için
   Go varsayılan olarak cgo'yu açar: host'ta binary nix'in glibc'sine dinamik
   bağlanır ve nix store'u olmayan makinede açılmaz, cross'ta host derleyicisi
@@ -190,8 +195,10 @@ reçeteler orada, `tests/`'e ait olanlar `tests/` içinde koşar.
   karar ister; plan'da yazılır.
 - `TARGET` host değilse `go build`'in önüne ayrıca `GOOS=linux` ve hedefin
   mimarisi gelir: aarch64 `GOARCH=arm64`, armv7 `GOARCH=arm GOARM=7`.
-- `test`: `go test -race ./...`; contract testi varsa
-  `tests/` içinde `go test -race ./contract/...`.
+- `test`: `go test -race ./...`; `tests/` içinde contract testleri ve ölçen
+  kodun unit testleri `go test -race ./contract/... <paketler>` ile. Ölçen
+  kodun dış sistem açmayan paketlerini (denetçiler, servisler) bileşenin
+  Makefile'ı sayar.
 - `test-integration`: `go test -race -count=1 -tags integration ./...`
   (paketlerin yanındaki `*_integration_test.go` dosyaları); `tests/` içinde
   `go test -race -count=1 ./integration/...`.
