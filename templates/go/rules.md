@@ -159,8 +159,9 @@ bir goroutine'de çıkan panic bütün süreci düşürür.
 - unit paketin yanında `*_test.go`'dur; Go'da unexported ada yalnız aynı
   paketten erişildiği için `tests/unit/` yoktur.
 - Exported API'yi kullanan integration `tests/integration/<NN_katman>/`'dadır
-  ve etiket istemez. unexported'a dokunmak zorunda olan integration paketinde
-  `*_integration_test.go`'dur, ilk satırı `//go:build integration`.
+  ve etiket istemez. Paketin yanında integration yalnız dış sistemin kendi
+  davranışı iddianın parçasıysa ve test unexported durumu kurmadan olmuyorsa
+  yazılır: `*_integration_test.go`, ilk satırı `//go:build integration`.
 - Her test paketinin `TestMain`'i goleak denetimiyle biter. Paket dış kaynak
   (container) açıyorsa önce kaynak kapanır, sonra `goleak.Find` koşar;
   `goleak.VerifyTestMain` bu sırayı kuramaz. `TestMain` etiketsiz bir
