@@ -160,10 +160,8 @@ Bu dosya dilden bağımsızdır. Bir dilin kaynağı ve testleri nereye koyduğu
   koşul, davranışı getiren user story'ler, testin adı ve yeri. Test ve
   senaryonun adı SC'nin açıklamasından türer; SC kimliği koda girmez.
 - Integration testi, davranışı getiren user story'lerin en sonuncusunun
-  fazındadır. Evidence senaryoları, probe'lar ve `sysenv/` işleri `tasks.md`'de
-  bütün user story fazlarından sonra, Polish'ten önce bir Evidence fazındadır.
-  Task senaryonun neyi ölçtüğünü söyler (SC davranışı, koşul, ad); arızanın
-  nereye sokulacağını impl kod varken seçer.
+  fazındadır. Evidence denen davranışın senaryosu `/speckit-tasks`'ta
+  yazılmaz; Evidence hazırlamada felaket tablosuna girer.
 - Spec'in sonunda gereksiz kalan testler ayıklanır. Ayıklama denetçi
   başınadır: bir senaryo SC'sinden fazlasını ölçebilir. Bir denetçi, aynı
   davranışı iddianın kendisini ölçerek daha alçak ya da aynı düzeyde sınayan
@@ -172,3 +170,28 @@ Bu dosya dilden bağımsızdır. Bir dilin kaynağı ve testleri nereye koyduğu
   kontrolü uygulanır) ve kalan testin kırmızı yandığı gösterilir; çıktı silme
   commit'ine yazılır. Açık bulgusu olan ya da başka bir feature'ın plan.md'sinin
   dayandığı test silinmez.
+
+## Evidence hazırlama
+
+Converge bitince ctrl felaket tablosunu ister. evidence spec'ten spec'e
+birikir; tablo her spec'te yeniden çıkarılır ve plan.md'nin Evidence
+bölümünde durur.
+
+1. Satırlar ürünün process rolleridir: sahada ayrı process olarak koşan her
+   rol. Rolleri plan.md'nin yerleşiminden ve koddan çıkarırsın.
+2. Sütunlar felaketlerdir: process kill edilir; durdurulur (SIGSTOP);
+   ötekilerden ayrı yavaşlar; process ile bir dış sistem arasındaki ağ
+   kesilir (her dış sistem ayrı sütun).
+3. Her hücreye o felakette ürünün tutması gereken sözü, spec'teki cümlesiyle
+   (FR, SC, Edge Cases) yazarsın. Spec'te yoksa "spec'te yok" yazar, beklenen
+   davranış için önerini eklersin. ctrl insana götürür; karar spec.md'ye
+   yazılınca hücreyi o cümleye bağlarsın.
+4. Her hücre şunlardan biridir: onu sınayan mevcut senaryo (yolu); yeni
+   senaryo (adı, ölçtüğü söz, kullandığı probe'lar ve parametreleri); kapsam
+   dışı ve gerekçesi (ör. rol o dış sisteme bağlanmıyor).
+5. Bu spec'te bulunan bug'lara bakarsın: bir bug'ın ortaya çıktığı rol ve
+   felaket tabloda bir senaryoyla sınanır.
+6. `evidence/` altındaki her senaryoya bakarsın: sınadığı davranış kalktıysa
+   silinir, değiştiyse güncellenir; tabloya nedeniyle yazılır.
+7. Senaryonun ihtiyacına göre probe değişir ya da yenisi açılır; ayrım
+   Yerleşim'deki probe ile parametre sınırıdır.

@@ -103,16 +103,16 @@ Oturum sıkıştırılsa da değer dosyada kalır.
 **Prompt**: İnsana teknoloji kararlarını (dil, platform, altyapı) sorarsın. Prompt insanın cevabıdır; kararı yoksa boş. Her durumda sonuna şu iki satır eklenir: "Kod yerleşimi ve Makefile impl'in `.claude/rules/` altındaki kurallarına uyar." ve "Yeni dizin, bileşen ya da `make` hedefi insana sorulmadan açılmaz."
 **Çalıştırma**: impl'de `/speckit-plan $PROMPT`
 **Süreç**: impl soru sorarsa `Soruları Cevaplama Kuralları` başlığını uygula. Cevaplayamadığın durumda soruyu insana iletirsin. İnsan sorunu ya seninle ya da gerekli görürse impl üzerinden çözer. Sorunun çözüldüğü bilgisi sana insandan ya da impl'den gelir. Komutun tamamlanmasını beklersin.
-**Kontrol**: Önce `Test Soruları` başlığındaki P aşaması sorularını impl'e sorarsın; impl her birini plan.md'den dosya:satır ile cevaplar, sen cevabı sorunun ölçütüyle karşılaştırırsın. "Hayır" çıkan her soru impl'e itirazdır. plan.md'nin Constitution Check'i II'yi geçti sayarken bir soru "hayır" çıkarsa impl Check'i ve plan'ı düzeltir ya da gerekçesini yazar; anlaşamazsanız insana götürürsün. plan.md'deki yeni paketleri, probe'ları ve sistemleri ve `contracts/`'taki yeni public adları rolleriyle insana götürürsün. Sorular kapanmadan review'a geçmezsin. Sonra `review` skill'ini `<impl>/specs/$BRANCH_NAME/` ile koşarsın. Review arka planda koşar; sonucu task notification olarak gelir, gelene kadar beklersin. Review zayıf yan bulduysa listeyle, bulamadıysa `zayıf yan bulunamadı` diye döner. Zayıf yan bulunduysa listeyi `work/review.md`'ye yazar ve insanın onayını beklersin. İnsan listeyi inceler ve düzeltir. İnsan düzeltilmiş listeyi impl'e göndermeni isterse `work/review.md`'yi dosyadan yeniden okur, olduğu gibi impl'e itiraz olarak iletirsin; impl belgeleri düzeltince `work/review.md`'yi siler, `review` skill'ini son kez yeniden çağırırsın; bu yeni bir review açar.
+**Kontrol**: Önce `Test Soruları` başlığındaki P aşaması sorularını impl'e sorarsın; impl her birini plan.md'den dosya:satır ile cevaplar, sen cevabı sorunun ölçütüyle karşılaştırırsın. "Hayır" çıkan her soru impl'e itirazdır. plan.md'nin Constitution Check'i II'yi geçti sayarken bir soru "hayır" çıkarsa impl Check'i ve plan'ı düzeltir ya da gerekçesini yazar; anlaşamazsanız insana götürürsün. plan.md'deki yeni paketleri ve `contracts/`'taki yeni public adları rolleriyle insana götürürsün. Sorular kapanmadan review'a geçmezsin. Sonra `review` skill'ini `<impl>/specs/$BRANCH_NAME/` ile koşarsın. Review arka planda koşar; sonucu task notification olarak gelir, gelene kadar beklersin. Review zayıf yan bulduysa listeyle, bulamadıysa `zayıf yan bulunamadı` diye döner. Zayıf yan bulunduysa listeyi `work/review.md`'ye yazar ve insanın onayını beklersin. İnsan listeyi inceler ve düzeltir. İnsan düzeltilmiş listeyi impl'e göndermeni isterse `work/review.md`'yi dosyadan yeniden okur, olduğu gibi impl'e itiraz olarak iletirsin; impl belgeleri düzeltince `work/review.md`'yi siler, `review` skill'ini son kez yeniden çağırırsın; bu yeni bir review açar.
 **Commit**: Kontrol temiz çıkınca, yani review zayıf yan bulmadıysa ya da insan onay verdiyse, impl'in reposunda sen commit'lersin: `git -C <impl> add -A && git -C <impl> commit -m "docs(specs): add plan for $BRANCH_NAME"`. Commit'ten sonra `work/review.md`'yi silersin.
 
 ## 6. Tasks
 
 **Komut**: `/speckit-tasks`
-**Prompt**: Testler isteniyor: her user story'nin testleri, türleri ve yerleri impl'in `.claude/rules/` altındaki Test kurallarına göre, o user story'nin fazındadır; Success Criteria'nın integration testleri plan.md'nin SC tablosunun gösterdiği user story fazındadır. Her user story fazı, fazın dokunduğu bileşenlerle `make test-integration COMPONENTS="<bileşenler>"` ile biter. SC tablosunda evidence denen davranışların senaryoları, probe'lar ve `sysenv/` işleri user story fazlarından sonra, Polish'ten önce bir Evidence fazındadır; o faz `make evidence:<ad> SCENARIO="<fazın senaryoları>"` ile biter.
+**Prompt**: Testler isteniyor: her user story'nin testleri, türleri ve yerleri impl'in `.claude/rules/` altındaki Test kurallarına göre, o user story'nin fazındadır; Success Criteria'nın integration testleri plan.md'nin SC tablosunun gösterdiği user story fazındadır. Her user story fazı, fazın dokunduğu bileşenlerle `make test-integration COMPONENTS="<bileşenler>"` ile biter. Evidence için task yazılmaz; evidence converge'den sonra ayrı bir adımda eklenir.
 **Çalıştırma**: impl'de `/speckit-tasks $PROMPT`
 **Süreç**: impl soru sorarsa `Soruları Cevaplama Kuralları` başlığını uygula. Cevaplayamadığın durumda soruyu insana iletirsin. İnsan sorunu ya seninle ya da gerekli görürse impl üzerinden çözer. Sorunun çözüldüğü bilgisi sana insandan ya da impl'den gelir. Komutun tamamlanmasını beklersin.
-**Kontrol**: `<impl>/specs/$BRANCH_NAME/tasks.md`'de her user story fazında o user story'nin test task'ları ve SC tablosunun o faza verdiği integration testleri var mı, fazın sonunda `make test-integration` var mı; Evidence fazı var mı, SC tablosunda evidence denen her davranışın senaryosu orada mı ve faz o senaryoları koşan `make evidence:<ad> SCENARIO=...` ile bitiyor mu? Eğer eksikse, impl'e hangi fazda eksik olduğunu iletirsin. Eksiklikler giderilince kontrol sürecine tekrar başlarsın.
+**Kontrol**: `<impl>/specs/$BRANCH_NAME/tasks.md`'de her user story fazında o user story'nin test task'ları ve SC tablosunun o faza verdiği integration testleri var mı, fazın sonunda `make test-integration` var mı; evidence task'ı yok mu? Eğer eksikse, impl'e hangi fazda eksik olduğunu iletirsin. Eksiklikler giderilince kontrol sürecine tekrar başlarsın.
 **Commit**: Kontrol temiz çıkınca impl'in reposunda sen commit'lersin: `git -C <impl> add -A && git -C <impl> commit -m "docs(specs): add tasks for $BRANCH_NAME"`.
 
 ## 7. Analyze
@@ -147,37 +147,49 @@ Oturum sıkıştırılsa da değer dosyada kalır.
 
 İnsan kalan bulguları bırakırsa da 9 biter.
 
-## 10. Ayıklama
+## 10. Evidence hazırlama
+
+**Komut**: `/speckit-implement` (Evidence fazı için)
+**Çalıştırma**: 9 bitince impl'den felaket tablosunu istersin. impl tabloyu `layout.md`'sinin Evidence hazırlama bölümüne göre çıkarır ve sana gönderir.
+**Süreç**:
+1. Tabloyu denetlersin: boş hücre yok; her senaryo bir spec cümlesine bağlı ve o cümlenin istediğini ölçüyor; her "kapsam dışı" hücrenin gerekçesi var; önceki spec'lerden kalan her senaryo korunmuş, güncellenmiş ya da silinmiş ve nedeni yazılı. Eksiği impl'e itiraz olarak iletirsin.
+2. "Spec'te yok" yazan her hücreyi insana götürürsün: felaket, etkilenen process rolü, referans ürünlerin bu durumda ne yaptığı (`Soruları Cevaplama Kuralları`, 2. adım) ve impl'in önerisi. İnsanın kararını impl'e iletirsin; impl kararı spec.md'ye yazar ve hücreyi o cümleye bağlar.
+3. Yeni ve değişen probe'ları ve sistemleri, silinecek senaryoları ve kapsam dışı hücreleri insana götürürsün; hepsi insanın onayıyladır.
+4. `Test Soruları` başlığındaki S3 ve S7'yi plan.md'nin Evidence bölümü için sorarsın.
+5. impl tabloyu plan.md'nin Evidence bölümüne yazar; senaryoları, probe'ları ve `sysenv/` işlerini `tasks.md`'nin sonuna `Evidence` fazı olarak ekler. Faz `make evidence:<ad> SCENARIO="<fazın senaryoları>"` ile biter. Sen commit'lersin: `git -C <impl> add -A && git -C <impl> commit -m "docs(specs): add evidence tasks for $BRANCH_NAME"`.
+6. 8'i bu faz için koşturursun; faz sonu kontrolü 8'deki gibidir.
+
+## 11. Ayıklama
 
 **Komut**: `/speckit-implement` (Pruning fazı için)
-**Çalıştırma**: 9 bitince impl'den gereksiz kalan testlerin aday listesini istersin. Aday, impl'in `layout.md`'sindeki Success Criteria bölümünün tanımına uyan testtir. Liste denetçi başınadır: senaryo ya da test, denetçi, onu karşılayan test (dosya:satır), ikisinin dayandığı spec cümlesi.
+**Çalıştırma**: 10 bitince impl'den gereksiz kalan testlerin aday listesini istersin. Aday, impl'in `layout.md`'sindeki Success Criteria bölümünün tanımına uyan testtir. Liste denetçi başınadır: senaryo ya da test, denetçi, onu karşılayan test (dosya:satır), ikisinin dayandığı spec cümlesi.
 **Süreç**:
 1. Her aday için impl mekanizmayı bozar (düzeltmeyi geri alır ya da denetçinin negatif kontrolünü uygular) ve karşılayan testin kırmızı yandığını çıktısıyla gösterir. Kırmızısı gösterilemeyen, açık bulgusu olan ya da başka bir feature'ın plan.md'sinin dayandığı aday listeden düşer.
 2. Kalan listeyi kanıtlarıyla insana götürürsün; silme insanın onayıyladır.
 3. impl onaylanan silmeleri `tasks.md`'nin sonuna `Pruning` fazı olarak ekler; her task geçersiz kıldığı task'ın kimliğini anar. plan.md'nin SC tablosu da güncellenir. Sen commit'lersin: `git -C <impl> add -A && git -C <impl> commit -m "docs(specs): add pruning tasks for $BRANCH_NAME"`.
-4. 8'i bu faz için koşturursun; faz sonu kontrolü 8'deki gibidir ve S9'u da içerir. Sonra 9'u bir kez daha koşturursun.
+4. 8'i bu faz için koşturursun; faz sonu kontrolü 8'deki gibidir ve S9'u da içerir.
 
-Aday yoksa 10 biter.
+Aday olsun olmasın, sonunda 9'u bir kez daha koşturursun; Evidence hazırlamanın spec'e yazdıkları da böylece denetlenir. Converge bitince 11 biter.
 
-## 11. Gate
+## 12. Gate
 
 **Komut**: `make gate EVIDENCE=full`; düşen test için `/speckit-bug-assess`, `/speckit-bug-fix`, `/speckit-bug-test`
-**Çalıştırma**: 10 bitince impl'e `make gate EVIDENCE=full` koşturursun. Gate ilk kırmızı hedefte durur; impl kırmızı hedefi, düşenleri ve çıktılarını sana gönderir; evidence düştüyse koşu dizinini de.
+**Çalıştırma**: 11 bitince impl'e `make gate EVIDENCE=full` koşturursun. Gate ilk kırmızı hedefte durur; impl kırmızı hedefi, düşenleri ve çıktılarını sana gönderir; evidence düştüyse koşu dizinini de.
 **Süreç**:
-1. Gate yeşilse impl'e branch'i push ettirirsin; 11 biter.
+1. Gate yeşilse impl'e branch'i push ettirirsin; 12 biter.
 2. Kırmızı hedef `build` ya da `lint` ise impl düzeltir ve yalnız o hedefi yeniden koşar. Yeşilse sen commit'lersin: `git -C <impl> add -A && git -C <impl> commit -m "fix(<bileşen>): <kısa açıklama>"`.
 3. Kırmızı hedef bir test hedefiyse her düşen test için:
    1. impl'e `/speckit-bug-assess slug=<kısa-ad>` koşturursun; girdi düşen testin adı ve çıktısıdır; evidence'ta koşu dizini de. Assessment'ı iki soruyla okursun: kök sebep mekanizmayı açıklıyor mu; test evidence'ta düştüyse assessment hatanın integration düzeyinde uzun bir koşu gerektirmeden üretilip üretilemeyeceğini yazıyor mu ve üretilebiliyorsa "Tests to add or update" o integration testini istiyor mu. Biri "hayır"sa impl'e itiraz edersin.
    2. impl'e `/speckit-bug-fix slug=<kısa-ad>` koşturursun; girdiye "Bug için yazılan testi ve düşen testi koşmaya onay var." eklersin. Bitince test ile düzeltmeyi tek commit'te atarsın; mesaj 2'deki gibidir.
    3. impl'e `/speckit-bug-test slug=<kısa-ad>` koşturursun; girdiye "Yalnız düşen testi ve bug için yazılan testi koşarsın; bunları koşmaya onay var." eklersin. Sonuç `partial` ya da `failed` ise 1'e yeni bir slug'la dönersin: ikinci tur `<kısa-ad>-2`, üçüncü tur `<kısa-ad>-3`; o turun üç komutu bu slug'la koşar ve assess'in girdisine önceki turun `test.md`'si eklenir. Üçüncü turda da `verified` olmazsa insana götürürsün.
-4. Kırmızı hedefin düşenleri kapanınca impl'e gate'i baştan koşturursun (`make gate EVIDENCE=full`): bütün testler yeniden koşar, evidence yine en sondadır. Kırmızı çıkarsa 2'ye ya da 3'e dönersin; yeşilse impl'e branch'i push ettirirsin ve 11 biter.
+4. Kırmızı hedefin düşenleri kapanınca impl'e gate'i baştan koşturursun (`make gate EVIDENCE=full`): bütün testler yeniden koşar, evidence yine en sondadır. Kırmızı çıkarsa 2'ye ya da 3'e dönersin; yeşilse impl'e branch'i push ettirirsin ve 12 biter.
 
 # Test Soruları
 
 Anayasa II'den ve projenin yerleşim kurallarından türer. Soru, cevabın arandığı yer ve ölçüt sabittir; her
 plan ve implement kontrolünde aynı sorular sorulur. impl cevabı belgeden,
 ağaçtan, commit'ten ya da evidence koşu dizininden dosya:satır ile verir; ölçüte uymayan cevap
-"hayır"dır. Aşamalar: P plan, I faz sonu.
+"hayır"dır. Aşamalar: P plan ve Evidence hazırlama, I faz sonu.
 
 | # | aşama | soru | cevabın yeri | "evet" ölçütü |
 |---|---|---|---|---|
