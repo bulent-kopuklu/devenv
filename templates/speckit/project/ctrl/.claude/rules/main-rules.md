@@ -150,7 +150,7 @@ Oturum sıkıştırılsa da değer dosyada kalır.
 ## 10. Evidence hazırlama
 
 **Komut**: Yok; impl işi task'sız yapar, sen commit'lersin.
-**Çalıştırma**: 9 bitince impl'den felaket tablosunu istersin. impl tabloyu `layout.md`'sinin Evidence hazırlama bölümüne göre çıkarır ve sana gönderir.
+**Çalıştırma**: 9 bitince impl'den felaket tablosunu istersin; mesajına "Tabloyu tek bir subagent'la çıkarırsın; birden fazla agent kullanmazsın." yazarsın. impl tabloyu `layout.md`'sinin Evidence hazırlama bölümüne göre çıkarır ve sana gönderir.
 **Süreç**:
 1. Tabloyu denetlersin: boş hücre yok; her senaryo bir spec cümlesine bağlı ve o cümlenin istediğini ölçüyor; her "kapsam dışı" hücrenin gerekçesi var; önceki spec'lerden kalan her senaryo korunmuş, güncellenmiş ya da silinmiş ve nedeni yazılı. Eksiği impl'e itiraz olarak iletirsin.
 2. "Spec'te yok" yazan her hücreyi insana götürürsün: felaket, etkilenen process rolü, referans ürünlerin bu durumda ne yaptığı (`Soruları Cevaplama Kuralları`, 2. adım) ve impl'in önerisi. İnsanın kararını impl'e iletirsin; impl kararı spec.md'ye yazar ve hücreyi o cümleye bağlar.
