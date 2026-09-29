@@ -45,7 +45,9 @@ Bu dosya dilden bağımsızdır. Bir dilin kaynağı ve testleri nereye koyduğu
   yazdığı yerdedir. Adı ürünün hangi kullanımını taklit ettiğini söyler
   (`saga-timeout`, `projection-local`); genel bir ad (`service`, `app`,
   `worker`) ya da senaryonun adını almaz. Bir probe'u birçok senaryo
-  kullanabilir, bir probe tek bir senaryo için de yazılabilir.
+  kullanabilir, bir probe tek bir senaryo için de yazılabilir. Probe'u yalnız
+  evidence kullanır; integration testi probe kullanmaz, birden çok instance'ı
+  kendisi başlatır.
 - Probe ile parametre arasındaki sınır: gerçek bir kullanıcı farkı kodla
   yapıyorsa ayrı probe'dur; config'le ya da dağıtımla yapıyorsa (ürünün
   ayarları, yükün ölçeği, arızanın hedefi) parametredir. Sınama sorusu: değer
