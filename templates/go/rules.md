@@ -158,9 +158,9 @@ bir goroutine'de çıkan panic bütün süreci düşürür.
 ## Test
 - unit paketin yanında `*_test.go`'dur; Go'da unexported ada yalnız aynı
   paketten erişildiği için `tests/unit/` yoktur.
-- integration `tests/integration/<NN_katman>/`'dadır, ürünün exported
-  API'sini kullanır ve etiket istemez. Paketin yanındaki test unit'tir
-  (`*_test.go`, etiketsiz); gerçek veritabanı ya da broker açabilir.
+- Exported API'yi kullanan integration `tests/integration/<NN_katman>/`'dadır
+  ve etiket istemez. unexported'a dokunmak zorunda olan integration paketinde
+  `*_integration_test.go`'dur, ilk satırı `//go:build integration`.
 - Her test paketinin `TestMain`'i goleak denetimiyle biter. Paket dış kaynak
   (container) açıyorsa önce kaynak kapanır, sonra `goleak.Find` koşar;
   `goleak.VerifyTestMain` bu sırayı kuramaz. `TestMain` etiketsiz bir
@@ -206,7 +206,9 @@ reçeteler orada, `tests/`'e ait olanlar `tests/` içinde koşar.
   mimarisi gelir: aarch64 `GOARCH=arm64`, armv7 `GOARCH=arm GOARM=7`.
 - `test`: `go test -race ./...`; contract testi varsa
   `tests/` içinde `go test -race ./contract/...`.
-- `test-integration`: `tests/` içinde `go test -race -count=1 ./integration/...`.
+- `test-integration`: `go test -race -count=1 -tags integration ./...`
+  (paketlerin yanındaki `*_integration_test.go` dosyaları); `tests/` içinde
+  `go test -race -count=1 ./integration/...`.
 - `bench`: `tests/` içinde `go test -count=1 -v -bench . ./bench/...`. Test
   ve Benchmark fonksiyonları birlikte koşar; sonucu `results/<host>.jsonl`'a
   ekleyen ve bir öncekiyle karşılaştıran bir Test fonksiyonu olabilir. `-v`

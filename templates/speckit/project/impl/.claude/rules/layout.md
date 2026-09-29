@@ -113,6 +113,7 @@ Bu dosya dilden bağımsızdır. Bir dilin kaynağı ve testleri nereye koyduğu
   |---|---|---|
   | unit | kodun yanında | `make test` |
   | integration | `components/<ad>/tests/integration/<NN_katman>/` | `make test-integration` |
+  | integration, iç alana dokunmak zorunda | kodun yanında, integration diye ayrılmış | `make test-integration` |
   | contract | `components/<ad>/tests/contract/` | `make test` |
   | evidence | `evidence/<bileşen>/<NN_katman>/` ya da `evidence/systems/<ad>/`; script (Yerleşim) | `make evidence:<ad>` |
   | bench | `components/<ad>/tests/bench/` | `make bench` |
@@ -125,13 +126,10 @@ Bu dosya dilden bağımsızdır. Bir dilin kaynağı ve testleri nereye koyduğu
   contract'tır. evidence, spec-kit'te karşılığı olmayan türdür: felaket
   senaryosu. Success Criteria'nın testinin türü aşağıdaki bölümdedir. unit, iç alana eriştiği için `tests/unit/` yerine kodun yanında
   durur.
-- unit bir parçayı (paket, fonksiyon) sınar ve kodun yanındadır. Parçanın
-  gerektirdiği her şeyi kullanabilir: sahte, fixture, gerçek veritabanı ya da
-  broker. integration ürünün modüllerini ayağa kaldırır ve unit'lerde sınanan
-  davranışı gerçek modüllerle, gerçek iletişimle, sahadaki gibi yeniden sınar:
-  sahada ayrı process olan testte de ayrı process'tir. Ürünün yüzeyinden
-  sınar; `tests/integration/`'dadır. Yardımcıya bağlı test onun yanında
-  kalır; yardımcı iki yere kopyalanmaz.
+- Kodun yanındaki unit testi dış sistemi (veritabanı, broker, container)
+  açmaz. Dış sistem açan test integration'dır; iç alana ve paketin test
+  yardımcılarına dokunmuyorsa `tests/integration/`'dadır. Yardımcıya bağlı
+  test onun yanında kalır; yardımcı iki yere kopyalanmaz.
 - Her bench `tests/bench/` altındadır, tek bir fonksiyonu ölçen de; kodun
   yanında bench olmaz. bench ürünün uçtan uca özelliklerini tek process içinde kısa
   süre koşar ve sonucunu sürüm başına `tests/bench/results/<host>.jsonl`'a
