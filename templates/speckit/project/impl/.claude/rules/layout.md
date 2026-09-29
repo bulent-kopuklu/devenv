@@ -18,8 +18,9 @@ Bu dosya dilden bağımsızdır. Bir dilin kaynağı ve testleri nereye koyduğu
   alışkanlığıdır; dilin kural dosyası yazar.
 - `tests/` bileşenin içindedir ama teslimin parçası değildir: derlenen,
   dağıtılan ya da yayımlanan pakete girmez.
-- evidence ürünü dışarıdan, bir kullanıcı gibi ölçer: birden çok process, ağ
-  ve arıza. Bileşenin değil sistemin testidir; kökteki `evidence/`'dadır:
+- evidence ürünü dışarıdan, bir kullanıcı gibi ölçer ve ona bir felaket
+  yaşatır: process'lerinden biri ölür, durur ya da yavaşlar, ağı kesilir.
+  Bileşenin değil sistemin testidir; kökteki `evidence/`'dadır:
 
   ```
   evidence/
@@ -118,8 +119,8 @@ Bu dosya dilden bağımsızdır. Bir dilin kaynağı ve testleri nereye koyduğu
 - unit, integration ve contract spec-kit'in adlarıdır (plan ve tasks
   şablonundaki `tests/unit`, `tests/integration`, `tests/contract`). User story'nin
   acceptance senaryosunun testi integration'dır; `contracts/` belgesinin testi
-  contract'tır. evidence, spec-kit'te karşılığı olmayan türdür: birden çok
-  process ve arıza. Success Criteria'nın testinin türü aşağıdaki bölümdedir. unit, iç alana eriştiği için `tests/unit/` yerine kodun yanında
+  contract'tır. evidence, spec-kit'te karşılığı olmayan türdür: felaket
+  senaryosu. Success Criteria'nın testinin türü aşağıdaki bölümdedir. unit, iç alana eriştiği için `tests/unit/` yerine kodun yanında
   durur.
 - Kodun yanındaki unit testi dış sistemi (veritabanı, broker, container)
   açmaz. Dış sistem açan test integration'dır; iç alana ve paketin test
@@ -153,12 +154,6 @@ Bu dosya dilden bağımsızdır. Bir dilin kaynağı ve testleri nereye koyduğu
     girmez; o integration'da üretilir.
   - (b) ürünün process'leri ile dış sistem arasında ağ kesilir. Gecikme buna
     girmez.
-  - (c) ürünün iki derlenmiş sürümü birlikte koşar ve dil ikisini tek
-    process'te barındıramaz.
-  - (d) SC'nin kendisi process'in kendi kaynağı hakkında bir büyüklük söyler
-    (tepe bellek, CPU).
-  - (e) ölçülen büyüklük instrument edilmemiş, teslim edilen kodla ölçülmek
-    zorundadır; integration'ın instrumentation'ı (`-race` gibi) onu değiştirir.
 - Bir davranış başka bir SC'nin koşuluyla birleşiyorsa (unit devri ile kill
   gibi) birleşim, koşulun sahibi olan SC'nin senaryosunda denetlenir.
 - plan.md her SC davranışı için bir satır yazar: mekanizma, düzey, evidence ise

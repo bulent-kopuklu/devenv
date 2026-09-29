@@ -7,7 +7,7 @@
 #   make                                   build, debug, host
 #   make build VARIANT=release TARGET=aarch64
 #   make test COMPONENTS="api agent"       unit (ve contract); evidence'ın kendi testleri
-#   make test-integration                  gerçek dış sistemle, tek süreç
+#   make test-integration                  gerçek dış sistemle, sahadaki process düzeniyle
 #   make evidence:<ad>                     bir bileşenin ya da sistemin evidence'ı; EVIDENCE=short|full
 #   make evidence:<ad> SCENARIO="<s> <s>"  yalnız bu senaryolar
 #   make evidence:all                      bütün evidence

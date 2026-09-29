@@ -24,9 +24,12 @@ taşır. Ürün belgesinde durmayan kanıt, belgeyi okuyan için yoktur; yazılm
 
 ### II. Testler iddianın kendisini ölçer; her bir hata, düzeltilmeden önce başarısız olan bir test aracılığıyla yeniden oluşturulur
 
-1. Test, hatanın üretilebildiği en alçak düzeyde yazılır: süreç içindeyse unit,
-   bir dış sistemle üretiliyorsa integration, süreçler arasıysa evidence. Yeri,
-   türünün projenin kurallarındaki yeridir (MUST).
+1. Test, hatanın üretilebildiği en alçak düzeyde yazılır: tek process'te ve
+   dış sistem olmadan üretiliyorsa unit; gerçek dış sistemle ya da ürünün
+   sahadaki gibi birden çok process'iyle üretiliyorsa integration; ancak bir
+   felaketle (ürünün bir process'i ölür, durur ya da ötekilerden ayrı yavaşlar;
+   ağ kesilir) üretiliyorsa evidence. Yeri, türünün projenin kurallarındaki
+   yeridir (MUST).
 
 2. Test, iddianın yasakladığı ya da istediği şeyin kendisini ölçer. İddiada
    olmayan bir koşul eklemez; iddia bozulunca tesadüfen görülebilecek bir

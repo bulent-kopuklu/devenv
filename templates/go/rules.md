@@ -163,6 +163,11 @@ bir goroutine'de çıkan panic bütün süreci düşürür.
   `goleak.VerifyTestMain` bu sırayı kuramaz. `TestMain` etiketsiz bir
   dosyadadır; etiketli dosyada durursa etiketsiz koşuda derlenmez ve goleak o
   koşuda yoktur.
+- Ürünün birden çok instance'ını isteyen integration testi her instance'ı ayrı
+  bir process'te koşar: test binary'sini (`os.Executable()`) instance'ın rolünü
+  taşıyan bir ortam değişkeniyle alt process olarak başlatır; `TestMain`
+  değişkeni görünce `m.Run`'ı çağırmadan o rolün fonksiyonunu koşar ve çıkar.
+  Rolün kodu testin yanında durur; alt process'ler de `-race`'lidir.
 - Kodun paketinde `Benchmark` fonksiyonu olmaz; bench `tests/bench/`'tedir.
 - Test süreci, bench dışında, `-race` ile koşar; probe'lar `-race`'siz
   derlenir.
