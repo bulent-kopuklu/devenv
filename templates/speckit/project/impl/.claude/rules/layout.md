@@ -18,8 +18,8 @@ Bu dosya dilden bağımsızdır. Bir dilin kaynağı ve testleri nereye koyduğu
   alışkanlığıdır; dilin kural dosyası yazar.
 - `tests/` bileşenin içindedir ama teslimin parçası değildir: derlenen,
   dağıtılan ya da yayımlanan pakete girmez.
-- evidence ürünü dışarıdan, bir kullanıcı gibi ölçer: birden çok süreç, ağ ve
-  arıza. Bileşenin değil sistemin testidir; kökteki `evidence/`'dadır:
+- evidence ürünü dışarıdan, bir kullanıcı gibi ölçer: birden çok process, ağ
+  ve arıza. Bileşenin değil sistemin testidir; kökteki `evidence/`'dadır:
 
   ```
   evidence/
@@ -70,8 +70,9 @@ Bu dosya dilden bağımsızdır. Bir dilin kaynağı ve testleri nereye koyduğu
 - `make evidence:<ad>` dizinin giriş noktasını koşar: Python'da
   `uv run run.py`, yetiyorsa bir shell script'i. Giriş noktası işi baştan
   sona yapar; çıktısını `TEST_RUN` ortam değişkeninin gösterdiği
-  dizine yazar; `SCENARIO` bir ya da birkaç senaryoyu, `EVIDENCE` (`short`|`full`)
-  hangi senaryoların koşacağını seçer; bir ihlal ya da atlanan senaryo varsa
+  dizine yazar; `SCENARIO` bir ya da birkaç senaryoyu seçer ve verilince
+  `EVIDENCE`'ı yok sayar, verilmezse `EVIDENCE` (`short`|`full`) hangi
+  senaryoların koşacağını seçer; bir ihlal ya da atlanan senaryo varsa
   sıfırdan farklı çıkış koduyla biter.
 - Bir iş hem probe'a hem script'e yazılabiliyorsa script'e yazılır. Probe'a
   ancak ürünü çağırmadan yapılamıyorsa girer.
@@ -115,17 +116,17 @@ Bu dosya dilden bağımsızdır. Bir dilin kaynağı ve testleri nereye koyduğu
   | probe'ların ve script'lerin kendi testleri | test ettikleri kodun yanında, `evidence/` altında | `make test` |
 
 - unit, integration ve contract spec-kit'in adlarıdır (plan ve tasks
-  şablonundaki `tests/unit`, `tests/integration`, `tests/contract`). Hikâyenin
+  şablonundaki `tests/unit`, `tests/integration`, `tests/contract`). User story'nin
   acceptance senaryosunun testi integration'dır; `contracts/` belgesinin testi
-  contract'tır. evidence, spec-kit'te karşılığı olmayan türdür: birden çok süreç
-  ve arıza. unit, iç alana eriştiği için `tests/unit/` yerine kodun yanında
+  contract'tır. evidence, spec-kit'te karşılığı olmayan türdür: birden çok
+  process ve arıza. Success Criteria'nın testinin türü aşağıdaki bölümdedir. unit, iç alana eriştiği için `tests/unit/` yerine kodun yanında
   durur.
 - Kodun yanındaki unit testi dış sistemi (veritabanı, broker, container)
   açmaz. Dış sistem açan test integration'dır; iç alana ve paketin test
   yardımcılarına dokunmuyorsa `tests/integration/`'dadır. Yardımcıya bağlı
   test onun yanında kalır; yardımcı iki yere kopyalanmaz.
 - Her bench `tests/bench/` altındadır, tek bir fonksiyonu ölçen de; kodun
-  yanında bench olmaz. bench ürünün uçtan uca özelliklerini süreç içinde kısa
+  yanında bench olmaz. bench ürünün uçtan uca özelliklerini tek process içinde kısa
   süre koşar ve sonucunu sürüm başına `tests/bench/results/<host>.jsonl`'a
   ekler; amacı sürümler arasındaki gerilemeyi görmektir. evidence'ın düzeneğini ve probe'larını kullanmaz.
   bench kapının dışındadır.
@@ -139,3 +140,40 @@ Bu dosya dilden bağımsızdır. Bir dilin kaynağı ve testleri nereye koyduğu
 - integration'da sabit bekleme yoktur; olay ya da işaret beklenir.
 - Kapanış testi vardır (integration): başlat, iş ver, iptal et; arkada
   çalışan hiçbir iş kalmadığını ve in-flight işin tamamlandığını doğrula.
+
+## Success Criteria
+
+- Success Criteria'nın (SC) testi de hatanın üretilebildiği en alçak
+  düzeydedir (anayasa II.1). Düzey SC başına değil, SC'nin her davranışı için
+  verilir: davranış, SC'nin bir cümlesi ya da virgülle ayrılan bir hâlidir.
+- Bir davranış yalnız şu koşullardan biri gerektiğinde evidence'tır; koşulu
+  davranışın kendi kelimesi taşır. Hiçbiri yoksa integration'dır:
+  - (a) ürünün bir process'i kill edilir, durdurulur (SIGSTOP) ya da
+    ötekilerden ayrı yavaşlar. Dış sistemin (veritabanı, broker) restart'ı buna
+    girmez; o integration'da üretilir.
+  - (b) ürünün process'leri ile dış sistem arasında ağ kesilir. Gecikme buna
+    girmez.
+  - (c) ürünün iki derlenmiş sürümü birlikte koşar ve dil ikisini tek
+    process'te barındıramaz.
+  - (d) SC'nin kendisi process'in kendi kaynağı hakkında bir büyüklük söyler
+    (tepe bellek, CPU).
+  - (e) ölçülen büyüklük instrument edilmemiş, teslim edilen kodla ölçülmek
+    zorundadır; integration'ın instrumentation'ı (`-race` gibi) onu değiştirir.
+- Bir davranış başka bir SC'nin koşuluyla birleşiyorsa (unit devri ile kill
+  gibi) birleşim, koşulun sahibi olan SC'nin senaryosunda denetlenir.
+- plan.md her SC davranışı için bir satır yazar: mekanizma, düzey, evidence ise
+  koşul, davranışı getiren user story'ler, testin adı ve yeri. Test ve
+  senaryonun adı SC'nin açıklamasından türer; SC kimliği koda girmez.
+- Integration testi, davranışı getiren user story'lerin en sonuncusunun
+  fazındadır. Evidence senaryoları, probe'lar ve `sysenv/` işleri `tasks.md`'de
+  bütün user story fazlarından sonra, Polish'ten önce bir Evidence fazındadır.
+  Task senaryonun neyi ölçtüğünü söyler (SC davranışı, koşul, ad); arızanın
+  nereye sokulacağını impl kod varken seçer.
+- Spec'in sonunda gereksiz kalan testler ayıklanır. Ayıklama denetçi
+  başınadır: bir senaryo SC'sinden fazlasını ölçebilir. Bir denetçi, aynı
+  davranışı iddianın kendisini ölçerek daha alçak ya da aynı düzeyde sınayan
+  bir test varsa ve koşullardan hiçbiri gerekmiyorsa gereksizdir. Silmeden
+  önce mekanizma bozulur (düzeltme geri alınır ya da denetçinin negatif
+  kontrolü uygulanır) ve kalan testin kırmızı yandığı gösterilir; çıktı silme
+  commit'ine yazılır. Açık bulgusu olan ya da başka bir feature'ın plan.md'sinin
+  dayandığı test silinmez.

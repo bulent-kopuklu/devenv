@@ -37,7 +37,7 @@ daralır; sistemler ve `sysenv/` dışarıda kalır.
 | `COMPONENTS` | varsayılan `components/` altında `Makefile`'ı olan bütün bileşenler; boşlukla ayrılmış bir alt küme verilebilir |
 | `RUNS` | koşu çıktısının kökü; env'den gelir |
 | `EVIDENCE` | `short`, `full`; evidence senaryolarını seçer |
-| `SCENARIO` | boşlukla ayrılmış bir ya da birkaç evidence senaryosunun adı; verilmezse `EVIDENCE`'ın seçtiği hepsi |
+| `SCENARIO` | boşlukla ayrılmış bir ya da birkaç evidence senaryosunun adı; verilince `EVIDENCE` yok sayılır ve adı verilen senaryo uzun da olsa koşar; verilmezse `EVIDENCE`'ın seçtiği hepsi |
 
 Geçersiz bir `VARIANT` ya da `TARGET` değeri make başlamadan hata verir.
 Testler ve evidence `TARGET=host`'ta koşar; başka bir hedefte istenince make

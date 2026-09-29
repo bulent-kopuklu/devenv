@@ -40,10 +40,12 @@ ctrl'ün itirazlarına göre belgeyi ya da kodu düzeltmek.
   birlikte commit'lersin.
 - Bir hatayı düzelttiğin commit'in mesajına, testin düzeltilmemiş koddaki
   kırmızı çıktısını yazarsın.
-- Faz bitince sonuç raporuna fazın ilk ve son commit'ini,
-  `make test-integration`'ın sonucunu ve fazda evidence senaryosu koştuysa
-  sonucunu ve koşu dizinini eklersin; fazda kırmızı yanan her testi
+- Faz bitince sonuç raporuna fazın ilk ve son commit'ini ve fazın son
+  koşusunun sonucunu eklersin (user story fazında `make test-integration`,
+  Evidence fazında `make evidence:<ad>` ve koşu dizini); fazda kırmızı yanan her testi
   çıktısıyla yazarsın.
+- Pruning fazında bir testi silen commit'in mesajına, mekanizma bozulunca
+  karşılayan testin kırmızı çıktısını yazarsın.
 - Commit geçmişini olduğu gibi bırakırsın: `rebase`, `squash` ve
   `commit --amend` kullanmazsın.
 
