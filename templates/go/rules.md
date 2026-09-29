@@ -78,6 +78,8 @@ Her goroutine'in sahibi, bitiş koşulu ve hata yolu vardır.
 - Kanalı yalnızca üretici kapatır, tek üretici; çoklu üreticide `WaitGroup` + tek
   kapatıcı. Tüketici kapatmaz.
 - Mutex kritik bölgesinde I/O, kanal işlemi, callback yok. Kilit sırası sabit.
+- `_test.go`'da yalnız şu geçerlidir: test, açtığı goroutine'in bitmesini
+  bekler. Sayı sınırı, config ve backpressure maddeleri test koduna uygulanmaz.
 
 ## Context
 - Sınırdan giren her fonksiyon ctx alır, aşağı geçirir. `context.Background()`
@@ -128,6 +130,7 @@ bir goroutine'de çıkan panic bütün süreci düşürür.
   sahibine döner. Goroutine kendini sessizce yeniden başlatıp devam etmez;
   hatayı sahibi görür ve karar verir.
 - `recover` ile hata akışı kurulmaz: beklenen hata `error` döner.
+- Bu bölüm `_test.go` dosyalarına uygulanmaz.
 
 ## Dış bağımlılıklar
 - Retry yalnızca idempotent işlemde; üst sınır (deneme sayısı VE toplam süre),
