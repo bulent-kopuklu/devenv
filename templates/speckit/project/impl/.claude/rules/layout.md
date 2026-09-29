@@ -29,12 +29,14 @@ Bu dosya dilden bağımsızdır. Bir dilin kaynağı ve testleri nereye koyduğu
   ├── sysenv/                  ortam düzeneği; kendi Makefile'ı
   ├── <bileşen>/               yalnız bu bileşeni kullanan senaryolar
   │   ├── Makefile
+  │   ├── disasters.md         felaket tablosu; referans dosyası
   │   ├── probes/<ad>/         probe'lar
   │   ├── <NN_katman>/         senaryolar
   │   ├── setup/               bu bileşene özgü kurulum (şema, seed)
   │   └── check/               denetçiler
   └── systems/<ad>/            birden çok bileşeni kullanan senaryolar
-      └── Makefile
+      ├── Makefile
+      └── disasters.md         felaket tablosu; referans dosyası
   ```
 - Probe ürünü bir kullanıcı gibi kullanan bir binary'dir (command gönderen,
   event yazan, saga ve handler koşan kod). Ürünün dilinde yazılır, yalnız
@@ -173,17 +175,20 @@ Bu dosya dilden bağımsızdır. Bir dilin kaynağı ve testleri nereye koyduğu
 
 ## Evidence hazırlama
 
-Converge bitince ctrl felaket tablosunu ister. evidence spec'ten spec'e
-birikir; tablo her spec'te yeniden çıkarılır ve plan.md'nin Evidence
-bölümünde durur.
+Converge bitince ctrl felaket tablosunu ister. Tablo evidence'ın referans
+dosyasıdır: her evidence dizininin (`evidence/<bileşen>/`,
+`evidence/systems/<ad>/`) `disasters.md`'sinde durur, senaryolarla birlikte
+commit'lenir ve spec'ten spec'e birikir. Her spec'in Evidence hazırlaması
+tabloyu günceller: satır ekler, değiştirir ya da siler ve nedenini yazar.
 
 1. Satırlar ürünün process rolleridir: sahada ayrı process olarak koşan her
    rol. Rolleri plan.md'nin yerleşiminden ve koddan çıkarırsın.
 2. Sütunlar felaketlerdir: process kill edilir; durdurulur (SIGSTOP);
    ötekilerden ayrı yavaşlar; process ile bir dış sistem arasındaki ağ
    kesilir (her dış sistem ayrı sütun).
-3. Her hücreye o felakette ürünün tutması gereken sözü, spec'teki cümlesiyle
-   (FR, SC, Edge Cases) yazarsın. Spec'te yoksa "spec'te yok" yazar, beklenen
+3. Her hücreye o felakette ürünün tutması gereken sözü, spec'teki cümlesini
+   aynen alıntılayarak yazarsın; spec merge'den sonra silindiği için kimliği
+   (FR, SC) değil cümleyi taşırsın. Spec'te yoksa "spec'te yok" yazar, beklenen
    davranış için önerini eklersin. ctrl insana götürür; karar spec.md'ye
    yazılınca hücreyi o cümleye bağlarsın.
 4. Her hücre şunlardan biridir: onu sınayan mevcut senaryo (yolu); yeni

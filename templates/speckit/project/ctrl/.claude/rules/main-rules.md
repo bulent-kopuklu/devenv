@@ -128,7 +128,7 @@ Oturum sıkıştırılsa da değer dosyada kalır.
 **Komut**: `/speckit-implement`
 **Prompt**: `Yalnız "<fazın başlığı>" fazının task'larını koş; faz bitince dur.`
 **Çalıştırma**: `tasks.md`'deki her faz için sırayla impl'de `/speckit-implement $PROMPT`.
-**Süreç**: impl soru sorarsa `Soruları Cevaplama Kuralları` başlığını uygula. Faz bitince impl sana fazın ilk ve son commit'ini ve fazın son koşusunun sonucunu gönderir: user story fazında `make test-integration`, Evidence fazında `make evidence:<ad>` ve koşu dizini.
+**Süreç**: impl soru sorarsa `Soruları Cevaplama Kuralları` başlığını uygula. Faz bitince impl sana fazın ilk ve son commit'ini ve fazın son koşusunun sonucunu gönderir: user story fazında `make test-integration`, evidence'a dokunan fazda `make evidence:<ad>` ve koşu dizini.
 **Kontrol**: `Test Soruları` başlığındaki I aşaması sorularını fazın commit aralığı ve impl'in faz raporu üzerinden sorarsın. "Hayır" çıkan her soru impl'e itirazdır.
 **Push**: Kontrol temiz çıkınca impl'e branch'i push ettirir, sıradaki fazı verirsin.
 
@@ -149,27 +149,27 @@ Oturum sıkıştırılsa da değer dosyada kalır.
 
 ## 10. Evidence hazırlama
 
-**Komut**: `/speckit-implement` (Evidence fazı için)
+**Komut**: Yok; impl işi task'sız yapar, sen commit'lersin.
 **Çalıştırma**: 9 bitince impl'den felaket tablosunu istersin. impl tabloyu `layout.md`'sinin Evidence hazırlama bölümüne göre çıkarır ve sana gönderir.
 **Süreç**:
 1. Tabloyu denetlersin: boş hücre yok; her senaryo bir spec cümlesine bağlı ve o cümlenin istediğini ölçüyor; her "kapsam dışı" hücrenin gerekçesi var; önceki spec'lerden kalan her senaryo korunmuş, güncellenmiş ya da silinmiş ve nedeni yazılı. Eksiği impl'e itiraz olarak iletirsin.
 2. "Spec'te yok" yazan her hücreyi insana götürürsün: felaket, etkilenen process rolü, referans ürünlerin bu durumda ne yaptığı (`Soruları Cevaplama Kuralları`, 2. adım) ve impl'in önerisi. İnsanın kararını impl'e iletirsin; impl kararı spec.md'ye yazar ve hücreyi o cümleye bağlar.
 3. Yeni ve değişen probe'ları ve sistemleri, silinecek senaryoları ve kapsam dışı hücreleri insana götürürsün; hepsi insanın onayıyladır.
-4. `Test Soruları` başlığındaki S3 ve S7'yi plan.md'nin Evidence bölümü için sorarsın.
-5. impl tabloyu plan.md'nin Evidence bölümüne yazar; senaryoları, probe'ları ve `sysenv/` işlerini `tasks.md`'nin sonuna `Evidence` fazı olarak ekler. Faz `make evidence:<ad> SCENARIO="<fazın senaryoları>"` ile biter. Sen commit'lersin: `git -C <impl> add -A && git -C <impl> commit -m "docs(specs): add evidence tasks for $BRANCH_NAME"`.
-6. 8'i bu faz için koşturursun; faz sonu kontrolü 8'deki gibidir.
+4. `Test Soruları` başlığındaki S7'yi tablo ve probe'lar için sorarsın.
+5. impl tabloyu evidence dizininin `disasters.md`'sine yazar; senaryoları, probe'ları ve `sysenv/` işlerini yazar ya da değiştirir, değişen senaryoları `make evidence:<ad> SCENARIO="<senaryolar>"` ile koşar ve çıktıyı koşu dizinini sana gönderir.
+6. `Test Soruları`'nın I sorularını bu işin diff'i ve koşusu üzerinden sorarsın. Temiz çıkınca sen commit'lersin: `git -C <impl> add -A && git -C <impl> commit -m "test(evidence): prepare evidence for $BRANCH_NAME"`.
 
 ## 11. Ayıklama
 
-**Komut**: `/speckit-implement` (Pruning fazı için)
+**Komut**: Yok; impl silmeleri task'sız yapar, sen commit'lersin.
 **Çalıştırma**: 10 bitince impl'den gereksiz kalan testlerin aday listesini istersin. Aday, impl'in `layout.md`'sindeki Success Criteria bölümünün tanımına uyan testtir. Liste denetçi başınadır: senaryo ya da test, denetçi, onu karşılayan test (dosya:satır), ikisinin dayandığı spec cümlesi.
 **Süreç**:
 1. Her aday için impl mekanizmayı bozar (düzeltmeyi geri alır ya da denetçinin negatif kontrolünü uygular) ve karşılayan testin kırmızı yandığını çıktısıyla gösterir. Kırmızısı gösterilemeyen, açık bulgusu olan ya da başka bir feature'ın plan.md'sinin dayandığı aday listeden düşer.
 2. Kalan listeyi kanıtlarıyla insana götürürsün; silme insanın onayıyladır.
-3. impl onaylanan silmeleri `tasks.md`'nin sonuna `Pruning` fazı olarak ekler; her task geçersiz kıldığı task'ın kimliğini anar. plan.md'nin SC tablosu da güncellenir. Sen commit'lersin: `git -C <impl> add -A && git -C <impl> commit -m "docs(specs): add pruning tasks for $BRANCH_NAME"`.
-4. 8'i bu faz için koşturursun; faz sonu kontrolü 8'deki gibidir ve S9'u da içerir.
+3. impl onaylanan silmeleri yapar; silinen evidence senaryosu `disasters.md`'den nedeniyle düşer, plan.md'nin SC tablosu güncellenir. Her silmeyi sen ayrı commit'lersin; mesaja karşılayan testin kırmızı çıktısını yazarsın: `git -C <impl> add -A && git -C <impl> commit -m "test(<bileşen>): remove <test> covered by <karşılayan test>"`.
+4. S9'u silme commit'leri üzerinden sorarsın.
 
-Aday olsun olmasın, sonunda 9'u bir kez daha koşturursun; Evidence hazırlamanın spec'e yazdıkları da böylece denetlenir. Converge bitince 11 biter.
+Aday yoksa ya da silmeler bitince 11 biter.
 
 ## 12. Gate
 
@@ -201,7 +201,7 @@ ağaçtan, commit'ten ya da evidence koşu dizininden dosya:satır ile verir; ö
 | S6 | I | Fazın diff'i dilin kural dosyasındaki paket yerleşimi kurallarına aykırı bir şey ekliyor mu (ör. alt paketin üst paketin tiplerine tipsiz erişimi)? | fazın diff'i; dilin kural dosyası | aykırılık 0 |
 | S7 | P, I | evidence'ta ürünün dilinde yazılan kod yalnız probe'larda mı ve her probe ürünü kullanıyor mu? Probe'larda ürünü çağırmadan yapılabilen bir iş (ortam kurma, arıza, bekleme, sayım, hüküm) var mı? Her probe'un adı ürünün hangi kullanımını taklit ettiğini söylüyor mu? | plan.md; ağaç; probe'ların diff'i | probe dışında ürün dilinde evidence kodu 0 ya da plan.md'nin Complexity Tracking'inde yazılı; ürünü kullanmadan yapılabilen iş 0; genel adlı ya da senaryonun adını taşıyan probe 0 |
 | S8 | P | plan.md'nin SC tablosu her SC davranışına bir satır veriyor mu? Evidence denen her satır impl'in `layout.md`'sindeki koşullardan birini SC'nin kendi kelimesiyle gösteriyor mu? Koşulu olmayan bir davranış evidence'a konmuş mu? | plan.md; spec.md'nin Success Criteria'sı | satırlar tam; her evidence satırının koşulu var; koşulsuz evidence 0 |
-| S9 | I | Pruning'de silinen her test için: karşılayan test var mı, mekanizma bozulunca kırmızı yandığının çıktısı silme commit'inde mi, açık bulgusu var mı, başka bir feature'ın plan.md'si ona dayanıyor mu? | silme commit'leri; bulgu listesi; `specs/*/plan.md` | ilk ikisi evet, son ikisi hayır |
+| S9 | I | Ayıklamada silinen her test için: karşılayan test var mı, mekanizma bozulunca kırmızı yandığının çıktısı silme commit'inde mi, açık bulgusu var mı, başka bir feature'ın plan.md'si ona dayanıyor mu? | silme commit'leri; bulgu listesi; `specs/*/plan.md` | ilk ikisi evet, son ikisi hayır |
 
 ## Oturum açılınca
 
