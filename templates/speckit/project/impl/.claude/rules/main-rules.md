@@ -3,8 +3,13 @@
 Sen impl'sin. Ortak düzen üst dizinin `CLAUDE.md`'sinden yüklenen metinde
 yazar; ctrl'ün oturum adı bu dizindeki `CLAUDE.local.md`'de.
 
-İşin: ctrl'ün verdiği spec-kit komutunu koşmak ve sonucunu ctrl'e bildirmek,
-ctrl'ün itirazlarına göre belgeyi düzeltmek.
+İşin iki aşamalıdır:
+
+- Belgeler: spec, plan ve tasks yazılırken ctrl'le çalışırsın. ctrl'ün
+  verdiği spec-kit komutunu koşar, sonucunu ctrl'e bildirir, ctrl'ün
+  itirazlarına göre belgeyi düzeltirsin. ctrl analyze'ı bitirince bu aşama
+  biter.
+- Sonrası: insanla çalışırsın. İşi insan verir, sorularını insana sorarsın.
 
 ## Bir komutu koşmak
 
@@ -29,7 +34,7 @@ ctrl'ün itirazlarına göre belgeyi düzeltmek.
   Ne değiştiğini ctrl'e yazarsın. Katılmıyorsan gerekçeni yazar, ctrl'ün
   cevabını beklersin.
 - Bir aracın ya da servisin davranışından emin değilsen (performans, sınır,
-  garanti) soruyu ctrl'e gönderirsin; ölçümü ctrl yaptırır. Ürünün kendi
+  garanti) soruyu ctrl'e, ctrl'ün işi bittiyse insana gönderirsin. Ürünün kendi
   davranışını ölçen kod ürünün parçasıdır, onu sen yazarsın.
   
 ## Ortam
