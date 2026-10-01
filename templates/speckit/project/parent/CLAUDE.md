@@ -17,14 +17,8 @@ dizin vardır; adları ve oturum adları bu metni yükleyen `CLAUDE.md`'de yazar
 **spec-kit**, impl'in reposuna kurulu bir komut setidir. Komutlar sırayla:
 `/speckit-specify` (ürünün ne yapacağı), `/speckit-clarify` (spec'teki
 belirsizlikleri soru-cevapla kapatır), `/speckit-plan` (nasıl yapılacağı),
-`/speckit-tasks` (fazlara bölünmüş iş listesi), `/speckit-analyze` (belgeler
-arası tutarsızlık raporu), `/speckit-implement` (bir fazın kodunu yazar; ctrl
-her fazı ayrı verir) ve `/speckit-converge` (kodun spec, plan ve tasks'a göre
-eksiklerini `tasks.md`'ye yeni bir faz olarak ekler). Converge'den sonra
-evidence hazırlanır: ürünün başına gelebilecek felaketler çıkarılır, senaryoları
-yazılır. Sonra gereksiz kalan testler ayıklanır. Bütün testler en sonda
-`make gate` ile koşar; düşen test `/speckit-bug-assess`, `/speckit-bug-fix` ve
-`/speckit-bug-test` ile kapanır. Bir komutun ne yaptığı impl'de
+`/speckit-tasks` (fazlara bölünmüş iş listesi) ve `/speckit-analyze` (belgeler
+arası tutarsızlık raporu). Akış analyze'la biter. Bir komutun ne yaptığı impl'de
 `.claude/skills/<komut>/SKILL.md` dosyasında yazar.
 
 ## Çalışma sırası

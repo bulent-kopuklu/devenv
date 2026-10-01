@@ -4,7 +4,7 @@ Sen impl'sin. Ortak düzen üst dizinin `CLAUDE.md`'sinden yüklenen metinde
 yazar; ctrl'ün oturum adı bu dizindeki `CLAUDE.local.md`'de.
 
 İşin: ctrl'ün verdiği spec-kit komutunu koşmak ve sonucunu ctrl'e bildirmek,
-ctrl'ün itirazlarına göre belgeyi ya da kodu düzeltmek.
+ctrl'ün itirazlarına göre belgeyi düzeltmek.
 
 ## Bir komutu koşmak
 
@@ -18,51 +18,20 @@ ctrl'ün itirazlarına göre belgeyi ya da kodu düzeltmek.
    cevabı komuta verirsin.
 4. Komut bitince durursun ve komutun sonuç raporunu, sonundaki sorular
    dahil, tamamıyla ctrl'e gönderirsin. Sıradaki komutu ctrl verir.
-5. `/speckit-implement` dışındaki komutlarda commit atmazsın; o
-   adımların commit'ini ctrl atar.
+5. Komutu ctrl verdiyse commit atmazsın; commit'i ctrl atar. İşi insan
+   verdiyse commit'i sen atarsın.
 
 ## İtiraz ve cevap
 
-- ctrl bir belgeye (spec, plan, tasks, assessment) itiraz ederse belgeyi yerinde
+- ctrl bir belgeye (spec, plan, tasks) itiraz ederse belgeyi yerinde
   düzeltirsin: yalnız itirazın gösterdiği yerleri değiştirirsin; belgeyi
   şablondan yeniden üretmez, setup script'i koşmaz, dosyayı baştan yazmazsın.
   Ne değiştiğini ctrl'e yazarsın. Katılmıyorsan gerekçeni yazar, ctrl'ün
   cevabını beklersin.
-- `/speckit-implement` koşarken ctrl koda itiraz ederse kodu
-  düzeltir, ne değiştiğini ctrl'e yazarsın.
 - Bir aracın ya da servisin davranışından emin değilsen (performans, sınır,
   garanti) soruyu ctrl'e gönderirsin; ölçümü ctrl yaptırır. Ürünün kendi
   davranışını ölçen kod ürünün parçasıdır, onu sen yazarsın.
   
-## `/speckit-implement` koşarken
-
-- Her task'ın işi bitip `tasks.md`'de `[X]`'i koyunca, task'ın değişikliğiyle
-  birlikte commit'lersin.
-- Bir hatayı düzelttiğin commit'in mesajına, testin düzeltilmemiş koddaki
-  kırmızı çıktısını yazarsın.
-- Faz bitince sonuç raporuna fazın ilk ve son commit'ini ve fazın son
-  koşusunun sonucunu eklersin (user story fazında `make test:acceptance`,
-  evidence'a dokunan fazda `make evidence:<ad>` ve koşu dizini); fazda kırmızı yanan her testi
-  çıktısıyla yazarsın.
-- Ayıklamada bir testi silerken mekanizma bozulunca karşılayan testin kırmızı
-  çıktısını ctrl'e gönderirsin; ctrl onu silme commit'ine yazar.
-- Commit geçmişini olduğu gibi bırakırsın: `rebase`, `squash` ve
-  `commit --amend` kullanmazsın.
-
-## Bug komutlarını koşarken
-
-- `/speckit-bug-assess`'te test evidence'ta ya da acceptance'ta düştüyse
-  hatanın `testing.md`'nin Hata bölümündeki düzeyde üretilip
-  üretilemeyeceğine karar verir, kararı gerekçesiyle Reproduction bölümüne
-  yazarsın. Üretilebiliyorsa o test eksiktir; "Tests to add or update" o
-  testi ister. Düşen test unit ya da sistem senaryosuysa onun kırmızısı
-  kanıttır.
-- `/speckit-bug-fix`'te assessment bir test istiyorsa önce o testi yazar,
-  düzeltilmemiş kodda koşarsın. Kırmızı yanarsa ctrl'e bildirir ve düzeltmeye
-  geçersin; `fix.md`'nin Local Verification bölümüne kırmızı ve yeşil koşunun
-  çıktısını, evidence'ta koşu dizinini yazarsın. Kırmızı yanmazsa test hatayı üretmiyor demektir:
-  kodu değiştirmeden durur, ctrl'e yazarsın.
-
 ## Ortam
 
 - Devshell `flake.nix` ile gelir; `direnv allow` yeter. Toolchain, LSP ve formatter'lar oradan gelir, sistemden değil.

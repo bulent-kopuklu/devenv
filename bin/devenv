@@ -55,9 +55,7 @@ ALIAS = {"c++": "cpp", "cxx": "cpp", "c": "cpp", "ts": "node", "js": "node",
 COMPANION = os.environ.get(
     "SPECKIT_COMPANION",
     "https://github.com/alfredoperez/speckit-companion/releases/download/speckit-ext-v0.21.0/companion-0.21.0.zip")
-#: create global CLAUDE.md'nin bir kopyasini buradan ctrl'in review'una koyar.
 #: Wiki, denetcinin ve spike'in yazdigi yer.
-CONFIG = Path(os.environ.get("CLAUDE_CONFIG_DIR", Path.home() / ".claude"))
 WIKI = Path(os.environ.get("CC_WORKSPACE", Path.home() / "workspace/cc-workspace"))
 
 VERSION = "5.0.0"
@@ -359,14 +357,6 @@ def create_project(name, speckit):
     ctrl.mkdir(exist_ok=True)
     render("parent", root, subs)
     render("ctrl", ctrl, subs)
-    # reviewer agent'i CLAUDE.md yuklemeden acilir; review global kurallari bu
-    # kopyadan okur, boylece ctrl proje disindan dosya okumaz.
-    genel = CONFIG / "CLAUDE.md"
-    if genel.is_file():
-        shutil.copy2(genel, ctrl / ".claude/skills/review/global-rules.md")
-    else:
-        print(f"UYARI:   {genel} yok; review genel kurallari okuyamaz. "
-              "dev-templates'te install.sh'i calistir.")
     os.chdir(impl)
     return subs
 

@@ -122,6 +122,8 @@ Bir testin yeri, neyi ölçtüğüne göre belirlenir; dokunduğu altyapıya gö
 
 ## Hata
 
+- Bir kez geçmiş bir test kırmızı yanarsa bu bir bulgudur; tekrar koşmak onu
+  kapatmaz.
 - Önce hatanın üretilebildiği en alçak düzeyde, düzeltilmemiş kodda kırmızı
   yanan test; sonra düzeltme. Kırmızı çıktı commit mesajına girer.
 - Düzeltme önerisi önce spec ve plan'la çatışmazlık için denetlenir; seçeneği

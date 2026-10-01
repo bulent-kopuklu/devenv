@@ -14,7 +14,7 @@ DEVENV = Path(__file__).resolve().parents[1] / "bin" / "devenv"
 WORK = Path(tempfile.mkdtemp(prefix="devenv-test-"))
 CFG = WORK / "cfg"
 os.environ["CLAUDE_CONFIG_DIR"] = str(CFG)
-CFG.mkdir(); (CFG / "CLAUDE.md").write_text("# global kurallar\n")
+CFG.mkdir()
 results = []
 
 
@@ -83,14 +83,9 @@ check("yeni: proje dosyalari config'ten import etmez",
       not any(f"@{CFG}" in p.read_text() for p in root.rglob("*.md") if ".git" not in p.parts))
 check("yeni: ctrl CLAUDE.md", (ctrl / "CLAUDE.md").is_file())
 check("yeni: ctrl feature-branch.sh impl yolunu tasir", f'impl="{t}/ornek/ornek-impl"' in (ctrl / "scripts/feature-branch.sh").read_text() and os.access(ctrl / "scripts/feature-branch.sh", os.X_OK))
-check("yeni: ctrl reviewer agent'i", (ctrl / ".claude/agents/reviewer.md").is_file())
-check("yeni: review global kurallari projedeki kopyadan okur",
-      (ctrl / ".claude/skills/review/global-rules.md").read_text() == "# global kurallar\n"
-      and f"`{ctrl}/.claude/skills/review/global-rules.md`" in (ctrl / ".claude/skills/review/SKILL.md").read_text())
 check("yeni: hicbir proje dosyasi config dizinine gitmez",
       not any(str(CFG) in p.read_text() for p in root.rglob("*") if p.is_file() and ".git" not in p.parts))
-check("yeni: ctrl skill'leri", all((ctrl / ".claude/skills" / s / "SKILL.md").is_file()
-                                   for s in ("reference", "review")))
+check("yeni: ctrl skill'i", (ctrl / ".claude/skills/reference/SKILL.md").is_file())
 check("yeni: impl CLAUDE.md speckit sablonundan, templates/claude'dan degil",
       (impl / "CLAUDE.md").read_text() == speckit_template("impl/CLAUDE.md", "ornek"))
 check("yeni: baslik proje adi, dizin adi degil", (root / "CLAUDE.md").read_text().startswith("# ornek\n"))

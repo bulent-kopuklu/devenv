@@ -129,12 +129,14 @@ ayırdığı `.claude/rules/<dil>-testing.md`'dedir.
 
 ## Evidence hazırlama
 
-Converge bitince ctrl evidence'ın referans dosyasını ister. Dosya her evidence
+Evidence'ın referans dosyası her evidence
 dizininin (`evidence/<bileşen>/`, `evidence/systems/<ad>/`) `disasters.md`'sinde
 durur, senaryolarla birlikte commit'lenir ve spec'ten spec'e birikir. İki
 bölümü vardır: felaket tablosu ve senaryo listesi. Her spec'in Evidence
 hazırlaması ikisini de günceller: satır ekler, değiştirir ya da siler ve
 nedenini yazar. Tabloda yeri olmayan bir senaryo atılmaz, listeye girer.
+Tabloyu ve listeyi tek bir subagent'la çıkarırsın; birden fazla agent
+kullanmazsın.
 
 1. Tablonun satırları ürünün process rolleridir: sahada ayrı process olarak
    koşan her rol. Rolleri plan.md'nin yerleşiminden ve koddan çıkarırsın.

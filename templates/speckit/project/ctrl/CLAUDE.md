@@ -4,5 +4,5 @@
 ## Bu proje
 
 - impl: `{{ROOT}}/{{NAME}}-impl`, oturum `{{NAME}}-impl`
-- özellik listesi, branch ve review listesi: `work/`
+- özellik listesi ve branch: `work/`
 - wiki: `{{WIKI}}`
