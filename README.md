@@ -66,7 +66,8 @@ devenv add -l rust
 ```
 
 It adds the language to `langs` in `flake.nix`, copies the language's files
-(an existing file is kept) and writes `.claude/rules/<lang>.md`. The Makefile,
+(an existing file is kept) and writes `.claude/rules/<lang>.md` and, if the
+language has one, `<lang>-testing.md`. The Makefile,
 `CLAUDE.md`, Spec Kit and the role files are not touched. Then the devshell is
 rebuilt.
 

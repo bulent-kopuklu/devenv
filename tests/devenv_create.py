@@ -101,7 +101,9 @@ check("yeni: Makefile dilsiz iskelet, proje adi argumandan",
       == (DEVENV.parents[1] / "templates/make/Makefile").read_text().replace("{{NAME}}", "ornek"))
 check("yeni: evidence/Makefile sablondan",
       (impl / "evidence/Makefile").read_text() == (DEVENV.parents[1] / "templates/make/evidence/Makefile").read_text())
-check("yeni: dilin Makefile bilgisi kuralinda", "## Makefile'da Go bileşeni" in (impl / ".claude/rules/go.md").read_text())
+check("yeni: dilin Makefile bilgisi makefile.md'de", "## Go bileşeni" in (impl / ".claude/rules/makefile.md").read_text())
+check("yeni: dilin test kurali <dil>-testing.md",
+      (impl / ".claude/rules/go-testing.md").read_text() == (DEVENV.parents[1] / "templates/go/testing.md").read_text())
 check("yeni: speckit cagrildi", "[speckit]" in out)
 anayasa = impl / ".specify/memory/constitution.md"
 check("yeni: anayasa yazildi, proje adiyla", anayasa.is_file() and anayasa.read_text().startswith("# ornek Anayasası\n"))
@@ -168,6 +170,7 @@ out, code = devenv(impl, "add", "-l", "rust")
 check("ekle: cikis 0", ok(code))
 check("ekle: flake'te go ve rust", 'langs = [ "go" "rust" ];' in (impl / "flake.nix").read_text())
 check("ekle: rust kurallari ve dosyalari geldi", (impl / ".claude/rules/rust.md").is_file() and (impl / "clippy.toml").is_file())
+check("ekle: testing.md'siz dilde <dil>-testing.md yok", not (impl / ".claude/rules/rust-testing.md").exists())
 check("ekle: var olan dosya ezilmedi", (impl / "rustfmt.toml").read_text() == "max_width = 80\n")
 check("ekle: Makefile, go'nun ve rollerin dosyalari degismedi", all((impl / f).read_text() == v for f, v in once.items()))
 check("ekle: Spec Kit'e dokunulmadi", "[speckit]" not in out)

@@ -1,12 +1,18 @@
 # Makefile
 
 İnsan terminalde yalnız `make <hedef>` yazar; hangi aracın hangi parametreyle
-koştuğunu Makefile bilir. İki katman vardır. Kökteki `Makefile` arayüzü taşır
-ve bir hedefi `COMPONENTS`'teki her bileşene `$(MAKE) -C components/<ad> <hedef>`
-ile, evidence hedeflerini `evidence/Makefile`'a indirir; reçete taşımaz. Her
-bileşenin reçeteleri kendi `components/<ad>/Makefile`'ında, her evidence
-dizininin reçeteleri kendi `evidence/<dizin>/Makefile`'ındadır. Bileşen ya da
-evidence dizini eklemek kök Makefile'ı ve `evidence/Makefile`'ı değiştirmez.
+koştuğunu Makefile bilir. Makefile'a dair her kural, dilin reçeteleri dahil,
+bu dosyadadır.
+
+İki katman vardır. Kökteki `Makefile` arayüzü taşır, reçete taşımaz: bir
+hedefi `COMPONENTS`'teki her bileşene `$(MAKE) -C components/<ad> <hedef>`
+ile, evidence hedeflerini `evidence/Makefile`'a indirir; `make
+<bileşen>:<hedef>[:<alt>…]`'yı yalnız o bileşenin Makefile'ına
+`<hedef>[:<alt>…]` olarak indirir, ilk iki noktadan sonrasını bileşen yorumlar
+(`make api:test:acceptance:sc-002`). Her bileşenin reçeteleri kendi
+`components/<ad>/Makefile`'ında, her evidence dizininin reçeteleri kendi
+`evidence/<dizin>/Makefile`'ındadır. Bileşen ya da evidence dizini eklemek kök
+Makefile'ı ve `evidence/Makefile`'ı değiştirmez.
 
 ## Hedefler
 
@@ -14,12 +20,13 @@ evidence dizini eklemek kök Makefile'ı ve `evidence/Makefile`'ı değiştirmez
 |---|---|
 | `build` | varsayılan hedef; bütün bileşenleri ve evidence'ın probe'larını derler |
 | `test` | unit ve contract testleri; evidence'ta probe'ların ve script'lerin kendi testleri |
-| `test-integration` | integration testleri |
+| `test:acceptance` | acceptance testleri, uzun ölçümler hariç |
+| `test:scenario` | sistem senaryoları, uzun ölçümler hariç |
 | `bench` | bench'ler; kapıya girmez |
 | `lint` | bileşenlerde ve evidence'ta formatter denetimi ve linter'lar |
 | `evidence:<ad>` | bir bileşenin (`evidence/<ad>/`) ya da sistemin (`evidence/systems/<ad>/`) evidence'ı |
 | `evidence:all` | `sysenv/` dışındaki bütün evidence dizinleri |
-| `gate` | sırayla `build`, `lint`, `test`, `test-integration`, `evidence:all` |
+| `gate` | sırayla `build`, `lint`, `test`, `test:acceptance`, `test:scenario`, `evidence:all` |
 | `dist` | release derler, teslim edilenleri `dist/<target>/` altına toplar |
 | `clean` | `build/`'i siler |
 | `distclean` | `clean`'e ek olarak `dist/`'i siler ve bileşenlerin `distclean`'ini çağırır |
@@ -46,19 +53,27 @@ hata verir.
 ## Bileşenin Makefile'ı
 
 1. Bir bileşeni `components/<ad>/` altında açtığın commit'te onun
-   `Makefile`'ını yazarsın. `build`, `test`, `test-integration`, `bench`,
-   `lint` ve `distclean` hedeflerinin hepsini tanımlar; bileşenin testi
-   olmayan türün ve işi olmayan hedefin reçetesi boştur (`@:`).
+   `Makefile`'ını yazarsın. `build`, `test`, `test:acceptance`,
+   `test:scenario`, `bench`, `lint` ve `distclean` hedeflerinin hepsini
+   tanımlar; bileşenin testi olmayan türün ve işi olmayan hedefin reçetesi
+   boştur (`@:`). Kökten `make <bileşen>:<hedef>` ile çağrılan şu hedefleri
+   de tanımlar:
+   - `test:acceptance:<ad>`: dosya adı `<ad>`'ı taşıyan acceptance dosyasının
+     testleri, uzun ölçümler dahil (`sc-002`, `us-005`).
+   - `test:scenario:<ad>`: dosya adı `<ad>`'ı taşıyan sistem senaryosunun
+     testleri, uzun ölçümler dahil (`ss-001`).
+   - `coverage`, `coverage:acceptance`: alt process'lerin coverage'ı dahil.
 2. Kök şu değişkenleri export eder; bileşen onları kullanır, kendisi
    tanımlamaz: `VARIANT`, `TARGET`, `BUILD` (derleme kökü), `BIN` (teslim
    edilen binary'lerin yeri), `TEST_RUN` (koşu dizini). Üç yol da mutlaktır.
 3. Reçete bileşenin kendi aracını çağırır (`go`, `cargo`, `cmake`, `npm`,
-   `uv`); araçlar devshell'den gelir. Dilin reçeteleri (bayraklar, cross
-   hedef, çıktının `$(BIN)`'e gelmesi) `.claude/rules/<dil>.md`'nin Makefile
+   `uv`); araçlar devshell'den gelir. Dilin reçeteleri bu dosyanın dil
    bölümündedir.
-4. Tablodaki hedeflerin reçetesini yazmak ve bileşene özgü bir adım eklemek
-   plan'ın işidir. Tabloda olmayan bir hedef adı ya da parametre gerekiyorsa
+4. Bu dosyadaki hedeflerin reçetesini yazmak ve bileşene özgü bir adım eklemek
+   plan'ın işidir. Burada olmayan bir hedef adı ya da parametre gerekiyorsa
    plan'da yazılır ve proje sahibine sorulur.
+5. Sözleşme bileşeninin (manifest `buf.yaml`) Makefile'ında yalnız `lint`
+   doludur: `buf lint`.
 
 ## evidence'ın Makefile'ları
 
@@ -73,8 +88,12 @@ hata verir.
    - `test`: probe'ların ve script'lerin kendi testleri (denetçinin negatif
      kontrolü gibi); dış sistem açmaz.
    - `lint`: probe'ların ve script'lerin lint'i.
-   - `run`: probe'ları `$(MAKE) build OUT=$(RUN)` ile koşu dizinine derler,
-     senaryoları koşar; çıktısı `$(RUN)` altındadır.
+   - `run`: probe'ları `$(MAKE) build OUT=$(RUN)` ile koşu dizinine derler ve
+     dizinin giriş noktasını koşar: Python'da `uv run run.py`, yetiyorsa bir
+     shell script'i. Giriş noktası işi baştan sona yapar, çıktısını `TEST_RUN`
+     ortam değişkeninin gösterdiği dizine yazar (`run` ona `$(RUN)`'ı verir)
+     ve bir ihlal ya da atlanan senaryo varsa sıfırdan farklı çıkış koduyla
+     biter.
    `OUT` ve `RUN`'ı `evidence/Makefile` verir; `SCENARIO` ve `EVIDENCE`
    komut satırından ortam değişkeni olarak gelir.
 3. Sistem dizininin probe'u yoktur; kullandığı bileşenlerin probe'larını
@@ -87,7 +106,8 @@ hata verir.
   `$(BIN)` = `build/<target>/<variant>/bin/` altındadır. `dist` bu `bin/`'i
   toplar. evidence'ın `build`'i probe'ları `$(BUILD)/evidence/<dizin>/`'e
   yazar; onlar `$(BIN)`'e ve `dist`'e girmez.
-- evidence koşularının çıktısı `$(TEST_RUN)` altındadır; unit ve integration
+- evidence, acceptance ve sistem senaryosu koşularının çıktısı `$(TEST_RUN)`
+  altında saklanır, coverage `$(TEST_RUN)/coverage/`'dadır; unit ve contract
   terminale yazar. Bir make çağrısı tek bir koşu dizini açar:
   `$(RUNS)/<proje>/<zaman>-<hedef>/` (hedefteki `:` `-` olur). gate'in alt
   make'leri aynı dizini kullanır; her evidence dizini `$(TEST_RUN)/<dizin>`
@@ -98,3 +118,35 @@ hata verir.
   `~/.local/state/runs`'tır; yeniden başlatmada silinmez. CI'da işin artifact
   dizini verilir. `clean` ve `distclean` ona dokunmaz, yalnız insan temizler.
 - Reçeteler POSIX `sh` ile koşar; bash'e özgü bir şey kullanmaz.
+
+## Go bileşeni
+
+Bileşenin `Makefile`'ı `components/<ad>/`'da, `go.mod`'un yanındadır.
+
+- `build`: önce `go generate ./...`, sonra
+  `go build <bayraklar> ./...` ile bütün paketler; ardından main paketleri
+  `go build <bayraklar> -o $(BIN)/ $$(go list -f '{{if eq .Name "main"}}{{.ImportPath}}{{end}}' ./...)`
+  ile `$(BIN)`'e (liste boşsa bu adım atlanır). `go build -o <dizin>` main
+  paketi olmayan modülde hata verdiği için bütün paketler ayrı derlenir.
+- Bayraklar: debug `-gcflags='all=-N -l'`, release `-trimpath -ldflags='-s -w'`.
+  İki varyantta da `-ldflags` sürümü gömer: `-X main.version=$(VERSION)`.
+  `VERSION` bileşenin Makefile'ında
+  `$(shell git describe --tags --always --dirty --match 'components/$(notdir $(CURDIR))/v*')`'tır;
+  bileşenin tag'i yoksa commit'tir. `VERSION` bayraklardan önce tanımlanır:
+  `:=` sağ tarafı tanımlandığı satırda açar.
+- Her `go build` `CGO_ENABLED=0` ile koşar. Devshell `CC`'yi export ettiği için
+  Go varsayılan olarak cgo'yu açar: host'ta binary nix'in glibc'sine dinamik
+  bağlanır ve nix store'u olmayan makinede açılmaz, cross'ta host derleyicisi
+  hedefi derleyemez. cgo isteyen bileşen ayrı karar ister; plan'da yazılır.
+- `TARGET` host değilse `go build`'in önüne ayrıca `GOOS=linux` ve hedefin
+  mimarisi gelir: aarch64 `GOARCH=arm64`, armv7 `GOARCH=arm GOARM=7`.
+- `test`: `go test -race ./...`; `tests/` içinde `go test -race ./contract/...`.
+- `test:acceptance`: `tests/` içinde `go test -race -count=1 -short ./acceptance/...`.
+- `test:acceptance:<ad>`: `tests/acceptance/`'ta adında `<ad>` geçen
+  dosyaların `Test` fonksiyonları `-run`'la seçilir, `-short`'suz koşar.
+- `test:scenario`, `test:scenario:<ad>`: aynı reçeteler `tests/scenario/` için.
+- `coverage`, `coverage:acceptance`: `-coverpkg` yalnız ürünün paketlerini
+  alır (`internal/testutils` ve `<paket>test` hariç); alt process'lerin
+  coverage'ı `-test.gocoverdir` ile toplanır.
+- `lint`: bileşen kökünde ve `tests/` içinde `golangci-lint run ./...`.
+- `distclean`: boş.

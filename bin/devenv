@@ -41,7 +41,8 @@ TEMPLATES = next((c for c in (ROOT / "templates", SHARE / "templates") if c.is_d
 REF = os.environ.get("DEV_TEMPLATES_REF", "github:bulent-kopuklu/devenv")
 LANGS = ["rust", "cpp", "go", "node", "java", "android"]
 #: Bir dilin parcalari `templates/<dil>/` altinda: `files/` projeye kopyalanir,
-#: `rules.md` `.claude/rules/<dil>.md` olur. Olmayan parca
+#: `rules.md` `.claude/rules/<dil>.md`, `testing.md` `.claude/rules/<dil>-testing.md`
+#: olur. Olmayan parca
 #: atlanir. Dilde `create.py` varsa bunlar yapilmaz, o script cagrilir:
 #: varsayilandan farkli olan dil ne yapacagina kendisi karar verir.
 ALIAS = {"c++": "cpp", "cxx": "cpp", "c": "cpp", "ts": "node", "js": "node",
@@ -109,10 +110,12 @@ class Lang:
             self.copy_files("files")
         if (self.dir / "rules.md").is_file():
             self.rules(self.dir / "rules.md")
+        if (self.dir / "testing.md").is_file():
+            self.rules(self.dir / "testing.md", f"{self.name}-testing")
 
-    def rules(self, path):
-        """`.claude/rules/<dil>.md` olarak kopyalanacak AI kurallari."""
-        self._rules[self.name] = path
+    def rules(self, path, name=None):
+        """`.claude/rules/<name>.md` olarak kopyalanacak AI kurallari; name yoksa dilin adi."""
+        self._rules[name or self.name] = path
 
 
 def create_langs(langs, project, keep=False):
@@ -286,7 +289,7 @@ ADD = """Bulundugun urun reposuna dil ekler:
 
   flake.nix        langs'e eklenir
   dilin dosyalari  var olan dosya atlanir
-  .claude/rules/<dil>.md
+  .claude/rules/<dil>.md, varsa <dil>-testing.md
 
 Makefile'a, CLAUDE.md'ye, Spec Kit'e ve rol dosyalarina dokunmaz; kaynak
 dosyasi yaratmaz. O dilde bir bileşen acilinca kendi Makefile'iyla gelir. Sonra

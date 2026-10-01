@@ -9,8 +9,7 @@ Go kodu yazarken uyulan standart; kütüphane ve servis için.
 - Bir unexported yardımcıyı başka bir dosya da kullanmaya başlarsa yardımcı
   artık o işlemin değildir; aynı commit'te dosyasından çıkar: bir tipin
   metoduysa tipin kendi dosyasına, değilse ne iş yaptığını söyleyen bir dosyaya
-  (`codec.go`), birden çok paket kullanıyorsa bir `internal/` paketine. Testlerin
-  çağırması bu kurala girmez.
+  (`codec.go`), birden çok paket kullanıyorsa bir `internal/` paketine. 
 
 ## Yerleşim
 - Bileşen bir Go modülüdür; `go.mod` bileşen kökündedir
@@ -23,12 +22,6 @@ Go kodu yazarken uyulan standart; kütüphane ve servis için.
 - Kod, tiplerinin paketinden aşağı inmez: bir internal paket üst paketin
   tiplerine `reflect.Value`, `any` ya da geri çağrı üzerinden ulaşmak zorunda
   kalıyorsa o kod üst pakette kalır.
-- `tests/` iç içe ikinci modüldür: `module <modül>/tests`; ürünü `require`
-  eder ve `replace <modül> => ../` ile kullanır. Yolu ürünün yolunun altında
-  olduğu için ürünün `internal` paketlerini import edebilir, unexported adlara
-  erişemez. Testlerin ortak yardımcısı (ör. `internal/testenv`) ürünün
-  `internal/`'ında tek kopya durur. İç içe modül bileşen kökündeki `./...`'e
-  ve yayımlanan modüle girmez; `tests/` teslimden böyle ayrılır.
 - Kardeş bileşeni kullanan bileşen onu `require` eder ve
   `replace <kardeş> => ../<kardeş>` ile monorepo'daki kopyasını kullanır.
   `replace` yalnız ana modülde geçerlidir: bileşeni `go get` ile çeken,
@@ -78,8 +71,6 @@ Her goroutine'in sahibi, bitiş koşulu ve hata yolu vardır.
 - Kanalı yalnızca üretici kapatır, tek üretici; çoklu üreticide `WaitGroup` + tek
   kapatıcı. Tüketici kapatmaz.
 - Mutex kritik bölgesinde I/O, kanal işlemi, callback yok. Kilit sırası sabit.
-- `_test.go`'da yalnız şu geçerlidir: test, açtığı goroutine'in bitmesini
-  bekler. Sayı sınırı, config ve backpressure maddeleri test koduna uygulanmaz.
 
 ## Context
 - Sınırdan giren her fonksiyon ctx alır, aşağı geçirir. `context.Background()`
@@ -101,7 +92,6 @@ Her goroutine'in sahibi, bitiş koşulu ve hata yolu vardır.
 - switch/select'in her case'i birkaç satırdır; iş, case'in çağırdığı
   fonksiyondadır.
 - İç içe blok derinliği en çok 3.
-- Bu bölüm `_test.go` dosyalarına uygulanmaz.
 - `.golangci.yml`'deki `funlen` ve `gocognit` yalnız açık aşımı yakalar; norm bu
   bölümdür. Aşan fonksiyon bölünür, `//nolint` yazılmaz.
 
@@ -130,7 +120,6 @@ bir goroutine'de çıkan panic bütün süreci düşürür.
   sahibine döner. Goroutine kendini sessizce yeniden başlatıp devam etmez;
   hatayı sahibi görür ve karar verir.
 - `recover` ile hata akışı kurulmaz: beklenen hata `error` döner.
-- Bu bölüm `_test.go` dosyalarına uygulanmaz.
 
 ## Dış bağımlılıklar
 - Retry yalnızca idempotent işlemde; üst sınır (deneme sayısı VE toplam süre),
@@ -141,97 +130,14 @@ bir goroutine'de çıkan panic bütün süreci düşürür.
 - Süre ölçümü `time.Since` (monotonic). Zaman damgası UTC.
 
 ## Bağımlılık ve derleme
-- `go.mod`/`go.sum` commit; ürünün ve `tests/`'in modülünde `go mod tidy`
-  temiz; `replace` gerekçeli ve geçici; kardeş bileşene, `tests/`'ten ürüne
-  ve probe'lardan bileşene `replace` kalıcıdır (Yerleşim, evidence'ta Go
-  probe'ları).
+- `go.mod`/`go.sum` commit; `go mod tidy` temiz; `replace` gerekçeli ve
+  geçici; kardeş bileşene `replace` kalıcıdır (Yerleşim).
 - Eklemeden önce stdlib ve `golang.org/x`'e bak; 20 satırlık işe kütüphane
   eklenmez.
 - `go.mod`'a `toolchain` direktifi yazılmaz. Go sürümü devshell'den gelir;
   `GOTOOLCHAIN=auto` olduğu için devshell'dekinden yeni bir direktif go'ya başka
   bir toolchain indirtir.
 - Binary `CGO_ENABLED=0` ile statik derlenir; cgo açılırsa gerekçe yazılır.
-  Testler cgo'lu koşar: `-race` cgo ister.
 - Binary'ye sürüm/commit `-ldflags "-X"` ile gömülür ve başlangıç log'unda
   görünür.
 
-## Test
-- unit paketin yanında `*_test.go`'dur; Go'da unexported ada yalnız aynı
-  paketten erişildiği için `tests/unit/` yoktur.
-- Exported API'yi kullanan integration `tests/integration/<NN_katman>/`'dadır
-  ve etiket istemez. unexported'a dokunmak zorunda olan integration paketinde
-  `*_integration_test.go`'dur, ilk satırı `//go:build integration`.
-- Her test paketinin `TestMain`'i goleak denetimiyle biter. Paket dış kaynak
-  (container) açıyorsa önce kaynak kapanır, sonra `goleak.Find` koşar;
-  `goleak.VerifyTestMain` bu sırayı kuramaz. `TestMain` etiketsiz bir
-  dosyadadır; etiketli dosyada durursa etiketsiz koşuda derlenmez ve goleak o
-  koşuda yoktur.
-- Ürünün birden çok instance'ını isteyen integration testi her instance'ı ayrı
-  bir process'te koşar: test binary'sini (`os.Executable()`) instance'ın rolünü
-  taşıyan bir ortam değişkeniyle alt process olarak başlatır; `TestMain`
-  değişkeni görünce `m.Run`'ı çağırmadan o rolün fonksiyonunu koşar ve çıkar.
-  Rolün kodu testin yanında durur; alt process'ler de `-race`'lidir.
-- Kodun paketinde `Benchmark` fonksiyonu olmaz; bench `tests/bench/`'tedir.
-- Test süreci, bench dışında, `-race` ile koşar; probe'lar `-race`'siz
-  derlenir.
-- Zamana bağlı unit davranışı `testing/synctest` balonunda sınanır; balonda
-  saati `time.Sleep` ilerletir. integration'da `time.Sleep`, `time.After`,
-  `time.NewTimer` yoktur. Kaçınılmaz istisna `//nolint:forbidigo // <neden>`
-  ile yazılır.
-- Interface yalnızca test için açılmaz; önce somut tip, gerçek ikinci
-  implementasyon gelince interface.
-
-## Makefile'da Go bileşeni
-Bileşenin `Makefile`'ı `components/<ad>/`'da, `go.mod`'un yanındadır;
-reçeteler orada, `tests/`'e ait olanlar `tests/` içinde koşar.
-- `build`: önce `go generate ./...`, sonra
-  `go build <bayraklar> ./...` ile bütün paketler; ardından main paketleri
-  `go build <bayraklar> -o $(BIN)/ $$(go list -f '{{if eq .Name "main"}}{{.ImportPath}}{{end}}' ./...)`
-  ile `$(BIN)`'e (liste boşsa bu adım atlanır). `go build -o <dizin>` main
-  paketi olmayan modülde hata verdiği için bütün paketler ayrı derlenir.
-  `./...` iç içe `tests/` modülüne inmez: testler derlenmez, teslime
-  girmez.
-- Bayraklar: debug `-gcflags='all=-N -l'`, release `-trimpath -ldflags='-s -w'`.
-  İki varyantta da `-ldflags` sürümü gömer: `-X main.version=$(VERSION)`.
-  `VERSION` bileşenin Makefile'ında
-  `$(shell git describe --tags --always --dirty --match 'components/$(notdir $(CURDIR))/v*')`'tır;
-  bileşenin tag'i yoksa commit'tir. `VERSION` bayraklardan önce tanımlanır:
-  `:=` sağ tarafı tanımlandığı satırda açar.
-- Her `go build` `CGO_ENABLED=0` ile koşar. Devshell `CC`'yi export ettiği için
-  Go varsayılan olarak cgo'yu açar: host'ta binary nix'in glibc'sine dinamik
-  bağlanır ve nix store'u olmayan makinede açılmaz, cross'ta host derleyicisi
-  hedefi derleyemez. Testler `-race` için cgo'lu kalır. cgo isteyen bileşen ayrı
-  karar ister; plan'da yazılır.
-- `TARGET` host değilse `go build`'in önüne ayrıca `GOOS=linux` ve hedefin
-  mimarisi gelir: aarch64 `GOARCH=arm64`, armv7 `GOARCH=arm GOARM=7`.
-- `test`: `go test -race ./...`; contract testi varsa
-  `tests/` içinde `go test -race ./contract/...`.
-- `test-integration`: `go test -race -count=1 -tags integration ./...`
-  (paketlerin yanındaki `*_integration_test.go` dosyaları); `tests/` içinde
-  `go test -race -count=1 ./integration/...`.
-- `bench`: `tests/` içinde `go test -count=1 -v -bench . ./bench/...`. Test
-  ve Benchmark fonksiyonları birlikte koşar; sonucu `results/<host>.jsonl`'a
-  ekleyen ve bir öncekiyle karşılaştıran bir Test fonksiyonu olabilir. `-v`
-  onun `t.Logf` ile bastığı sonucu gösterir.
-- `lint`: bileşen kökünde ve `tests/` içinde `golangci-lint run ./...`;
-  paketin yanındaki integration dosyalarını `.golangci.yml`'deki `build-tags`
-  görünür kılar.
-- `distclean`: boş.
-
-## evidence'ta Go probe'ları
-Bileşenin probe'ları `evidence/<bileşen>/probes/`'ta ayrı bir Go modülüdür.
-- `module <repo>/evidence/<bileşen>/probes`; bileşeni `require` eder ve
-  `replace <bileşenin modülü> => ../../../components/<bileşen>` ile kullanır.
-  Modülün yolu bileşeninkinin altında olmadığı için probe'lar bileşenin
-  `internal` paketlerini import edemez: public API'yi derleyici korur.
-- Her probe `probes/<ad>/` altında bir main paketidir; binary'nin adı dizinin
-  adıdır. Probe'ların ortak kodu `probes/internal/`'dadır.
-- `evidence/<bileşen>/Makefile`:
-  - `build`: `probes/` içinde
-    `CGO_ENABLED=0 go build -trimpath -ldflags='-s -w -X main.version=$(VERSION)' -o $(OUT)/bin/ ./...`.
-    Probe `-race`'siz, release bayraklarıyla ve host için derlenir;
-    `TARGET`'a bakmaz. `VERSION` bileşeninki gibi bulunur, tag öneki
-    `components/<bileşen>/v*`'dır.
-  - `test`: `probes/` içinde `go test -race ./...`.
-  - `lint`: `probes/` içinde `golangci-lint run ./...`.
-  - `run`: `$(MAKE) build OUT=$(RUN)`, sonra `TEST_RUN=$(RUN) uv run run.py`.

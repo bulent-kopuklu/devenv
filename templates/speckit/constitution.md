@@ -1,5 +1,6 @@
 # {{NAME}} Anayasası
 
+
 ## Core Principles
 
 ### I. Davranış İddiası Ölçümsüz Kurulmaz
@@ -22,37 +23,7 @@ Gerekçe: Belgelenen davranış ile gözlenen davranış ayrışır, kararı yal
 taşır. Ürün belgesinde durmayan kanıt, belgeyi okuyan için yoktur; yazılmayan
 ölçüm bir sonraki soruda yeniden sorulur.
 
-### II. Testler iddianın kendisini ölçer; her bir hata, düzeltilmeden önce başarısız olan bir test aracılığıyla yeniden oluşturulur
-
-1. Test, hatanın üretilebildiği en alçak düzeyde yazılır: tek process'te ve
-   dış sistem olmadan üretiliyorsa unit; gerçek dış sistemle ya da ürünün
-   sahadaki gibi birden çok process'iyle üretiliyorsa integration; ancak bir
-   felaketle (ürünün bir process'i ölür, durur ya da ötekilerden ayrı yavaşlar;
-   ağ kesilir) üretiliyorsa evidence. Yeri, türünün projenin kurallarındaki
-   yeridir (MUST).
-
-2. Test, iddianın yasakladığı ya da istediği şeyin kendisini ölçer. İddiada
-   olmayan bir koşul eklemez; iddia bozulunca tesadüfen görülebilecek bir
-   sonucunu ölçmez (MUST NOT).
-
-3. Bir hata bulununca, düzeltmeden önce onu yeniden üreten test yazılır ve
-   düzeltilmemiş kodda kırmızı yandığı gösterilir (MUST). Kanıt, o kırmızı
-   koşunun çıktısıdır: evidence'ta koşu dizininde durur, öteki testlerde
-   düzeltme commit'ine yazılır. Test ve düzeltme aynı commit'e girer (MUST).
-
-4. evidence koşularının çıktısı, sonraki koşunun ve temizliğin silmediği bir
-   yerde saklanır; yeri plan.md'de yazar (MUST). Commit'lenmiş ve bir kez geçmiş
-   bir test ya da kapı kırmızı yanarsa bu bir bulgudur. Tekrar koşu onu kapatmaz;
-   bulgu, mekanizması açıklanana kadar açık kalır (MUST).
-
-Gerekçe: Yeşil bir koşu, o koşuda ihlal görülmediğini söyler; iddianın doğru
-olduğunu söylemez. Hata, üretilebildiği en alçak düzeyde sınanmazsa ancak şans
-eseri görülür. İddianın kendisini değil bir sonucunu ölçen test, hatayı ancak o
-sonuç tesadüfen oluştuğunda görür. Düzeltilmemiş kodda kırmızı yanmamış test,
-düzeltmenin hatayı giderdiğini göstermez. Seyrek bir hatanın tek
-kırmızısının verisi silinirse hata bir daha görülmez.
-
-### III. Tek Kaynak Spec
+### II. Tek Kaynak Spec
 
 Üretilen artefaktların tek kaynağı spec'tir. Ön çalışma belgeleri, tasarım
 notları ve özellik listeleri spec'in girdisidir; spec yazıldıktan sonra kaynak
@@ -65,7 +36,7 @@ varsayılamaz.
 Gerekçe: İki kaynak arasında senkron tutmak, tek kaynak ile kod arasında senkron
 tutmaktan pahalıdır; üçüncü kaynak onu imkânsız yapar.
 
-### IV. Önce Sadelik
+### III. Önce Sadelik
 
 Problemi çözen en az bileşen seçilir. Olgun bir çözümün yaptığı iş yeniden
 yazılmaz. Spekülatif esneklik, yapılandırılabilirlik ya da "ileride lazım olur"
@@ -78,7 +49,7 @@ değersizleştirir. Yazılmamış olanın gerekçesi metinde durur, kodda değil
 
 Gerekçe: Her ek bileşen işletme, güvenlik ve arıza yüzeyi maliyetidir.
 
-### V. Kanıtlanmış Yaklaşım Yeniden Keşfedilmez
+### IV. Kanıtlanmış Yaklaşım Yeniden Keşfedilmez
 
 Bir tasarım kararından önce — mimari, protokol, veri modeli, algoritma, operasyon
 akışı — aynı problemi çözmüş ve üretimde kendini kanıtlamış çözümler incelenir
@@ -135,5 +106,6 @@ mekanizmasının hatası işlevsel testte görünmez, ancak biri onu kırmaya
 - **Uyum denetimi**: Her spec, plan ve task incelemesinde anayasa uyumu kontrol
   edilir. Sapma ya reddedilir ya da gerekçesi ve süresi yazılı bir istisna
   olarak kaydedilir. Sessiz sapma kabul edilmez.
+
 
 **Version**: 1.0.0 | **Ratified**: {{DATE}} | **Last Amended**: {{DATE}}

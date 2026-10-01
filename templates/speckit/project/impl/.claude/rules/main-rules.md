@@ -41,7 +41,7 @@ ctrl'ün itirazlarına göre belgeyi ya da kodu düzeltmek.
 - Bir hatayı düzelttiğin commit'in mesajına, testin düzeltilmemiş koddaki
   kırmızı çıktısını yazarsın.
 - Faz bitince sonuç raporuna fazın ilk ve son commit'ini ve fazın son
-  koşusunun sonucunu eklersin (user story fazında `make test-integration`,
+  koşusunun sonucunu eklersin (user story fazında `make test:acceptance`,
   evidence'a dokunan fazda `make evidence:<ad>` ve koşu dizini); fazda kırmızı yanan her testi
   çıktısıyla yazarsın.
 - Ayıklamada bir testi silerken mekanizma bozulunca karşılayan testin kırmızı
@@ -51,11 +51,12 @@ ctrl'ün itirazlarına göre belgeyi ya da kodu düzeltmek.
 
 ## Bug komutlarını koşarken
 
-- `/speckit-bug-assess`'te test evidence'ta düştüyse hatanın integration
-  düzeyinde uzun bir koşu gerektirmeden üretilip üretilemeyeceğine karar
-  verir, kararı gerekçesiyle Reproduction bölümüne yazarsın. Üretilebiliyorsa
-  integration testi eksiktir; "Tests to add or update" o testi ister. Düşen
-  test integration ya da daha alçak düzeydeyse onun kırmızısı kanıttır.
+- `/speckit-bug-assess`'te test evidence'ta ya da acceptance'ta düştüyse
+  hatanın `testing.md`'nin Hata bölümündeki düzeyde üretilip
+  üretilemeyeceğine karar verir, kararı gerekçesiyle Reproduction bölümüne
+  yazarsın. Üretilebiliyorsa o test eksiktir; "Tests to add or update" o
+  testi ister. Düşen test unit ya da sistem senaryosuysa onun kırmızısı
+  kanıttır.
 - `/speckit-bug-fix`'te assessment bir test istiyorsa önce o testi yazar,
   düzeltilmemiş kodda koşarsın. Kırmızı yanarsa ctrl'e bildirir ve düzeltmeye
   geçersin; `fix.md`'nin Local Verification bölümüne kırmızı ve yeşil koşunun
