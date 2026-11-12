@@ -109,6 +109,8 @@ let
         export GOPATH="''${XDG_DATA_HOME:-$HOME/.local/share}/go"
         export GOBIN="$GOPATH/bin"
         export PATH="$GOBIN:$PATH"
+        # host Go managers (gvm) export GOROOT; nix's go would then build against their stdlib
+        unset GOROOT
       '';
     };
 
