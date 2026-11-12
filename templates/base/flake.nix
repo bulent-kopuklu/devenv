@@ -13,7 +13,7 @@
       targets = [ ];  # aarch64 armv7
       android = { };  # api-level = 21; ndk-version = "23.2.8568313"; cmake-version = "3.22.1";
 
-      systems = [ "x86_64-linux" "aarch64-linux" ];
+      systems = [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ];
       forAll = nixpkgs.lib.genAttrs systems;
     in {
       devShells = forAll (system:
