@@ -43,7 +43,8 @@ let
     "i686-linux-android" = "i686-linux-android";
     "armv7-linux-androideabi" = "armv7a-linux-androideabi";
   };
-  ndkBin = "$ANDROID_HOME/ndk/${androidCfg.ndk-version}/toolchains/llvm/prebuilt/linux-x86_64/bin";
+  ndkHost = if pkgs.stdenv.hostPlatform.isDarwin then "darwin-x86_64" else "linux-x86_64";
+  ndkBin = "$ANDROID_HOME/ndk/${androidCfg.ndk-version}/toolchains/llvm/prebuilt/${ndkHost}/bin";
   androidLinkerExports = lib.mapAttrsToList
     (triple: clangPrefix: exportLinker triple "${ndkBin}/${clangPrefix}${toString androidCfg.api-level}-clang")
     androidTriples;
